@@ -33,10 +33,11 @@ WebSocketClass::WebSocketClass(QScriptEngine* engine, QWebSocket* qWebSocket) :
 void WebSocketClass::initialize() {
     connect(_webSocket, &QWebSocket::disconnected, this, &WebSocketClass::handleOnClose);
     connect(_webSocket, &QWebSocket::textMessageReceived, this, &WebSocketClass::handleOnMessage);
+    connect(_webSocket, &QWebSocket::binaryMessageReceived, this, &WebSocketClass::handleOnBinaryMessage);
     connect(_webSocket, &QWebSocket::connected, this, &WebSocketClass::handleOnOpen);
     connect(_webSocket, static_cast<void(QWebSocket::*)(QAbstractSocket::SocketError)>(&QWebSocket::error), this,
         &WebSocketClass::handleOnError);
-    _binaryType = QStringLiteral("blob");
+    _binaryType = QStringLiteral("arraybuffer");
 }
 
 QScriptValue WebSocketClass::constructor(QScriptContext* context, QScriptEngine* engine) {
@@ -52,7 +53,12 @@ WebSocketClass::~WebSocketClass() {
 }
 
 void WebSocketClass::send(QScriptValue message) {
-    _webSocket->sendTextMessage(message.toString());
+    if (message.isObject()) {
+        QByteArray ba = qscriptvalue_cast<QByteArray>(message);
+        _webSocket->sendBinaryMessage(ba);
+    } else {
+        _webSocket->sendTextMessage(message.toString());
+    }
 }
 
 void WebSocketClass::close() {
@@ -91,6 +97,18 @@ void WebSocketClass::handleOnMessage(const QString& message) {
         QScriptValueList args;
         QScriptValue arg = _engine->newObject();
         arg.setProperty("data", message);
+        args << arg;
+        _onMessageEvent.call(QScriptValue(), args);
+    }
+}
+
+void WebSocketClass::handleOnBinaryMessage(const QByteArray& message) {
+    if (_onMessageEvent.isFunction()) {
+        QScriptValueList args;
+        QScriptValue arg = _engine->newObject();
+        QScriptValue data = _engine->newVariant(QVariant::fromValue(message));
+        QScriptValue arrayBuffer = _engine->newObject(reinterpret_cast<ScriptEngine*>(_engine)->getArrayBufferClass(), data);
+        arg.setProperty("data", arrayBuffer);
         args << arg;
         _onMessageEvent.call(QScriptValue(), args);
     }
