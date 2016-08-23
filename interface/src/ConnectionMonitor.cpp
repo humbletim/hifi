@@ -17,10 +17,16 @@
 #include <DependencyManager.h>
 #include <DomainHandler.h>
 #include <AddressManager.h>
+#include <SettingHandle.h>
 
 static const int DISPLAY_AFTER_DISCONNECTED_FOR_X_MS = 5000;
 
+static Setting::Handle<bool> autoShowAddressBar("autoShowAddressBar", true);
+
 void ConnectionMonitor::init() {
+    // respect .ini setting for disabling this feature
+    if (!autoShowAddressBar.get())
+        return;
     // Connect to domain disconnected message
     auto nodeList = DependencyManager::get<NodeList>();
     const DomainHandler& domainHandler = nodeList->getDomainHandler();
