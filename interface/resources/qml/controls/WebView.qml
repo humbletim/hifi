@@ -60,12 +60,28 @@ Item {
 
         webChannel.registeredObjects: [eventBridgeWrapper]
 
+        // Ensure the JS from the web-engine makes it to our logging
+        Connections {
+            target: root
+            onJavaScriptConsoleMessage: {
+                var category = [' info',' warn','error'][level] || level,
+                    src = (sourceID+''),
+                    parts = src.split(/[?#]/)[0].split(/[/]+/),
+                    basename = parts.pop(),
+                    scheme = parts.shift(),
+                    domainOrScheme = /^http/.test(scheme) ? parts.shift() : scheme;
+                console.log(
+                    "Web Entity [%1] | (%2) %3:%4 | %5"
+                        .arg(category)
+                        .arg(domainOrScheme)
+                        .arg(basename)
+                        .arg(lineNumber)
+                        .arg(message)
+                );
+            }
+            }
+        }
         Component.onCompleted: {
-            // Ensure the JS from the web-engine makes it to our logging
-            root.javaScriptConsoleMessage.connect(function(level, message, lineNumber, sourceID) {
-                console.log("Web Entity JS message: " + sourceID + " " + lineNumber + " " +  message);
-            });
-
             root.profile.httpUserAgent = "Mozilla/5.0 Chrome (HighFidelityInterface)";
         }
 

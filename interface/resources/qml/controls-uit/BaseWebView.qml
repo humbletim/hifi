@@ -17,12 +17,25 @@ WebEngineView {
 
     profile: desktop.browserProfile
 
-    Component.onCompleted: {
-        console.log("Connecting JS messaging to Hifi Logging")
-        // Ensure the JS from the web-engine makes it to our logging
-        root.javaScriptConsoleMessage.connect(function(level, message, lineNumber, sourceID) {
-            console.log("Web Window JS message: " + sourceID + " " + lineNumber + " " +  message);
-        });
+    // Ensure the JS from the web-engine makes it to our logging
+    Connections {
+        target: root
+        onJavaScriptConsoleMessage: {
+            var category = [' info',' warn','error'][level] || level,
+                src = (sourceID+''),
+                parts = src.split(/[?#]/)[0].split(/[/]+/),
+                basename = parts.pop(),
+                scheme = parts.shift(),
+                domainOrScheme = /^http/.test(scheme) ? parts.shift() : scheme;
+            console.log(
+                "Web Window [%1] | (%2) %3:%4 | %5"
+                    .arg(category)
+                    .arg(domainOrScheme)
+                    .arg(basename)
+                    .arg(lineNumber)
+                    .arg(message)
+            );
+        }
     }
 
     onLoadingChanged: {
