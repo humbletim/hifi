@@ -163,7 +163,7 @@ ScrollingWindow {
                             MouseArea {
                                 id: reloadButtonArea
                                 anchors { fill: parent; margins: -2 }
-                                onClicked: reloadScript(model.url)
+                                onClicked: reloadScript(model.path)
                             }
                         }
 
@@ -179,7 +179,7 @@ ScrollingWindow {
                             MouseArea {
                                 id: stopButtonArea
                                 anchors { fill: parent; margins: -2 }
-                                onClicked: stopScript(model.url)
+                                onClicked: stopScript(model.path)
                             }
                         }
 
