@@ -14,6 +14,8 @@
 
 #include <QObject>
 #include <QUrl>
+#include <QMetaEnum>
+#include <QDebug>
 
 #include <cstdint>
 
@@ -28,6 +30,7 @@ public:
         InProgress,
         Finished
     };
+    Q_ENUM(State)
 
     enum Result {
         Success,
@@ -38,6 +41,7 @@ public:
         InvalidURL,
         NotFound
     };
+    Q_ENUM(Result)
 
     QByteArray getData() { return _data; }
     State getState() const { return _state; }
@@ -64,5 +68,24 @@ protected:
     bool _cacheEnabled { true };
     bool _loadedFromCache { false };
 };
+
+inline QDebug operator<<(QDebug dbg, const ResourceRequest::State &state) {
+    dbg << QMetaEnum::fromType<ResourceRequest::State>().valueToKey(state);
+    return dbg;
+}
+
+inline QDebug operator<<(QDebug dbg, const ResourceRequest::Result &result) {
+    dbg << QMetaEnum::fromType<ResourceRequest::Result>().valueToKey(result);
+    return dbg;
+}
+
+inline QDebug operator<<(QDebug dbg, const ResourceRequest &c) {
+    dbg.nospace() << "[ResourceRequest " <<
+        "url=" << c.getUrl() <<
+        ", state=" << c.getState() <<
+        ", result=" << c.getResult() <<
+        "]";
+    return dbg;
+}
 
 #endif
