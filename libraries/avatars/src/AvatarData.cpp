@@ -2175,6 +2175,13 @@ glm::mat4 AvatarData::getControllerRightHandMatrix() const {
 
 
 QScriptValue RayToAvatarIntersectionResultToScriptValue(QScriptEngine* engine, const RayToAvatarIntersectionResult& value) {
+    if (QThread::currentThread() != engine->thread()) {
+#if THREAD_DEBUGGING
+        qCDebug(avatars) << "RayToAvatarIntersectionResultToScriptValue -- wrong thread...." <<
+            QThread::currentThread() << " engine:" << engine->thread();
+#endif
+        return QScriptValue();
+    }
     QScriptValue obj = engine->newObject();
     obj.setProperty("intersects", value.intersects);
     QScriptValue avatarIDValue = quuidToScriptValue(engine, value.avatarID);
@@ -2186,6 +2193,13 @@ QScriptValue RayToAvatarIntersectionResultToScriptValue(QScriptEngine* engine, c
 }
 
 void RayToAvatarIntersectionResultFromScriptValue(const QScriptValue& object, RayToAvatarIntersectionResult& value) {
+    if (QThread::currentThread() != object.engine()->thread()) {
+#if THREAD_DEBUGGING
+        qCDebug(avatars) << "RayToAvatarIntersectionResultFromScriptValue -- wrong thread...." <<
+            QThread::currentThread() << " engine:" << object.engine()->thread();
+#endif
+        return;
+    }
     value.intersects = object.property("intersects").toVariant().toBool();
     QScriptValue avatarIDValue = object.property("avatarID");
     quuidFromScriptValue(avatarIDValue, value.avatarID);

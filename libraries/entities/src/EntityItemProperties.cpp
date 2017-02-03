@@ -352,6 +352,14 @@ QScriptValue EntityItemProperties::copyToScriptValue(QScriptEngine* engine, bool
     // is included in _desiredProperties, or is one of the specially enumerated ALWAYS properties below.
     // (There may be exceptions, but if so, they are bugs.)
     // In all other cases, you are welcome to inspect the code and try to figure out what was intended. I wish you luck. -HRS 1/18/17
+
+    if (QThread::currentThread() != engine->thread()) {
+#if THREAD_DEBUGGING
+        qCDebug(entities) << "EntityItemProperties::copyToScriptValue -- wrong thread...."
+                          << QThread::currentThread() << " engine:" << engine->thread();
+#endif
+        return QScriptValue();
+    }
     QScriptValue properties = engine->newObject();
     EntityItemProperties defaultEntityProperties;
 
@@ -615,6 +623,13 @@ QScriptValue EntityItemProperties::copyToScriptValue(QScriptEngine* engine, bool
 }
 
 void EntityItemProperties::copyFromScriptValue(const QScriptValue& object, bool honorReadOnly) {
+    if (QThread::currentThread() != object.engine()->thread()) {
+#if THREAD_DEBUGGING
+        qCDebug(entities) << "EntityItemProperties::copyFromScriptValue -- wrong thread...."
+                          << QThread::currentThread() << " engine:" << object.engine()->thread();
+#endif
+        return;
+    }
     QScriptValue typeScriptValue = object.property("type");
     if (typeScriptValue.isValid()) {
         setType(typeScriptValue.toVariant().toString());

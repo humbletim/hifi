@@ -93,7 +93,7 @@ void EntityEditPacketSender::queueEditEntityMessage(PacketType type,
         return; // bail early
     }
 
-    if (properties.getClientOnly()) {
+    if (properties.getClientOnly() && serversExist()) {
         queueEditAvatarEntityMessage(type, entityTree, entityItemID, properties);
         return;
     }
