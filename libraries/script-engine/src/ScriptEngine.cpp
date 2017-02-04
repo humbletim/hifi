@@ -561,6 +561,11 @@ void ScriptEngine::init() {
     qScriptRegisterMetaType(this, wscReadyStateToScriptValue, wscReadyStateFromScriptValue);
 
     registerGlobalObject("Script", this);
+    if (isEntityClientScript()) {
+        // prevent local Entity scripts from calling stop() on the shared engine instance
+        QScriptEngine::evaluate("Script.stop = undefined", "");
+    }
+
     registerGlobalObject("Audio", &AudioScriptingInterface::getInstance());
     registerGlobalObject("Entities", entityScriptingInterface.data());
     registerGlobalObject("Quat", &_quatLibrary);
