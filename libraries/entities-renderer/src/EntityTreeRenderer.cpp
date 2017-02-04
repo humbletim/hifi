@@ -148,7 +148,7 @@ void EntityTreeRenderer::reloadEntityScripts() {
     _entitiesScriptEngine->unloadAllEntityScripts();
     foreach(auto entity, _entitiesInScene) {
         if (!entity->getScript().isEmpty()) {
-            ScriptEngine::loadEntityScript(_entitiesScriptEngine, entity->getEntityItemID(), entity->getScript(), true);
+            _entitiesScriptEngine->loadEntityScript(entity->getEntityItemID(), entity->getScript(), true);
         }
     }
 }

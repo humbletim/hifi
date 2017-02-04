@@ -421,8 +421,8 @@ void ScriptEngines::setScriptsLocation(const QString& scriptsLocation) {
 void ScriptEngines::reloadAllScripts() {
     DependencyManager::get<ScriptCache>()->clearCache();
     DependencyManager::get<OffscreenUi>()->clearCache();
-    emit scriptsReloading();
     stopAllScripts(true);
+    emit scriptsReloading();
 }
 
 ScriptEngine* ScriptEngines::loadScript(const QUrl& scriptFilename, bool isUserLoaded, bool loadScriptFromEditor,

@@ -1404,20 +1404,23 @@ bool ScriptEngine::getEntityScriptDetails(const EntityItemID& entityID, EntitySc
 
 // since all of these operations can be asynch we will always do the actual work in the response handler
 // for the download
-void ScriptEngine::loadEntityScript(QWeakPointer<ScriptEngine> theEngine, const EntityItemID& entityID, const QString& entityScript, bool forceRedownload) {
-    // NOTE: If the script content is not currently in the cache, the LAMBDA here will be called on the Main Thread
-    //       which means we're guaranteed that it's not the correct thread for the ScriptEngine. This means
-    //       when we get into entityScriptContentAvailable() we will likely invokeMethod() to get it over
-    //       to the "Entities" ScriptEngine thread.
-    DependencyManager::get<ScriptCache>()->getScriptContents(entityScript, [theEngine, entityID](const QString& scriptOrURL, const QString& contents, bool isURL, bool success) {
-        QSharedPointer<ScriptEngine> strongEngine = theEngine.toStrongRef();
-        if (strongEngine) {
-#ifdef THREAD_DEBUGGING
-            qCDebug(scriptengine) << "ScriptEngine::entityScriptContentAvailable() IN LAMBDA contentAvailable on thread ["
-                << QThread::currentThread() << "] expected thread [" << strongEngine->thread() << "]";
-#endif
-            strongEngine->entityScriptContentAvailable(entityID, scriptOrURL, contents, isURL, success);
-        }
+void ScriptEngine::loadEntityScript(const EntityItemID& entityID, const QString& entityScript, bool forceRedownload) {
+    if (QThread::currentThread() != thread()) {
+        QMetaObject::invokeMethod(this, "loadEntityScript",
+            Q_ARG(const EntityItemID&, entityID),
+            Q_ARG(const QString&, entityScript),
+            Q_ARG(bool, forceRedownload)
+        );
+        return;
+    }
+
+    DependencyManager::get<ScriptCache>()->getScriptContents(entityScript, [entityID](const QString& scriptOrURL, const QString& contents, bool isURL, bool success) {
+        QMetaObject::invokeMethod(this, "entityScriptContentAvailable",
+                                  Q_ARG(const EntityItemID&, entityID),
+                                  Q_ARG(const QString&, scriptOrURL),
+                                  Q_ARG(const QString&, contents),
+                                  Q_ARG(bool, isURL),
+                                  Q_ARG(bool, success));
     }, forceRedownload);
 }
 
