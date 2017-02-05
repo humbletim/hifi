@@ -18,7 +18,9 @@ var window = new OverlayWindow({
     width: 400, height: 900,
 });
 window.setPosition(25, 50);
-window.closed.connect(function() { Script.stop(); });
+function killit() { if (window) { window=null; Script.stop(); } }
+window.closed.connect(killit);
+Script.scriptEnding.connect(function() { window && window.windowClosed &&window.windowClosed(); });
 
 var getFormattedDate = function() {
     var date = new Date();
@@ -32,21 +34,14 @@ var sendToLogWindow = function(type, message, scriptFileName) {
     }
     window.sendToQml("[" + getFormattedDate() + "] " + "[" + scriptFileName + "] " + typeFormatted + message);
 };
-
-ScriptDiscoveryService.printedMessage.connect(function(message, scriptFileName) {
-    sendToLogWindow("", message, scriptFileName);
+'printedMessage,warningMessage,errorMessage,infoMessage'.split(',').forEach(function(signal) {
+    var prefix = signal === 'printedMessage' ? '' : signal.toUpperCase().replace(/message/i,'');
+    ScriptDiscoveryService[signal].connect(logit);
+    Script.scriptEnding.connect(function() {
+        ScriptDiscoveryService[signal].disconnect(logit);
+    });
+        function logit(message, scriptFileName) {
+            sendToLogWindow(prefix, message, scriptFileName);
+        }
 });
-
-ScriptDiscoveryService.warningMessage.connect(function(message, scriptFileName) {
-    sendToLogWindow("WARNING", message, scriptFileName);
-});
-
-ScriptDiscoveryService.errorMessage.connect(function(message, scriptFileName) {
-    sendToLogWindow("ERROR", message, scriptFileName);
-});
-
-ScriptDiscoveryService.infoMessage.connect(function(message, scriptFileName) {
-    sendToLogWindow("INFO", message, scriptFileName);
-});
-
 }()); // END LOCAL_SCOPE

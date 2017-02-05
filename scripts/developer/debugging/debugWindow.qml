@@ -7,24 +7,100 @@
 //  Distributed under the Apache License, Version 2.0.
 //  See the accompanying file LICENSE or http://www.apache.org/licenses/LICENSE-2.0.html
 //
+// ================================================================================
+//
+// tim's changes:
+//   * added support for "pop out / pop in" button
+//   * added support for styling via various CSS-like rules
+//
+// Examples:
+//   - White on black background, bolded 12pt DejaVu Sans Mono font:
+//     var style = 'font: 12pt bold "DejaVu Sans Mono"; background-color: white; color: black;'
+//
+//   - Disable antialiasing, smoothing and word wrapping:
+//     var style = 'white-space: nowrap; text-rendering: optimizeLegibility;'
+//
+//   - Display log entries as HTML (eg: print('<b>asdf</b> hi') will show in bold)
+//     var style = '-hifi-format: html;'
+//
+//   NOTE: the style string needs to be set manually for now using this sorta thing:
+//      Settings.setValue('debugWindow/style', style);
+//   (which you can do in the Console... or Script Editor debug pane)
+//
+// List of supported CSS-like rules:
+//     color: #abc;
+//     background-color: #def;
+//     font: NNpt bold italic 'Desired Font Family', FallbackFont, 'Comic Sans MS';
+//       font-family: 'Desired Font Family', FallbackFont;
+//       font-size: NNpt;
+//       font-weight: bold;
+//       font-style: italic;
+//     white-space: nowrap;
+//     text-rendering: optimizeLegibility;
+//     -hifi-smooth: false; (same effect as text-rendering: optimizeLegibility)
+//     -hifi-format: html;
+//
+// -- humbletim @ 2017.02.05
 
 import QtQuick 2.5
 import QtQuick.Controls 1.4
-import Hifi 1.0 as Hifi
+import QtQuick.Controls.Styles 1.4
 
-
-Rectangle {
+Item {
     id: root
     width: parent ? parent.width : 100
     height: parent ? parent.height : 100
 
-    property var channel;
+    property var textStyle: null
+    property var iconFont: ''
 
-    TextArea {
-        id: textArea
-        width: parent.width
-        height: parent.height
-        text:""
+    Rectangle {
+        id: logArea
+        anchors.fill: parent
+        property alias textArea: textArea
+        Component.onCompleted: pollFont()
+        Button {
+            id: popoutButton
+            visible: false
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            anchors.rightMargin: textArea.viewport.anchors.rightMargin
+            anchors.bottomMargin: textArea.viewport.anchors.bottomMargin
+            z: textArea.z + 1
+            property var expand:   iconFont === 'FontAwesome' ? '\uf065' : '\u21f1'
+            property var compress: iconFont === 'FontAwesome' ? '\uf066' : '\u21f2'
+            text: popoutwin && popoutwin.visible ? compress : expand
+            onClicked: popoutwin && popoutwin.visible ? popWindowIn() : popWindowOut()
+            width: height
+            style: ButtonStyle {
+                label: Text {
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    anchors.fill: parent
+                    font.family: root.iconFont
+                    text: control.text
+                    color: 'black'
+                }
+            }
+        }
+
+        TextArea {
+            id: textArea
+            text: ""
+            anchors.fill: parent
+            readOnly: true
+            selectByMouse: true
+            selectByKeyboard: true
+            frameVisible: false
+            antialiasing: !!smooth
+            smooth: !!smooth
+            style: textAreaStyle
+            property var to
+            onTextChanged: {
+                if (wrapMode === Text.NoWrap)
+                    flickableItem.contentX = 0;
+            }
+        }
     }
 
     function fromScript(message) {
@@ -35,7 +111,235 @@ Rectangle {
             lines.splice(0, TRIM_LINES);
             textArea.text = lines.join('\n');
         }
-        textArea.append(message);
+        if (textArea.textFormat === Text.RichText)
+            message = (''+message).replace(/\n/g,'<br />');
+        textArea.append((''+message).replace(/\n$/,''));
+    }
+
+    // make textStyle.renderType available for debug printing..
+    property Component textAreaStyle: TextAreaStyle {
+        frame: Item { visible: false }
+        Component.onCompleted: textStyle = this
+    }
+
+    // try to pull FontAwesome in from the local resources
+    FontLoader { id: iconFontA; source: "../../../resources/fonts/fontawesome-webfont.ttf" }
+    FontLoader { id: iconFontB; source: "../../../interface/resources/fonts/fontawesome-webfont.ttf" }
+    property var fonts: [ iconFontA, iconFontB ]
+    function pollFont() {
+        pollFont.i = (pollFont.i||0) + 1;
+        iconFont = fonts
+            .filter(function(f) { return f.status === FontLoader.Ready })
+            .map(function(f) { return f.name })[0];
+        if (!iconFont && pollFont.i++ < 5)
+            setTimeout(pollFont, 1000);
+    }
+    onIconFontChanged: console.info('iconFont', iconFont)
+
+    // dynamic popout window support
+    default property alias contents: root.children
+    property var window: null
+    property var popoutwin: null
+    property var backupProperties: 'width,height,closable,destroyOnHidden,x,y,shown'.split(',')
+    property var backup: ({})
+    Binding { target: root; property: 'window'; value: parent.parent; when: Boolean(parent.parent) }
+
+    function popWindowIn() {
+        console.info('popWindowIn', popoutwin.contents);
+        root.contents = popoutwin.contents;
+        popoutwin.window = null;
+        window.visible = true;
+        backupProperties.forEach(function(p) {
+            window[p] = backup[p];
+        });
+        window.opacity = .9
+        window.fadeIn();
+        textArea.flickableItem.contentY = textArea.flickableItem.contentHeight - textArea.viewport.height;
+    }
+
+    Connections {
+        target: popoutwin ? popoutwin : null
+        ignoreUnknownSignals: true
+        onClosing: {
+            console.info('window.popoutwin.onClosing', popoutwin, popoutwin && popoutwin.window);
+        }
+        onClosed: {
+            console.info('window.popoutwin.onClosed', popoutwin, popoutwin && popoutwin.window);
+        }
+        Component.onDestruction: {
+            console.info('window.popoutwin.Component.onDestruction', popoutwin, popoutwin && popoutwin.window)
+            if (popoutwin && popoutwin.window)
+                popWindowIn();
+        }
+    }
+
+    function popWindowOut() {
+
+        backupProperties.forEach(function(p) {
+                backup[p] = window[p];
+            });
+
+        window.x = -9999;
+        window.y = -9999;
+        window.closable = false;
+        window.destroyOnHidden = false;
+
+        popoutwin = windowMaker.createObject(null, {
+            window: window,
+            contents: logArea
+        });
+        popoutwin.width = backup.width
+        popoutwin.height = backup.height
+        setTimeout(function() {
+            /*window.visible = false;
+            window.opacity = 0.01;
+            window.fadeOut();
+            window.width = 100
+            window.height = 100;*/
+            console.info('timeout');
+        }, 100);
+    }
+    property var css: myDecodeStyles(
+        Settings.getValue('debugWindow/style', Settings.getValue('debugWindow/css'))
+    )
+
+    Binding { target: window;     property: 'width';          value: parseInt(css['width']); when: 'width' in css; }
+    Binding { target: window;     property: 'height';         value: parseInt(css['height']); when: 'height' in css; }
+    Binding { target: textStyle;  property: 'backgroundColor';value: css['background-color'] || hifi.colors.white; }
+    Binding { target: textArea;   property: 'textColor';      value: css['color'] || hifi.colors.black; }
+    Binding { target: textArea;   property: 'wrapMode';       value: css['white-space'] === 'nowrap' ? Text.NoWrap : Text.WordWrap; }
+    Binding { target: textArea;   property: 'textFormat';     value: /html|rich/i.test(css['-hifi-format']+' '+Settings.getValue('debugWindow/format', '')) || 1? Text.RichText : Text.PlainText; }
+
+    Binding { target: textArea;   property: 'font.bold';      value: /bold/.test([css['font-weight'],css['font']]); }
+    Binding { target: textArea;   property: 'font.italic';    value: /italic/.test([css['font-weight'],css['font']]); }
+    Binding { target: textArea;   property: 'font.family';    value: css['font-family']; when: css['font-family']; }
+    Binding { target: textArea;   property: 'font.pixelSize'; value: parseFloat((css['font-size']+' '+css['font']).match(/[.0-9]+px/));
+              when: /\b[.0-9]+px\b/.test(css['font-size']+' '+css['font']) }
+    Binding { target: textArea;   property: 'font.pointSize'; value: parseFloat((css['font-size']+' '+css['font']).match(/[.0-9]+pt/));
+              when: /\b[.0-9]+pt\b/.test(css['font-size']+' '+css['font']) }
+
+    Binding { target: textStyle;  property: 'renderType';     value: css['-hifi-smooth'] ? Text.QtRendering : Text.NativeRendering }
+    Binding { target: textArea;   property: 'smooth';         value: css['-hifi-smooth'] }
+    Binding { target: textArea;   property: 'antialiasing';   value: css['-hifi-smooth'] }
+
+    Connections {
+        target: root
+        Component.onCompleted: {
+            popoutButton.visible = !HMD.active;
+        }
+    }
+
+    Component {
+        id: windowMaker
+        ApplicationWindow {
+            id: win
+            visible: true
+            //flags: Qt.Tool | Qt.WindowDoesNotAcceptFocus
+            title: 'Debug Log (external)'
+            property var window: null
+            onWindowChanged: {
+                if (window)
+                    console.info('poppping out window', window);
+                else {
+                    console.info('popping in window');
+                    win.close();
+                }
+            }
+            onClosing: {
+                console.info('popoutwin.onClosing', window);
+                window && window.close && window.close();
+                window && window.windowClosed && window.windowClosed();
+            }
+            default property alias contents: placeholder.children
+            Rectangle {
+                id: placeholder
+                anchors.fill: parent
+                color: '#000'
+            }
+        }
+    }
+
+    Connections {
+        target: window
+        ignoreUnknownSignals: true
+        onShownChanged: console.info('window.onShownChanged')
+        onParentChanged: console.info('window.onParentChanged')
+        onWindowClosing: console.info('window.windowClosing')
+        onWindowClosed: console.info('window.windowClosed')
+        onClosed: console.info('window.closed')
+        Component.onDestruction: {
+            console.info('window.onDestruction');
+            if (popoutwin) popoutwin.window = null;
+        }
+    }
+
+    onWindowChanged: {
+        if (window) {
+            if (window.x < 0) window.x = 0;
+            if (window.y < 0) window.y = 0;
+            fromScript(window);
+            'width,height'.split(',').forEach(function(p) {
+                fromScript(p + ': ' + window[p]);
+            });
+            'textFormat,antialiasing,smooth,width,height'.split(',').forEach(function(p) {
+                fromScript(p + ': ' + textArea[p]);
+            });
+            fromScript('renderType: '+ (textStyle.renderType === Text.NativeRendering ? 'NativeRendering' : 'QtRendering'));
+            'family,pointSize,pixelSize,italic,bold'.split(',').forEach(function(p) {
+                fromScript(p + ': ' + textArea.font[p]);
+            });
+            fromScript('css: ' + JSON.stringify(css));
+        }
+    }
+
+    // helper functions
+
+    // decode stuff like 'font-size: 12pt; color: #ff0; foo: bar;' into a POJO object
+    function decodeStyles(css) {
+        return (css+'').split(';').reduce(function(out, rule) {
+            var kv = rule.split(':'),
+                name = kv.shift().trim(),
+                value = kv.join(':').trim();
+            if (name) {
+                out[name] = value === 'false' || value === 'none' ? false : value;
+            }
+            return out;
+        }, {});
+    }
+    // apply special roll-ups for font and -hifi-smooth pseudo-style
+    function myDecodeStyles(css) {
+        var style = decodeStyles(css);
+        style['font-family'] = style['font-family'] || (css['font']+'').replace(/bold|italic|\b[.0-9]+(pt|px)/g,'').trim();
+        if (!('-hifi-smooth' in style))
+            style['-hifi-smooth'] = !/legibil/i.test(css['text-rendering']); // !== 'optimizeLegibility'
+        return style;
+    }
+
+    // humbletim's setTimeout implementation for QML!
+    function setTimeout(fn, ms) {
+        return setTimeoutish.createObject(null, {
+            running: true,
+            interval: ms,
+            callback: fn
+        });
+    }
+    Component {
+        id: setTimeoutish
+        Timer {
+            id: delay
+            interval: 1000
+            running: false
+            property var callback: null
+            onTriggered: {
+                console.info('timer.timeout', typeof callback)
+                stop();
+                try {
+                    callback && callback();
+                } finally {
+                    destroy();
+                }
+            }
+        }
     }
 }
 
