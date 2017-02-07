@@ -15,7 +15,7 @@
 #include <mutex>
 #include <ResourceCache.h>
 
-using contentAvailableCallback = std::function<void(const QString& scriptOrURL, const QString& contents, bool isURL, bool contentAvailable)>;
+using contentAvailableCallback = std::function<void(const QString& scriptOrURL, const QString& contents, bool isURL, bool contentAvailable, const QString& status)>;
 
 class ScriptUser {
 public:

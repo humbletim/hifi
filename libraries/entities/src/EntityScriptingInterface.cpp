@@ -675,22 +675,8 @@ bool EntityScriptingInterface::getServerScriptStatus(QUuid entityID, QScriptValu
     auto client = DependencyManager::get<EntityScriptClient>();
     auto request = client->createScriptStatusRequest(entityID);
     connect(request, &GetScriptStatusRequest::finished, callback.engine(), [callback](GetScriptStatusRequest* request) mutable {
-        QString statusString;
-        switch (request->getStatus()) {
-            case RUNNING:
-                statusString = "running";
-                break;
-            case ERROR_LOADING_SCRIPT:
-                statusString = "error_loading_script";
-                break;
-            case ERROR_RUNNING_SCRIPT:
-                statusString = "error_running_script";
-                break;
-            default:
-                statusString = "";
-                break;
-        }
-        QScriptValueList args { request->getResponseReceived(), request->getIsRunning(), statusString, request->getErrorInfo() };
+        QString statusString = EntityScriptStatus_::valueToKey(request->getStatus());;
+        QScriptValueList args { request->getResponseReceived(), request->getIsRunning(), statusString.toLower(), request->getErrorInfo() };
         callback.call(QScriptValue(), args);
         request->deleteLater();
     });
@@ -734,6 +720,13 @@ RayToEntityIntersectionResult::RayToEntityIntersectionResult() :
 }
 
 QScriptValue RayToEntityIntersectionResultToScriptValue(QScriptEngine* engine, const RayToEntityIntersectionResult& value) {
+    if (QThread::currentThread() != engine->thread()) {
+#if THREAD_DEBUGGING
+        qCDebug(entities) << "EntityItemProperties::RayToEntityIntersectionResultToScriptValue -- wrong thread...."
+                          << QThread::currentThread() << " engine:" << engine->thread();
+#endif
+        return QScriptValue();
+    }
     QScriptValue obj = engine->newObject();
     obj.setProperty("intersects", value.intersects);
     obj.setProperty("accurate", value.accurate);
@@ -781,6 +774,13 @@ QScriptValue RayToEntityIntersectionResultToScriptValue(QScriptEngine* engine, c
 }
 
 void RayToEntityIntersectionResultFromScriptValue(const QScriptValue& object, RayToEntityIntersectionResult& value) {
+    if (QThread::currentThread() != object.engine()->thread()) {
+#if THREAD_DEBUGGING
+        qCDebug(entities) << "EntityItemProperties::RayToEntityIntersectionResultFromScriptValue -- wrong thread...."
+                          << QThread::currentThread() << " engine:" << object.engine()->thread();
+#endif
+        return;
+    }
     value.intersects = object.property("intersects").toVariant().toBool();
     value.accurate = object.property("accurate").toVariant().toBool();
     QScriptValue entityIDValue = object.property("entityID");

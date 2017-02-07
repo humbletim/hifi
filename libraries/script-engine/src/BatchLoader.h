@@ -24,10 +24,10 @@
 class ScriptCacheSignalProxy : public QObject {
     Q_OBJECT
 public:
-    void receivedContent(const QString& url, const QString& contents, bool isURL, bool success);
+    void receivedContent(const QString& url, const QString& contents, bool isURL, bool success, const QString& status);
 
 signals:
-    void contentAvailable(const QString& url, const QString& contents, bool isURL, bool success);
+    void contentAvailable(const QString& url, const QString& contents, bool isURL, bool success, const QString& status);
 };
 
 class BatchLoader : public QObject {
@@ -39,7 +39,7 @@ public:
     bool isFinished() const { return _finished; };
 
 signals:
-    void finished(const QMap<QUrl, QString>& data);
+    void finished(const QMap<QUrl, QString>& data, const QMap<QUrl, QString>& status);
 
 private:
     void checkFinished();
@@ -48,6 +48,7 @@ private:
     bool _finished;
     QSet<QUrl> _urls;
     QMap<QUrl, QString> _data;
+    QMap<QUrl, QString> _status;
 };
 
 #endif // hifi_BatchLoader_h
