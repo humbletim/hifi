@@ -1983,6 +1983,12 @@ void ScriptEngine::loadEntityScript(const EntityItemID& entityID, const QString&
         return;
     }
 
+    EntityScriptDetails newDetails;
+    newDetails.scriptText = entityScript;
+    newDetails.status = EntityScriptStatus::LOADING;
+    newDetails.definingSandboxURL = currentSandboxURL;
+    _entityScripts[entityID] = newDetails;
+
     qCDebug(scriptengine_module) << "loadEntityScript.loading: " << entityScript << entityID.toString();
     auto scriptCache = DependencyManager::get<ScriptCache>();
     scriptCache->getScriptContents(entityScript,
