@@ -394,8 +394,10 @@ void ScriptEngines::stopAllScripts(bool restart) {
             qCDebug(scriptengine) << "reloading script..." << scriptName;
             reloadScript(scriptName);
         }
-        qCDebug(scriptengine) << "stopAllScripts -- emitting scriptsReloading";
-        emit scriptsReloading();
+        if (restart) {
+            qCDebug(scriptengine) << "stopAllScripts -- emitting scriptsReloading";
+            emit scriptsReloading();
+        }
     });
 }
 
