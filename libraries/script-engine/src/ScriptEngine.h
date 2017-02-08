@@ -58,9 +58,9 @@ class ImmediateData : public QObject, public CallbackData {
     Q_OBJECT
 public:
     ImmediateData(const EntityItemID& uuid, const QUrl& url, const QScriptValue& function) :
-        CallbackData({function, uuid, url}) {}
-    ImmediateData(const EntityItemID& uuid, const QUrl& url, const std::function<void()>& op = nullptr) :
-        CallbackData({QScriptValue(), uuid, url}), operation(op) {}
+      CallbackData({function, uuid, url}) {}
+    ImmediateData(const EntityItemID& uuid, const QUrl& url, const std::function<void()>& op = nullptr, const QMutex& lock = QMutex(QMutex::NonRecursive)) :
+      CallbackData({QScriptValue(), uuid, url}), operation(op) {}
     std::function<void()> operation { nullptr };
 };
 
@@ -164,7 +164,14 @@ public:
     // note: _requireResolve gets reattached in init() as Script.require.resolve
     Q_INVOKABLE QString _requireResolve(const QString& moduleId, const QString& relativeTo = QString());
     Q_INVOKABLE QScriptValue require(const QString& moduleId);
+
     Q_INVOKABLE void resetModuleCache();
+    Q_INVOKABLE QScriptValue currentModule();
+    bool registerModuleWithParent(const QScriptValue& module, const QScriptValue& parent);
+    Q_INVOKABLE QScriptValue getModuleCache();
+    QScriptValue newModule(const QString& modulePath, const QScriptValue& parent = QScriptValue());
+    QScriptValue fetchModuleSource(const QString& modulePath, const bool forceDownload = false);
+    QScriptValue instantiateModule(const QScriptValue& module, const QString& sourceCode);
 
     Q_INVOKABLE QObject* setInterval(const QScriptValue& function, int intervalMS);
     Q_INVOKABLE QObject* setTimeout(const QScriptValue& function, int timeoutMS);
@@ -285,7 +292,8 @@ protected:
     QQueue<ImmediateData*> _immediateQueue;
     QSet<QUrl> _includedURLs;
     QHash<EntityItemID, EntityScriptDetails> _entityScripts;
-    std::map<QString,std::mutex> _lockPerUniqueScriptURL;
+    QMutex _requireLock { QMutex::Recursive };
+    std::map<QString, QMutex> _lockPerUniqueScriptURL;
 
     bool _isThreaded { false };
     QScriptEngineDebugger* _debugger { nullptr };
