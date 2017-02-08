@@ -2,4 +2,4 @@ if (typeof Script !== 'object') {
     print = console.log.bind(console);
     Script = { require: require };
 }
-print("error: ", Script.require("./error.js"));
+print("exported (but not thrown) 'Error' object: ", JSON.stringify(Script.require("./error.js")));

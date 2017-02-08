@@ -2,17 +2,30 @@ var uuids = [];
 var sampleScripts = [
     Script.require.resolve('./a/entityConstructor.js'),
     Script.require.resolve('./a/entityConstructorNested.js'),
+    Script.require.resolve('./a/entityConstructorNested2.js'),
     Script.require.resolve('./a/entityPreloadModule.js')
 ];
 
+// temporary workaround for lingering avatarEntityData ITEMS
+var filename = Script.resolvePath('').split('/').pop();
+Entities.findEntities(MyAvatar.position, 1e3)
+    .forEach(function(id) {
+        var props = Entities.getEntityProperties(id);
+        if (props.parentID === MyAvatar.sessionUUID && 0 === props.description.indexOf(filename)) {
+            print('deleting stray test entity...', id);
+            Entities.deleteEntity(id);
+        }
+    });
 Script.setTimeout(function() {
     for(var i=0; i < 6; i++) {
         var position = MyAvatar.position;
         position.y -= i/2;
         uuids.push( Entities.addEntity({
-            text: "Entity #" + i,
+            text: " Entity #" + i,
+            description: filename,
             type: 'Text',
             position: position,
+            rotation: MyAvatar.orientation,
             script: sampleScripts[ i % sampleScripts.length ],
             scriptTimestamp: +new Date,
             lifetime: 120,

@@ -15,9 +15,16 @@ function MyEntity(filename) {
                 dimensions: { x: 4, y: .4, z: .01 },
             });
         },
+        clickDownOnEntity: function(uuid, evt) {
+            print('... updating scriptTimestamp ...');
+            Entities.editEntity(uuid, {
+                text: '... reloading script ...',
+                scriptTimestamp: +new Date
+            });
+        },
     };
 }
 
 try { module.exports = MyEntity; } catch(e) { }
-print('entityMyEntity', MyEntity);
+print('entityConstructor MyEntity', typeof MyEntity);
 (MyEntity)

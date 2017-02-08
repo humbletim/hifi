@@ -58,9 +58,9 @@ class ImmediateData : public QObject, public CallbackData {
     Q_OBJECT
 public:
     ImmediateData(const EntityItemID& uuid, const QUrl& url, const QScriptValue& function) :
-      CallbackData({function, uuid, url}) {}
-    ImmediateData(const EntityItemID& uuid, const QUrl& url, const std::function<void()>& op = nullptr, const QMutex& lock = QMutex(QMutex::NonRecursive)) :
-      CallbackData({QScriptValue(), uuid, url}), operation(op) {}
+        CallbackData({function, uuid, url}) {}
+    ImmediateData(const EntityItemID& uuid, const QUrl& url, const std::function<void()>& op = nullptr) :
+        CallbackData({QScriptValue(), uuid, url}), operation(op) {}
     std::function<void()> operation { nullptr };
 };
 

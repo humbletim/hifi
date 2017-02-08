@@ -1993,7 +1993,7 @@ void ScriptEngine::loadEntityScript(const EntityItemID& entityID, const QString&
     //   but for this to work intuitively with module caching and cyclic dependency resolution,
     //   the first Entity in the "set" needs to finish loading before others.
     auto &locker = _lockPerUniqueScriptURL[entityScript];
-    if (!locker.tryLock(50)) {
+    if (!locker.tryLock(10)) {
         // ... so this lock guard forces any secondary Entities (using the same script URL) to queue until the current entity
         //   loads.  Secondary entities then get loaded one at a time (per update cycle, so still relatively quickly).
         qCDebug(scriptengine_module) << "loadEntityScript.PENDING: " << entityScript << entityID.toString();

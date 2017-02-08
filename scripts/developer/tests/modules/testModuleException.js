@@ -7,7 +7,13 @@ if (typeof Script !== 'object') {
 try {
   print("exception: ", Script.require("./exception.js"));
 } catch(e) {
-  print("caught exception: ", e);
+  print("caught require exception: ", e);
+}
+
+try {
+  print("unresolvable exception: ", Script.require("about:404"));
+} catch(e) {
+  print("caught require exception: ", e);
 }
 
 // test uncaught require exceptions

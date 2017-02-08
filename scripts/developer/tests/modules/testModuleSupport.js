@@ -1,6 +1,6 @@
 //WIP
 
-(typeof Script === 'object' ? Script : module).require('./jasmine-isomorphic.js');
+jasmin_polyfill();
 
 var require = Script.require;
 
@@ -10,7 +10,7 @@ describe('require.resolve tests', function() {
             require.resolve("");
         }).toThrowError(/Cannot find/);
     });
-    if (MODE !== 'node') {
+    if (typeof MODE !== 'undefined' && MODE !== 'node') {
         it('should reject non-system, extensionless identifiers', function() {
             expect(function() {
                 require.resolve('./example');
@@ -46,5 +46,13 @@ describe('require.resolve tests', function() {
     });
 });
 
-jasmine.getEnv().execute();
-try { Test.quit(); } catch(e) {}
+function atexit() {}
+function jasmin_polyfill() {
+    if (typeof describe !== 'function') {
+        // allow direct invocation (via Node.js or as Client script)
+        (typeof Script === 'object' ? Script : module).require('./jasmine-isomorphic.js');
+        atexit = function() { jasmine.getEnv().execute(); };
+    }
+}
+atexit();
+//try { Test.quit(); } catch(e) {}
