@@ -25,8 +25,11 @@ public:
 
 class ScriptRequest {
 public:
+    static const int MAX_RETRIES { 5 };
+    static const int START_DELAY_BETWEEN_RETRIES { 200 };
     std::vector<contentAvailableCallback> scriptUsers { };
     int numRetries { 0 };
+    int maxRetries { MAX_RETRIES };
 };
 
 /// Interface for loading scripts
@@ -40,7 +43,7 @@ class ScriptCache : public QObject, public Dependency {
 public:
     void clearCache();
     Q_INVOKABLE void clearATPScriptsFromCache();
-    void getScriptContents(const QString& scriptOrURL, contentAvailableCallback contentAvailable, bool forceDownload = false);
+    void getScriptContents(const QString& scriptOrURL, contentAvailableCallback contentAvailable, bool forceDownload = false, int max_retries = ScriptRequest::MAX_RETRIES);
 
 
     QString getScript(const QUrl& unnormalizedURL, ScriptUser* scriptUser, bool& isPending, bool redownload = false);
@@ -52,9 +55,9 @@ public:
     
 private slots:
     void scriptDownloaded(); // old version
-    void scriptContentAvailable(); // new version
 
 private:
+    void scriptContentAvailable(int max_retries); // new version
     ScriptCache(QObject* parent = NULL);
     
     Mutex _containerLock;

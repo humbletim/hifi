@@ -6,7 +6,7 @@ Script.include('../../libraries/jasmine/hifi-boot.js')
 Script.include('avatarUnitTests.js');
 Script.include('bindUnitTest.js');
 Script.include('entityUnitTests.js');
-Script.include('../modules/testModuleSupport.js');
+Script.include('moduleUnitTests.js');
 
 // invoke Script.stop (after any async tests complete)
 jasmine.getEnv().addReporter({ jasmineDone: Script.stop });

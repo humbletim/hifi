@@ -32,7 +32,7 @@ BatchLoader::BatchLoader(const QList<QUrl>& urls)
     qRegisterMetaType<QMap<QUrl, QString>>("QMap<QUrl, QString>");
 }
 
-void BatchLoader::start() {
+void BatchLoader::start(int max_retries) {
     if (_started) {
         return;
     }
@@ -60,6 +60,10 @@ void BatchLoader::start() {
         connect(scriptCache.data(), &ScriptCache::destroyed, proxy, &ScriptCacheSignalProxy::deleteLater);
 
         connect(proxy, &ScriptCacheSignalProxy::contentAvailable, this, [this](const QString& url, const QString& contents, bool isURL, bool success, const QString& status) {
+            if (_finished) {
+                qCDebug(scriptengine) << "Batch loader disrupted; not emitting results" << url;
+                return;
+            }
             _status.insert(url, status);
             if (isURL && success) {
                 _data.insert(url, contents);
@@ -78,7 +82,7 @@ void BatchLoader::start() {
         scriptCache->getScriptContents(url.toString(), [proxy](const QString& url, const QString& contents, bool isURL, bool success, const QString& status) {
             proxy->receivedContent(url, contents, isURL, success, status);
             proxy->deleteLater();
-        }, false);
+        }, false, max_retries);
     }
 }
 

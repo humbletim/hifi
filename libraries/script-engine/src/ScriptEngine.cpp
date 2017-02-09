@@ -546,10 +546,10 @@ void ScriptEngine::resetModuleCache() {
         QMutexLocker locker(&_requireLock);
         auto jsRequire = globalObject().property("Script").property("require");
         auto cache = jsRequire.property("cache");
-        qCDebug(scriptengine_module) << "resetModuleCache... " << getFilename() << cache.isObject();
-        qCDebug(scriptengine_module) << "resetModuleCache... " << QScriptEngine::evaluate("Object.keys(Script.require.cache || {}).toString()","").toString();
+        //qCDebug(scriptengine_module) << "resetModuleCache... " << getFilename() << cache.isObject();
+        //qCDebug(scriptengine_module) << "resetModuleCache... " << QScriptEngine::evaluate("Object.keys(Script.require.cache || {}).toString()","").toString();
         jsRequire.setProperty("cache", newObject(), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-        qCDebug(scriptengine_module) << "//resetModuleCache... " << QScriptEngine::evaluate("Object.keys(Script.require.cache).toString()","").toString();
+        //qCDebug(scriptengine_module) << "//resetModuleCache... " << QScriptEngine::evaluate("Object.keys(Script.require.cache).toString()","").toString();
     }
 }
 
@@ -1424,13 +1424,26 @@ void ScriptEngine::print(const QString& message) {
     }
 }
 
+static const auto MAX_MODULE_IDENTIFIER_LEN { 4096 };
+static const auto MAX_MODULE_IDENTIFIER_LOG_LEN { 60 };
+
 // Script.require.resolve -- like resolvePath, but throws exceptions on invalid module identifiers
 QString ScriptEngine::_requireResolve(const QString& moduleId, const QString& relativeTo) {
     QUrl defaultScriptsLoc = defaultScriptsLocation();
-    const QString errorMessage = QString("Cannot find module '%1' (%2)").arg(moduleId);
-    QUrl url;
+    const QString errorMessage = QString("Cannot find module '%1' (%2)")
+        .arg(moduleId.left(MAX_MODULE_IDENTIFIER_LOG_LEN));
+    QUrl url(moduleId);
 
-    QRegularExpression qualified ("^\\w+:|^/|^[.]{1,2}(/|$)"); // matches absolute, dotted or path-like URLs
+    auto idLength = url.toString().length();
+    if (idLength < 1 || idLength > MAX_MODULE_IDENTIFIER_LEN) {
+        QString msg { "rejecting invalid module id size (%1 chars [1,%2])" };
+        msg = msg.arg(idLength).arg(MAX_MODULE_IDENTIFIER_LEN);
+        currentContext()->throwError(errorMessage.arg(msg));
+        return QString();
+    }
+
+    // matches absolute, dotted or path-like URLs
+    QRegularExpression qualified ("^\\w+:|^/|^[.]{1,2}(/|$)"); 
     if (!qualified.match(moduleId).hasMatch()) {
 #define DEBUG_TEST_SYSTEM_MODULES 1
 #ifdef DEBUG_TEST_SYSTEM_MODULES
@@ -1586,15 +1599,15 @@ QScriptValue ScriptEngine::fetchModuleSource(const QString& modulePath, const bo
 #ifdef DEBUG_JS_MODULES
     module.setProperty("__request", req, hiddenPropertyFlags);
 #endif
-    qCDebug(scriptengine_module) << "require.requestScript: " << QUrl(modulePath).fileName() << QThread::currentThread();
+    qCDebug(scriptengine_module) << "require.fetchModuleSource: " << QUrl(modulePath).fileName() << QThread::currentThread();
 
     auto onload = [=, &req](const QMap<QUrl, QString>& _data, const QMap<QUrl, QString>& _status) {
         auto url = modulePath;
         auto status = _status[url];
         auto contents = _data[url];
-        qCDebug(scriptengine_module) << "require.contentAvailable: " << QUrl(url).fileName() << status << QThread::currentThread();
-        if (isStopping()) {
-            req.setProperty("status", "stopped");
+        qCDebug(scriptengine_module) << "require.fetchModuleSource.onload: " << QUrl(url).fileName() << status << QThread::currentThread();
+        if (isStopping() || status.isEmpty()) {
+            req.setProperty("status", "Stopped");
             req.setProperty("success", false);
         } else {
             req.setProperty("url", url);
@@ -1611,11 +1624,22 @@ QScriptValue ScriptEngine::fetchModuleSource(const QString& modulePath, const bo
     BatchLoader* loader = new BatchLoader({ modulePath });
     connect(loader, &BatchLoader::finished, this, onload);
     connect(this, &QObject::destroyed, loader, &QObject::deleteLater);
-    loader->start();
+    const int MAX_RETRIES = 1; // fail faster since require() blocks the engine thread
+
+    loader->start(MAX_RETRIES);
 
     if (!loader->isFinished()) {
+        QTimer monitor;
         QEventLoop loop;
-        QObject::connect(loader, &BatchLoader::finished, &loop, &QEventLoop::quit);
+        QObject::connect(loader, &BatchLoader::finished, this, [this, &monitor, &loop]{
+            monitor.stop();
+            loop.quit();
+        });
+        connect(&monitor, &QTimer::timeout, this, [this, &loop, &loader]{
+            if (isStopping())
+                loop.exit(-1);
+            });
+        monitor.start(500);
         loop.exec();
     }
     loader->deleteLater();
@@ -1679,7 +1703,8 @@ static void _applyUserOptions(QScriptValue& module) {
     // Not all JSON URLs end in .json -- and currently ScriptCache doesn't provide request metadata.
     // This option gives the user a way to override the effective mime type via hash fragment.
     // Example use:
-    //   Script.require('https://highfidelity.io/api/v1/marketplace/items?category=everything&sort=recent#application/json');
+    //   var ITEMS_URL = 'https://highfidelity.io/api/v1/marketplace/items';
+    //   Script.require(ITEMS_URL + '?category=everything&sort=recent#content-type=application/json');
     QRegularExpression re("content-type[:=]([-+/\\w.]+)");
     auto match = re.match(frag);
     if (match.hasMatch()) {
@@ -1690,14 +1715,14 @@ static void _applyUserOptions(QScriptValue& module) {
 }
 
 QScriptValue ScriptEngine::require(const QString& moduleId) {
-    qCDebug(scriptengine_module) << "ScriptEngine::require(" << moduleId << ")";
+    qCDebug(scriptengine_module) << "ScriptEngine::require(" << moduleId.left(MAX_MODULE_IDENTIFIER_LOG_LEN) << ")";
     if (QThread::currentThread() != thread()) {
         qCDebug(scriptengine_module) << moduleId << " threads mismatch";
         return nullValue();
     }
 
-    // serialize require calls so things work correctly across parallel-loading Entities
-    // note: this is a Recursive mutex (so nested require's are not affected)
+    // serialize require calls so ordering works correctly across multiple Entities
+    // note: this is a Recursive mutex so nested require's are not affected
     QMutexLocker locker(&_requireLock);
 
     auto cache = getModuleCache();
@@ -1705,7 +1730,10 @@ QScriptValue ScriptEngine::require(const QString& moduleId) {
     auto throwModuleError = [this, &cache](const QString& modulePath, const QScriptValue& error) {
         qCDebug(scriptengine_module) << "throwing module error:" << error.toString() << modulePath;
         cache.setProperty(modulePath, nullValue());
-        currentContext()->throwValue(error);
+        if (error.isString())
+            currentContext()->throwError(error.toString());
+        else
+            currentContext()->throwValue(error);
         return nullValue();
     };
 
@@ -2021,22 +2049,28 @@ void ScriptEngine::loadEntityScript(const EntityItemID& entityID, const QString&
 
     qCDebug(scriptengine_module) << "loadEntityScript.LOADING: " << entityScript << entityID.toString();
     auto scriptCache = DependencyManager::get<ScriptCache>();
+    auto status = "Unknown";
+    auto contentAvailable = [=, &locker, &status](const QString& url, const QString& contents, bool isURL, bool success, const QString& status) {
+        qCDebug(scriptengine_module) << "loadEntityScript.contentAvailable" << status << QUrl(url).fileName() << entityID.toString();
+        if (isStopping()) {
+            qCDebug(scriptengine_module) << "loadEntityScript.aborting -- engine is stopping";
+        } else if (!_entityScripts.contains(entityID)) {
+            qCDebug(scriptengine_module) << "loadEntityScript.aborting -- entity was deleted" << entityID.toString();
+        } else if (DependencyManager::get<ScriptEngines>()->isStopped()) {
+            qCDebug(scriptengine_module) << "loadEntityScript.aborting -- engines shutdown";
+        } else {
+            qCDebug(scriptengine_module) << "loadEntityScript.loaded -- " << status;
+            entityScriptContentAvailable(entityID, url, contents, isURL, success, status);
+        }
+        locker.unlock();
+    };
     scriptCache->getScriptContents(entityScript,
         [=, &locker](const QString& url, const QString& contents, bool isURL, bool success, const QString& status) {
-            executeOnScriptThread([=, &locker]() {
-                    qCDebug(scriptengine_module) << "loadEntityScript.contentAvailable" << status << QUrl(url).fileName() << entityID.toString();
-                if (isStopping()) {
-                    qCDebug(scriptengine_module) << "loadEntityScript.aborting -- engine is stopping";
-                } else if (!_entityScripts.contains(entityID)) {
-                    qCDebug(scriptengine_module) << "loadEntityScript.aborting -- entity was deleted" << entityID.toString();
-                } else if (DependencyManager::get<ScriptEngines>()->isStopped()) {
-                    qCDebug(scriptengine_module) << "loadEntityScript.aborting -- engines shutdown";
-                } else {
-                    qCDebug(scriptengine_module) << "loadEntityScript.loaded -- " << status;
-                    entityScriptContentAvailable(entityID, url, contents, isURL, success, status);
-                }
-                locker.unlock();
-        });
+            if (isStopping()) {
+                qCDebug(scriptengine_module) << "loadEntityScript.getScriptContents callback aborting -- engine is stopping";
+                return;
+            }
+            executeOnScriptThread([=]{ contentAvailable(url, contents, isURL, success, status); });
     }, forceRedownload);
 }
 
@@ -2355,7 +2389,7 @@ void ScriptEngine::callEntityScriptMethod(const EntityItemID& entityID, const QS
 #endif
         }
     } else {
-        qCDebug(scriptengine) << "callEntityScriptMethod on non-running entity -- status:" << getEntityScriptStatus(entityID) << methodName << entityID.toString();
+        //qCDebug(scriptengine) << "callEntityScriptMethod on non-running entity -- status:" << getEntityScriptStatus(entityID) << methodName << entityID.toString();
     }
 }
 

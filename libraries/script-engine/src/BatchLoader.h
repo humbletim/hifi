@@ -19,6 +19,8 @@
 #include <QString>
 #include <QUrl>
 
+#include "ScriptCache.h"
+
 #include <mutex>
 
 class ScriptCacheSignalProxy : public QObject {
@@ -35,7 +37,7 @@ class BatchLoader : public QObject {
 public:
     BatchLoader(const QList<QUrl>& urls);
 
-    void start();
+    void start(int max_retries = ScriptRequest::MAX_RETRIES);
     bool isFinished() const { return _finished; };
 
 signals:
