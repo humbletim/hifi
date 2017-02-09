@@ -349,7 +349,6 @@ void ScriptEngine::runInThread() {
 }
 
 void ScriptEngine::waitTillDoneRunning() {
-    qCWarning(scriptengine) << "waitTillDoneRunning" << getFilename() << QThread::currentThread();
     auto workerThread = thread();
 
     if (_isThreaded && workerThread) {
@@ -546,10 +545,7 @@ void ScriptEngine::resetModuleCache() {
         QMutexLocker locker(&_requireLock);
         auto jsRequire = globalObject().property("Script").property("require");
         auto cache = jsRequire.property("cache");
-        //qCDebug(scriptengine_module) << "resetModuleCache... " << getFilename() << cache.isObject();
-        //qCDebug(scriptengine_module) << "resetModuleCache... " << QScriptEngine::evaluate("Object.keys(Script.require.cache || {}).toString()","").toString();
         jsRequire.setProperty("cache", newObject(), QScriptValue::ReadOnly | QScriptValue::Undeletable);
-        //qCDebug(scriptengine_module) << "//resetModuleCache... " << QScriptEngine::evaluate("Object.keys(Script.require.cache).toString()","").toString();
     }
 }
 
@@ -918,18 +914,20 @@ QScriptValue ScriptEngine::evaluateInClosure(const QScriptValue& closure, const 
     ctx->pushScope(closure);
     {
         ++_evaluatesPending;
-        qCDebug(scriptengine_module) << "[" << _evaluatesPending << "] evaluateInClosure " << QUrl(filename).fileName();
+        qCDebug(scriptengine_module) << QString("[%1] evaluateInClosure %2").arg(_evaluatesPending).arg(QUrl(filename).fileName());
+
         result = QScriptEngine::evaluate(sourceCode, filename, lineNumber);
-        qCDebug(scriptengine_module) << "[" << _evaluatesPending << "] //evaluateInClosure " << QUrl(filename).fileName() << result.property("preload").toString().left(50)+"...";
+
+        qCDebug(scriptengine_module) << QString("[%1] //evaluateInClosure %2").arg(_evaluatesPending).arg(QUrl(filename).fileName());
         --_evaluatesPending;
 
         if (hasUncaughtException()) {
-            qDebug() << "hasUncaughtException ----- -------" << uncaughtException().toString() << _evaluatesPending;
+            qCWarning(scriptengine_module) << "------ hasUncaughtException -------" << uncaughtException().toString() << _evaluatesPending;
             // capture the exception into a return value
             result = uncaughtException();
             result.setProperty("stack", uncaughtExceptionBacktrace().join("\n    "));
             result.setProperty("stackTrace", qScriptValueFromSequence(this, uncaughtExceptionBacktrace()));
-            // only report as "uncaught" if we are not currently in a nested evaluate/evaluateInClosure scenario
+            // only report as "uncaught" if not currently in a nested evaluate/evaluateInClosure scenario
             if (!evaluatePending()) {
                 reportUncaughtExceptions(filename);
             }
@@ -1153,11 +1151,9 @@ void ScriptEngine::stopAllTimers() {
         QTimer* timer = i.key();
         stopTimer(timer);
     }
-    qDebug() << "stopAllTimers -- immediate queue #" << _immediateQueue.size();
     foreach(ImmediateData* immediateData, _immediateQueue) {
         clearImmediate(immediateData);
     }
-    qDebug() << "//stopAllTimers -- immediate queue now #" << _immediateQueue.size();
 }
 
 void ScriptEngine::stopAllTimersForEntityScript(const EntityItemID& entityID) {
@@ -1175,7 +1171,6 @@ void ScriptEngine::stopAllTimersForEntityScript(const EntityItemID& entityID) {
     for (auto timer:toDelete) { // now reap 'em
         stopTimer(timer);
     }
-    // note: foreach works with a copy (so it's fine to delete things while iterating)
     foreach(ImmediateData* immediateData, _immediateQueue) {
         if (immediateData->definingEntityIdentifier == entityID) {
             clearImmediate(immediateData);
@@ -1250,18 +1245,11 @@ void ScriptEngine::timerFired() {
 
     // call the associated JS function, if it exists
     if (timerData.function.isValid()) {
-        auto thisObject = timerData.function;
-        auto entityID = timerData.definingEntityIdentifier;
-        if (!entityID.isNull() && _entityScripts.contains(entityID)) {
-            EntityScriptDetails details = _entityScripts[entityID];
-            thisObject = details.scriptObject;
-        }
         auto preTimer = p_high_resolution_clock::now();
-        callWithEnvironment(entityID, timerData.definingSandboxURL, timerData.function, thisObject, QScriptValueList());
+        callWithEnvironment(timerData.definingEntityIdentifier, timerData.definingSandboxURL, timerData.function, timerData.function, QScriptValueList());
         auto postTimer = p_high_resolution_clock::now();
         auto elapsed = (postTimer - preTimer);
         _totalTimerExecution += std::chrono::duration_cast<std::chrono::microseconds>(elapsed);
-
     }
 }
 
@@ -1291,18 +1279,12 @@ QObject* ScriptEngine::setupTimerWithInterval(const QScriptValue& function, int 
 
 void ScriptEngine::processNextImmediate() {
     if (!_immediateQueue.isEmpty()) {
-#ifdef DEBUG_JS_IMMEDIATE
-        qCDebug(scriptengine) << "processing next immediate (queue length #" << _immediateQueue.size() << ")";
-#endif
         ImmediateData *immediateData = _immediateQueue.dequeue();
         ImmediateData &immediate = *immediateData;
         auto &entityID = immediate.definingEntityIdentifier;
         if (!entityID.isNull() && !isEntityScriptRunning(entityID)) {
             qCDebug(scriptengine) << "ignoring immediate for no longer running entityID" << entityID;
         } else {
-#ifdef DEBUG_JS_IMMEDIATE
-            qCDebug(scriptengine) << "executing immediate" << (entityID.isNull() ? "" : entityID.toString());
-#endif
             EntityScriptDetails details = _entityScripts[entityID];
             QScriptValue entityScript = details.scriptObject; // previously loaded
             // call the associated JS function, if it exists
@@ -1331,7 +1313,7 @@ QObject* ScriptEngine::setImmediate(const QScriptValue& function) {
     }
     ImmediateData *immediateData = new ImmediateData(currentEntityIdentifier, currentSandboxURL, function);
     _immediateQueue.enqueue(immediateData);
-    qDebug() << "setImmediate" << immediateData->definingEntityIdentifier << "(queue #" << _immediateQueue.length() << ")";
+    qCDebug(scriptengine) << "setImmediate" << immediateData->definingEntityIdentifier << "(queue #" << _immediateQueue.length() << ")";
     return immediateData;
 }
 
@@ -1339,7 +1321,7 @@ bool ScriptEngine::clearImmediate(QObject *data) {
     ImmediateData* immediateData = reinterpret_cast<ImmediateData*>(data);
     if (_immediateQueue.contains(immediateData)) {
         _immediateQueue.removeAll(immediateData);
-        qDebug() << "clearImmediate" << immediateData->definingEntityIdentifier << "(queue #" << _immediateQueue.length() << ")";
+        qCDebug(scriptengine) << "clearImmediate" << immediateData->definingEntityIdentifier << "(queue #" << _immediateQueue.length() << ")";
         delete immediateData;
         return true;
     }
@@ -1445,8 +1427,6 @@ QString ScriptEngine::_requireResolve(const QString& moduleId, const QString& re
     // matches absolute, dotted or path-like URLs
     QRegularExpression qualified ("^\\w+:|^/|^[.]{1,2}(/|$)"); 
     if (!qualified.match(moduleId).hasMatch()) {
-#define DEBUG_TEST_SYSTEM_MODULES 1
-#ifdef DEBUG_TEST_SYSTEM_MODULES
         // check if the moduleId refers to a "system" module
         QString defaultsPath = defaultScriptsLoc.path();
         QString systemModulePath = QString("%1/modules/%2.js").arg(defaultsPath).arg(moduleId);
@@ -1456,10 +1436,6 @@ QString ScriptEngine::_requireResolve(const QString& moduleId, const QString& re
             currentContext()->throwError(errorMessage.arg("system module not found"));
             return QString();
         }
-#else
-        currentContext()->throwError(errorMessage.arg("unrecognized module identifier"));
-        return QString();
-#endif
     } else {
         if (!QUrl(moduleId).isRelative() || relativeTo.isEmpty()) {
             // run through normal resolvePath
@@ -1485,10 +1461,12 @@ QString ScriptEngine::_requireResolve(const QString& moduleId, const QString& re
 
         bool disallowOutsideFiles = !defaultScriptsLocation().isParentOf(canonical) && !currentSandboxURL.isLocalFile();
         if (disallowOutsideFiles && !PathUtils::isDescendantOf(canonical, currentSandboxURL)) {
-            currentContext()->throwError(errorMessage.arg(QString("path '%1' outside of origin script '%2' '%3'")
-                                                          .arg(PathUtils::stripFilename(url))
-                                                          .arg(PathUtils::stripFilename(currentSandboxURL))
-                                                          .arg(canonical.toString())));
+            currentContext()->throwError(errorMessage.arg(
+                QString("path '%1' outside of origin script '%2' '%3'")
+                    .arg(PathUtils::stripFilename(url))
+                    .arg(PathUtils::stripFilename(currentSandboxURL))
+                    .arg(canonical.toString())
+            ));
             return QString();
         }
         if (!file.exists()) {
@@ -1552,33 +1530,24 @@ bool ScriptEngine::registerModuleWithParent(const QScriptValue& module, const QS
             qCDebug(scriptengine_module) << "registerModuleWithParent -- unrecognized parent" << parent.toVariant().toString();
         }
     }
-    qCDebug(scriptengine_module) << "//registerModuleWithParent -- parent" << parent.toVariant().toString();
     return false;
 }
 
-// provision a new JS module Object and assign initial metadata properties
+// provision a new JS "module" Object and assign initial metadata properties
 QScriptValue ScriptEngine::newModule(const QString& modulePath, const QScriptValue& parent) {
     auto closure = newObject();
     auto exports = newObject();
     auto module = newObject();
 
     qCDebug(scriptengine_module) << "newModule" << modulePath << parent.property("filename").toString();
-    closure.setProperty("__module__", module, hiddenPropertyFlags); // for parent detection
+    closure.setProperty("__module__", module, hiddenPropertyFlags);         // for parent detection
     closure.setProperty("__global__", globalObject(), hiddenPropertyFlags); // to prevent gc while closure is active
-    closure.setProperty("module", module, readOnlyPropertyFlags);
-    closure.setProperty("exports", exports); // "exports" free variable (which scripts can potentially redefine)
+    closure.setProperty("module",     module, readOnlyPropertyFlags);
+    closure.setProperty("exports", exports); // "exports" free variable
 
-    closure.setProperty("__closure__", closure, hiddenPropertyFlags); // for parent detection
+    closure.setProperty("__closure__", closure, hiddenPropertyFlags); // used for parent detection
     module.setProperty("__closure__", closure, hiddenPropertyFlags);
 
-#ifdef DEBUG_JS_MODULES
-    auto canonical = QUrl(modulePath);
-    if (canonical.isLocalFile()) {
-        canonical.setPath(QFileInfo(canonical.toLocalFile()).canonicalFilePath());
-    }
-    module.setProperty("canonicalURL", canonical.toString(QUrl::FullyEncoded), readOnlyPropertyFlags);
-    module.setProperty("canonicalFile", canonical.toLocalFile(), readOnlyPropertyFlags);
-#endif
     // for consistency with Node.js Module
     module.setProperty("exports", exports); // "module.exports"
     module.setProperty("filename", modulePath, readOnlyPropertyFlags);
@@ -1596,9 +1565,6 @@ QScriptValue ScriptEngine::newModule(const QString& modulePath, const QScriptVal
 QScriptValue ScriptEngine::fetchModuleSource(const QString& modulePath, const bool forceDownload) {
     auto scriptCache = DependencyManager::get<ScriptCache>();
     QScriptValue req = newObject();
-#ifdef DEBUG_JS_MODULES
-    module.setProperty("__request", req, hiddenPropertyFlags);
-#endif
     qCDebug(scriptengine_module) << "require.fetchModuleSource: " << QUrl(modulePath).fileName() << QThread::currentThread();
 
     auto onload = [=, &req](const QMap<QUrl, QString>& _data, const QMap<QUrl, QString>& _status) {
@@ -1606,7 +1572,7 @@ QScriptValue ScriptEngine::fetchModuleSource(const QString& modulePath, const bo
         auto status = _status[url];
         auto contents = _data[url];
         qCDebug(scriptengine_module) << "require.fetchModuleSource.onload: " << QUrl(url).fileName() << status << QThread::currentThread();
-        if (isStopping() || status.isEmpty()) {
+        if (isStopping()) {
             req.setProperty("status", "Stopped");
             req.setProperty("success", false);
         } else {
@@ -1624,7 +1590,8 @@ QScriptValue ScriptEngine::fetchModuleSource(const QString& modulePath, const bo
     BatchLoader* loader = new BatchLoader({ modulePath });
     connect(loader, &BatchLoader::finished, this, onload);
     connect(this, &QObject::destroyed, loader, &QObject::deleteLater);
-    const int MAX_RETRIES = 1; // fail faster since require() blocks the engine thread
+    // fail faster (since require() blocks the engine thread while resolving dependencies)
+    const int MAX_RETRIES = 1;
 
     loader->start(MAX_RETRIES);
 
@@ -1650,38 +1617,25 @@ QScriptValue ScriptEngine::instantiateModule(const QScriptValue& module, const Q
     QScriptValue result;
     auto modulePath = module.property("filename").toString();
     auto closure = module.property("__closure__");
-#ifdef DEBUG_JS_MODULES
-    if (!closure.isValid()) {
-        qCDebug(scriptengine_module) << "evaluateModule -- closure is invalid" << closure.toString();
-        return result;
-    }
-#endif
-    qCDebug(scriptengine_module) << "require.evaluateModule: " << QUrl(modulePath).fileName() << sourceCode.length() << "bytes" << QThread::currentThread();
+
+    qCDebug(scriptengine_module) << QString("require.evaluateModule: %1 / %2 bytes").arg(QUrl(modulePath).fileName()).arg(sourceCode.length());
+
     if (module.property("content-type").toString() == "application/json") {
         qCDebug(scriptengine_module) << "... parsing as JSON";
         closure.setProperty("__json", sourceCode);
         result = evaluateInClosure(closure, "module.exports = JSON.parse(__json)", modulePath);
     } else {
-#ifdef DEBUG_JS_MODULES
-        closure.setProperty("__entityID", currentEntityIdentifier.toScriptValue(this), hiddenPropertyFlags);
-        closure.setProperty("__sandboxURL", currentSandboxURL.toDisplayString(), hiddenPropertyFlags);
-        closure.setProperty("__cache__", getModuleCache(), hiddenPropertyFlags);
-#endif
+        // provision scoped vars similarly to Node.js
         closure.setProperty("require", module.property("require"));
         closure.setProperty("__filename", modulePath, hiddenPropertyFlags);
         closure.setProperty("__dirname", QString(modulePath).replace(QRegExp("/[^/]*$"), ""), hiddenPropertyFlags);
 
         result = evaluateInClosure(closure, sourceCode, modulePath);
-
-#ifdef DEBUG_JS_MODULES
-        closure.setProperty("__result", result, hiddenPropertyFlags);
-        qDebug() << " result:::: " << result.toString().left(50) << "...";
-#endif
     }
-    if (0&&hasUncaughtException()) {
-        qCDebug(scriptengine_module) << "instantiateModule -- hasUncaughtException" << uncaughtException().toString();
-        return uncaughtException();
-    }
+    // if (hasUncaughtException()) {
+    //     qCDebug(scriptengine_module) << "instantiateModule -- hasUncaughtException" << uncaughtException().toString();
+    //     return uncaughtException();
+    // }
     return result;
 }
 
@@ -1696,7 +1650,6 @@ static void _applyUserOptions(QScriptValue& module) {
     // Example use:
     //   Script.require('./mymodule.js#this=exports')
     if (frag.contains("this=exports")) {
-        // see also: ScriptEngine::evaluateInClosure
         module.property("__closure__").setProperty("this", module.property("exports"));
     }
 
@@ -1721,14 +1674,14 @@ QScriptValue ScriptEngine::require(const QString& moduleId) {
         return nullValue();
     }
 
-    // serialize require calls so ordering works correctly across multiple Entities
+    // serialize require calls so the ordering works correctly across multiple Entities
     // note: this is a Recursive mutex so nested require's are not affected
     QMutexLocker locker(&_requireLock);
 
     auto cache = getModuleCache();
     auto parent = currentModule();
     auto throwModuleError = [this, &cache](const QString& modulePath, const QScriptValue& error) {
-        qCDebug(scriptengine_module) << "throwing module error:" << error.toString() << modulePath;
+        qCWarning(scriptengine_module) << "throwing module error:" << error.toString() << modulePath;
         cache.setProperty(modulePath, nullValue());
         if (error.isString())
             currentContext()->throwError(error.toString());
@@ -1746,9 +1699,9 @@ QScriptValue ScriptEngine::require(const QString& moduleId) {
     // now check the resolved path against the module cache
     auto module = cache.property(modulePath);
 
-    // if a manually set the entry to null, trigger cache invalidation (ie: forceRedownload)
+    // if a user manually set the entry to null, trigger cache invalidation / forceRedownload
     // example JS: `Script.require.cache[Script.require.resolve(moduleId)] = null;`
-    // note: this matches Node.js module conventions (and helps avoid the need the use URL cache busters)
+    // note: this matches Node.js module conventions and helps avoid the need for URL cache busters during dev
     bool invalidateCache = module.isNull();
 
     auto exports = module.property("exports");
@@ -1762,38 +1715,25 @@ QScriptValue ScriptEngine::require(const QString& moduleId) {
     module = newModule(modulePath, parent);
     registerModuleWithParent(module, parent);
 
-#if DEBUG_JS_MODULES
-    if (!parent.isObject()) {
-        qCDebug(scriptengine_module) << module.property("filename").toString() << " -- no parent module found";
-    }
-    module.setProperty("__sandboxURL", currentSandboxURL.toDisplayString(), hiddenPropertyFlags);
-    module.setProperty("__entityID", currentEntityIdentifier.toScriptValue(this), hiddenPropertyFlags);
-
-    module.property("exports").setProperty(
-        "preload", QScriptEngine::evaluate("1,function(uuid) { print(uuid,'DUMMY PRELOAD CALLED'); }","")
-        );
-#endif
-
     // add the pending module to the cache for potential dependency cycles to find
-    //qCDebug(scriptengine_module) << "require.defining incomplete module: " << modulePath << QThread::currentThread();
     cache.setProperty(modulePath, module);
 
     // download the module source
     auto req = fetchModuleSource(modulePath, invalidateCache);
 
-    // qCDebug(scriptengine_module) << "require.executing back on script thread: " << modulePath << QThread::currentThread();
     if (!req.property("success").toBool()) {
         auto error = QString("error retrieving script (%1)").arg(req.property("status").toString());
         return throwModuleError(modulePath, error);
     }
 
-#ifdef DEBUG_JS_MODULES
+#if DEBUG_JS_MODULES
     qCDebug(scriptengine_module) << "require.loaded: " <<
         QUrl(req.property("url").toString()).fileName() << req.property("status").toString();
 #endif
 
     auto sourceCode = req.property("contents").toString();
 
+    // apply a default mime type (non-standard)
     if (QUrl(modulePath).fileName().endsWith(".json", Qt::CaseInsensitive)) {
         module.setProperty("content-type", "application/json");
     } else {
@@ -1804,13 +1744,13 @@ QScriptValue ScriptEngine::require(const QString& moduleId) {
     // evaluate the module
     auto result = instantiateModule(module, sourceCode);
 
-    // bubble-up any captured exceptions (which can happen in the case of nested require's)
+    // bubble-up any captured exceptions (which can possibly happen in the case of nested require's)
     if (result.isError() && !result.strictlyEquals(module.property("exports"))) {
-        qCDebug(scriptengine_module) << "-- result.isError --" << result.toString();
+        qCWarning(scriptengine_module) << "-- result.isError --" << result.toString();
         return throwModuleError(modulePath, result);
     }
 
-    // flag the module as fully-loaded (note: this provides a way for cyclic dependents to know when handed an "incomplete" (pending) module)
+    // flag the module as fully-loaded (providing a way for cyclic dependents to know when handed a pending exports ref)
     module.setProperty("loaded", true, readOnlyPropertyFlags);
 
     qCDebug(scriptengine_module) << "//ScriptEngine::require(" << moduleId << ")";
@@ -2013,9 +1953,25 @@ void ScriptEngine::loadEntityScript(const EntityItemID& entityID, const QString&
             newDetails.status = EntityScriptStatus::PENDING;
             newDetails.scriptText = "about:pending";
             _entityScripts[entityID] = newDetails;
+#if DEBUG_JS_MODULES
             qCDebug(scriptengine_module) << "loadEntityScript.initialized _entityScripts[" << entityID << "]";
+#endif
         }
     }
+
+    auto shouldAbortLoading = [this, entityID](const QString& phase) -> bool {
+        //qCDebug(scriptengine_module) << "loadEntityScript" << phase << entityID.toString();
+        if (isStopping()) {
+            qCDebug(scriptengine_module) << "loadEntityScript.aborting" << phase << " -- engine is stopping";
+        } else if (!_entityScripts.contains(entityID)) {
+            qCDebug(scriptengine_module) << "loadEntityScript.aborting" << phase << " -- entity was deleted";
+        } else if (DependencyManager::get<ScriptEngines>()->isStopped()) {
+            qCDebug(scriptengine_module) << "loadEntityScript.aborting" << phase << " -- engines shutting down";
+        } else {
+            return false;
+        }
+        return true;
+    };
 
     // With `Script.require` several Entities are able to share module dependencies more optimally --
     //   but for this to work intuitively with module caching and cyclic dependency resolution,
@@ -2026,14 +1982,7 @@ void ScriptEngine::loadEntityScript(const EntityItemID& entityID, const QString&
         //   loads.  Secondary entities then get loaded one at a time (per update cycle, so still relatively quickly).
         qCDebug(scriptengine_module) << "loadEntityScript.PENDING: " << entityScript << entityID.toString();
         ImmediateData* immediateData = new ImmediateData(currentEntityIdentifier, currentSandboxURL, [=]() {
-            qCDebug(scriptengine_module) << "loadEntityScript.immediate: " << entityScript << entityID.toString();
-            if (isStopping()) {
-                qCDebug(scriptengine_module) << "loadEntityScript.aborting(immediate) -- engine is stopping";
-            } else if (!_entityScripts.contains(entityID)) {
-                qCDebug(scriptengine_module) << "loadEntityScript.aborting(immediate) -- entity was deleted";
-            } else if (DependencyManager::get<ScriptEngines>()->isStopped()) {
-                qCDebug(scriptengine_module) << "loadEntityScript.aborting(immediate) -- engines shutdown";
-            } else {
+            if(!shouldAbortLoading("immediateCallback")) {
                 loadEntityScript(entityID, entityScript, false);
             }
         });
@@ -2049,28 +1998,18 @@ void ScriptEngine::loadEntityScript(const EntityItemID& entityID, const QString&
 
     qCDebug(scriptengine_module) << "loadEntityScript.LOADING: " << entityScript << entityID.toString();
     auto scriptCache = DependencyManager::get<ScriptCache>();
-    auto status = "Unknown";
-    auto contentAvailable = [=, &locker, &status](const QString& url, const QString& contents, bool isURL, bool success, const QString& status) {
-        qCDebug(scriptengine_module) << "loadEntityScript.contentAvailable" << status << QUrl(url).fileName() << entityID.toString();
-        if (isStopping()) {
-            qCDebug(scriptengine_module) << "loadEntityScript.aborting -- engine is stopping";
-        } else if (!_entityScripts.contains(entityID)) {
-            qCDebug(scriptengine_module) << "loadEntityScript.aborting -- entity was deleted" << entityID.toString();
-        } else if (DependencyManager::get<ScriptEngines>()->isStopped()) {
-            qCDebug(scriptengine_module) << "loadEntityScript.aborting -- engines shutdown";
-        } else {
-            qCDebug(scriptengine_module) << "loadEntityScript.loaded -- " << status;
-            entityScriptContentAvailable(entityID, url, contents, isURL, success, status);
-        }
-        locker.unlock();
-    };
     scriptCache->getScriptContents(entityScript,
         [=, &locker](const QString& url, const QString& contents, bool isURL, bool success, const QString& status) {
             if (isStopping()) {
-                qCDebug(scriptengine_module) << "loadEntityScript.getScriptContents callback aborting -- engine is stopping";
                 return;
             }
-            executeOnScriptThread([=]{ contentAvailable(url, contents, isURL, success, status); });
+            executeOnScriptThread([=, &locker]{
+                qCDebug(scriptengine_module) << "loadEntityScript.contentAvailable" << status << QUrl(url).fileName() << entityID.toString();
+                if (!shouldAbortLoading("contentAvailable")) {
+                    entityScriptContentAvailable(entityID, url, contents, isURL, success, status);
+                }
+                locker.unlock();
+            });
     }, forceRedownload);
 }
 
@@ -2095,15 +2034,10 @@ void ScriptEngine::entityScriptContentAvailable(const EntityItemID& entityID, co
         return;
     }
 
-    qCDebug(scriptengine_module) << "+++++ ScriptEngine::entityScriptContentAvailable(" << QUrl(scriptOrURL).fileName() << ")" << QThread::currentThread();
 #ifdef THREAD_DEBUGGING
     qCDebug(scriptengine) << "ScriptEngine::entityScriptContentAvailable() thread [" << QThread::currentThread() << "] expected thread [" << thread() << "]";
 #endif
 
-    if (!success) {
-        qCDebug(scriptengine_module) << "----- ScriptEngine::entityScriptContentAvailable NOT SUCESS(" << scriptOrURL << ")";
-        return;
-    }
     auto scriptCache = DependencyManager::get<ScriptCache>();
     bool isFileUrl = isURL && scriptOrURL.startsWith("file://");
     auto fileName = isURL ? scriptOrURL : "about:EmbeddedEntityScript";
@@ -2209,14 +2143,14 @@ void ScriptEngine::entityScriptContentAvailable(const EntityItemID& entityID, co
     newDetails.definingSandboxURL = sandboxURL;
     _entityScripts[entityID] = newDetails;
 
-#ifdef DEBUG_JS_MODULES
+#if DEBUG_JS_MODULES
     qCDebug(scriptengine_module) << "++++++++ ScriptEngine::entityScriptContentAvailable -- preload (" << scriptOrURL << ")";
 #endif
 
     // if we got this far, then call the preload method
     callEntityScriptMethod(entityID, "preload");
 
-#ifdef DEBUG_JS_MODULES
+#if DEBUG_JS_MODULES
     qCDebug(scriptengine_module) << "-------- ScriptEngine::entityScriptContentAvailable -- //preload (" << scriptOrURL << ")";
 #endif
 
@@ -2318,10 +2252,6 @@ void ScriptEngine::refreshFileScript(const EntityItemID& entityID) {
 // of the code being executed (e.g., if we ever sandbox different entity scripts, or provide different
 // global values for different entity scripts).
 void ScriptEngine::doWithEnvironment(const EntityItemID& entityID, const QUrl& sandboxURL, std::function<void()> operation) {
-    if (QThread::currentThread() != thread()) {
-        qCDebug(scriptengine_module) << "doWithEnvironment" << entityID.toString() << " threads mismatch";
-        return;
-    }
     EntityItemID oldIdentifier = currentEntityIdentifier;
     QUrl oldSandboxURL = currentSandboxURL;
     currentEntityIdentifier = entityID;
@@ -2376,20 +2306,7 @@ void ScriptEngine::callEntityScriptMethod(const EntityItemID& entityID, const QS
             args << entityID.toScriptValue(this);
             args << qScriptValueFromSequence(this, params);
             callWithEnvironment(entityID, details.definingSandboxURL, entityScript.property(methodName), entityScript, args);
-        } else {
-#if DEBUG_JS_MODULES
-            qCDebug(scriptengine) << "callEntityScriptMethod non-function" << methodName << entityID.toString() << entityScript.property(methodName).toString();
-            qCDebug(scriptengine) << "---- CURRENT ENTITY PROPERTIES: --------------------------";
-            QScriptValueIterator it(entityScript);
-            while (it.hasNext()) {
-                it.next();
-                qCDebug(scriptengine) << it.name() << ":" << it.value().toString().left(50);
-            }
-            qCDebug(scriptengine) << "--------------------------------------------------------";
-#endif
         }
-    } else {
-        //qCDebug(scriptengine) << "callEntityScriptMethod on non-running entity -- status:" << getEntityScriptStatus(entityID) << methodName << entityID.toString();
     }
 }
 

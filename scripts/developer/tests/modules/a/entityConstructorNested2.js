@@ -5,7 +5,7 @@ function constructor() {
     // when used as a module this will invalidate ourselves and any child modules
     function clearUsedModuleCache(module) {
         print("====>_clearUsedModuleCache", JSON.stringify({
-            module: module,
+            module: Object.keys(module),
             children: module.children.map(function(x) { return x.id }),
         },0,2));
         module.children.concat(module).forEach(function(mod) {

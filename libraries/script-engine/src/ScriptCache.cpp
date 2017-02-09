@@ -38,9 +38,6 @@ void ScriptCache::clearCache() {
         qCDebug(scriptengine) << "clearing cache: " << url;
     }
     _scriptCache.clear();
-    foreach(auto &url, _scriptCache.keys()) {
-        qCDebug(scriptengine) << "remaining...: " << url;
-    }
 }
 
 void ScriptCache::clearATPScriptsFromCache() {
@@ -134,7 +131,6 @@ void ScriptCache::scriptDownloaded() {
 }
 
 void ScriptCache::getScriptContents(const QString& scriptOrURL, contentAvailableCallback contentAvailable, bool forceDownload, int max_retries) {
-    qCDebug(scriptengine) << "ScriptCache::getScriptContents(" << max_retries << ")";
     #ifdef THREAD_DEBUGGING
     qCDebug(scriptengine) << "ScriptCache::getScriptContents() on thread [" << QThread::currentThread() << "] expected thread [" << thread() << "]";
     #endif
