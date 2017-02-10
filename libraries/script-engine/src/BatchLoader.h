@@ -37,7 +37,7 @@ class BatchLoader : public QObject {
 public:
     BatchLoader(const QList<QUrl>& urls);
 
-    void start(int max_retries = ScriptRequest::MAX_RETRIES);
+    void start(int maxRetries = ScriptRequest::MAX_RETRIES);
     bool isFinished() const { return _finished; };
 
 signals:

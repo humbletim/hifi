@@ -32,7 +32,7 @@ BatchLoader::BatchLoader(const QList<QUrl>& urls)
     qRegisterMetaType<QMap<QUrl, QString>>("QMap<QUrl, QString>");
 }
 
-void BatchLoader::start(int max_retries) {
+void BatchLoader::start(int maxRetries) {
     if (_started) {
         return;
     }
@@ -82,7 +82,7 @@ void BatchLoader::start(int max_retries) {
         scriptCache->getScriptContents(url.toString(), [proxy](const QString& url, const QString& contents, bool isURL, bool success, const QString& status) {
             proxy->receivedContent(url, contents, isURL, success, status);
             proxy->deleteLater();
-        }, false, max_retries);
+        }, false, maxRetries);
     }
 }
 
