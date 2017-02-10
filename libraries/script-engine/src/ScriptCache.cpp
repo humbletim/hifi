@@ -19,6 +19,7 @@
 #include <QObject>
 #include <QThread>
 #include <QRegularExpression>
+#include <QMetaEnum>
 
 #include <assert.h>
 #include <SharedUtil.h>
@@ -33,6 +34,9 @@ ScriptCache::ScriptCache(QObject* parent) {
 
 void ScriptCache::clearCache() {
     Lock lock(_containerLock);
+    foreach(auto& url, _scriptCache.keys()) {
+        qCDebug(scriptengine) << "clearing cache: " << url;
+    }
     _scriptCache.clear();
 }
 
@@ -85,6 +89,15 @@ void ScriptCache::deleteScript(const QUrl& unnormalizedURL) {
         qCDebug(scriptengine) << "Delete script from cache:" << url.toString();
         _scriptCache.remove(url);
     }
+    if (_badScripts.contains(url)) {
+        qCDebug(scriptengine) << "Delete script from bad scripts:" << url.toString();
+        _badScripts.remove(url);
+    }
+    // FIXME: this second check might not be necessary, but currently neither addScriptToBadScriptList nor isInBadScriptList apply normalization to the url input
+    if (_badScripts.contains(unnormalizedURL)) {
+        qCDebug(scriptengine) << "Delete unnormalized script from bad scripts:" << unnormalizedURL.toString();
+        _badScripts.remove(unnormalizedURL);
+    }
 }
 
 void ScriptCache::scriptDownloaded() {
@@ -117,7 +130,7 @@ void ScriptCache::scriptDownloaded() {
     req->deleteLater();
 }
 
-void ScriptCache::getScriptContents(const QString& scriptOrURL, contentAvailableCallback contentAvailable, bool forceDownload) {
+void ScriptCache::getScriptContents(const QString& scriptOrURL, contentAvailableCallback contentAvailable, bool forceDownload, int maxRetries) {
     #ifdef THREAD_DEBUGGING
     qCDebug(scriptengine) << "ScriptCache::getScriptContents() on thread [" << QThread::currentThread() << "] expected thread [" << thread() << "]";
     #endif
@@ -128,7 +141,7 @@ void ScriptCache::getScriptContents(const QString& scriptOrURL, contentAvailable
     // entityScript use case)
     if (unnormalizedURL.scheme().isEmpty() &&
             scriptOrURL.simplified().replace(" ", "").contains(QRegularExpression(R"(\(function\([a-z]?[\w,]*\){)"))) {
-        contentAvailable(scriptOrURL, scriptOrURL, false, true);
+        contentAvailable(scriptOrURL, scriptOrURL, false, true, "Inline");
         return;
     }
 
@@ -136,7 +149,7 @@ void ScriptCache::getScriptContents(const QString& scriptOrURL, contentAvailable
     if (unnormalizedURL.scheme() == "javascript") {
         QString contents { scriptOrURL };
         contents.replace(QRegularExpression("^javascript:"), "");
-        contentAvailable(scriptOrURL, contents, false, true);
+        contentAvailable(scriptOrURL, contents, false, true, "Inline");
         return;
     }
 
@@ -145,34 +158,32 @@ void ScriptCache::getScriptContents(const QString& scriptOrURL, contentAvailable
         auto scriptContent = _scriptCache[url];
         lock.unlock();
         qCDebug(scriptengine) << "Found script in cache:" << url.toString();
-        contentAvailable(url.toString(), scriptContent, true, true);
+        contentAvailable(url.toString(), scriptContent, true, true, "Cached");
     } else {
         auto& scriptRequest = _activeScriptRequests[url];
-
         bool alreadyWaiting = scriptRequest.scriptUsers.size() > 0;
         scriptRequest.scriptUsers.push_back(contentAvailable);
 
         lock.unlock();
 
         if (alreadyWaiting) {
-            qCDebug(scriptengine) << "Already downloading script at:" << url.toString();
+            qCDebug(scriptengine) << "Already downloading script at:" << url.toString()
+                 << "(retry: " << scriptRequest.numRetries << "; waiters: " << scriptRequest.scriptUsers.size() << ")" ;
         } else {
+            scriptRequest.maxRetries = maxRetries;
             #ifdef THREAD_DEBUGGING
             qCDebug(scriptengine) << "about to call: ResourceManager::createResourceRequest(this, url); on thread [" << QThread::currentThread() << "] expected thread [" << thread() << "]";
             #endif
             auto request = ResourceManager::createResourceRequest(nullptr, url);
             Q_ASSERT(request);
             request->setCacheEnabled(!forceDownload);
-            connect(request, &ResourceRequest::finished, this, &ScriptCache::scriptContentAvailable);
+            connect(request, &ResourceRequest::finished, this, [=]{ scriptContentAvailable(maxRetries); });
             request->send();
         }
     }
 }
 
-static const int MAX_RETRIES = 5;
-static int START_DELAY_BETWEEN_RETRIES = 200;
-
-void ScriptCache::scriptContentAvailable() {
+void ScriptCache::scriptContentAvailable(int maxRetries) {
     #ifdef THREAD_DEBUGGING
     qCDebug(scriptengine) << "ScriptCache::scriptContentAvailable() on thread [" << QThread::currentThread() << "] expected thread [" << thread() << "]";
     #endif
@@ -181,7 +192,7 @@ void ScriptCache::scriptContentAvailable() {
 
     QString scriptContent;
     std::vector<contentAvailableCallback> allCallbacks;
-    bool finished { false };
+    QString status = QMetaEnum::fromType<ResourceRequest::Result>().valueToKey(req->getResult());
     bool success { false };
 
     {
@@ -199,7 +210,6 @@ void ScriptCache::scriptContentAvailable() {
                 _activeScriptRequests.remove(url);
 
                 _scriptCache[url] = scriptContent = req->getData();
-                finished = true;
                 qCDebug(scriptengine) << "Done downloading script at:" << url.toString();
             } else {
                 auto result = req->getResult();
@@ -207,16 +217,19 @@ void ScriptCache::scriptContentAvailable() {
                     result == ResourceRequest::AccessDenied ||
                     result == ResourceRequest::InvalidURL ||
                     result == ResourceRequest::NotFound ||
-                    scriptRequest.numRetries >= MAX_RETRIES;
+                    scriptRequest.numRetries >= maxRetries;
 
                 if (!irrecoverable) {
                     ++scriptRequest.numRetries;
 
-                    qCDebug(scriptengine) << "Script request failed: " << url;
+                    int timeout = exp(scriptRequest.numRetries) * ScriptRequest::START_DELAY_BETWEEN_RETRIES;
+                    int attempt = scriptRequest.numRetries;
+                    qCDebug(scriptengine) << QString("Script request failed [%1]: %2 (will retry %3 more times; attempt #%4 in %5ms...)")
+                        .arg(status).arg(url.toString()).arg(maxRetries - attempt + 1).arg(attempt).arg(timeout);
 
-                    int timeout = exp(scriptRequest.numRetries) * START_DELAY_BETWEEN_RETRIES;
-                    QTimer::singleShot(timeout, this, [this, url]() {
-                        qCDebug(scriptengine) << "Retrying script request: " << url;
+                    QTimer::singleShot(timeout, this, [this, url, attempt, maxRetries]() {
+                        qCDebug(scriptengine) << QString("Retrying script request [%1 / %2]: %3")
+                            .arg(attempt).arg(maxRetries).arg(url.toString());
 
                         auto request = ResourceManager::createResourceRequest(nullptr, url);
                         Q_ASSERT(request);
@@ -224,7 +237,7 @@ void ScriptCache::scriptContentAvailable() {
                         // We've already made a request, so the cache must be disabled or it wasn't there, so enabling
                         // it will do nothing.
                         request->setCacheEnabled(false);
-                        connect(request, &ResourceRequest::finished, this, &ScriptCache::scriptContentAvailable);
+                        connect(request, &ResourceRequest::finished, this, [=]{ scriptContentAvailable(maxRetries); });
                         request->send();
                     });
                 } else {
@@ -232,9 +245,12 @@ void ScriptCache::scriptContentAvailable() {
 
                     allCallbacks = scriptRequest.scriptUsers;
 
-                    scriptContent = _scriptCache[url];
-                    finished = true;
-                    qCWarning(scriptengine) << "Error loading script from URL " << url;
+                    if (_scriptCache.contains(url)) {
+                        scriptContent = _scriptCache[url];
+                    }
+                    _activeScriptRequests.remove(url);
+                    qCWarning(scriptengine) << "Error loading script from URL " << url << "(" << result <<")";
+
                 }
             }
         }
@@ -242,9 +258,9 @@ void ScriptCache::scriptContentAvailable() {
 
     req->deleteLater();
 
-    if (finished && !DependencyManager::get<ScriptEngines>()->isStopped()) {
+    if (allCallbacks.size() > 0 && !DependencyManager::get<ScriptEngines>()->isStopped()) {
         foreach(contentAvailableCallback thisCallback, allCallbacks) {
-            thisCallback(url.toString(), scriptContent, true, success);
+            thisCallback(url.toString(), scriptContent, true, success, status);
         }
     }
 }

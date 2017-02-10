@@ -3,11 +3,13 @@ Script.include('../../libraries/jasmine/jasmine.js');
 Script.include('../../libraries/jasmine/hifi-boot.js')
 
 // Include unit tests
-// FIXME: Figure out why jasmine done() is not working.
-// Script.include('avatarUnitTests.js');
+Script.include('avatarUnitTests.js');
 Script.include('bindUnitTest.js');
 Script.include('entityUnitTests.js');
+Script.include('moduleUnitTests.js');
+
+// invoke Script.stop (after any async tests complete)
+jasmine.getEnv().addReporter({ jasmineDone: Script.stop });
 
 // Run the tests
 jasmine.getEnv().execute();
-Script.stop();
