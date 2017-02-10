@@ -715,23 +715,21 @@ function loaded() {
                 if (data.type == "server_script_status") {
                     if (!data.statusRetrieved) {
                         elServerScriptStatus.innerHTML = "Failed to retrieve status";
-                        elServerScriptError.style.display = "none";
                     } else if (data.isRunning) {
-                        if (data.status == "running") {
-                            elServerScriptStatus.innerHTML = "Running";
-                            elServerScriptError.style.display = "none";
-                        } else if (data.status == "error_loading_script") {
-                            elServerScriptStatus.innerHTML = "Error loading script";
-                            elServerScriptError.style.display = "block";
-                        } else if (data.status == "error_running_script") {
-                            elServerScriptStatus.innerHTML = "Error running script";
-                            elServerScriptError.style.display = "block";
-                        }
-                        elServerScriptError.innerHTML = data.errorInfo;;
+                        var ENTITY_SCRIPT_STATUS = {
+                            pending: 'Pending',
+                            loading: 'Loading',
+                            error_loading_script: 'Error loading script',
+                            error_running_script: 'Error running script',
+                            running: 'Running',
+                            unloaded: '(unloaded)',
+                        };
+                        elServerScriptStatus.innerHTML = ENTITY_SCRIPT_STATUS[data.status];
                     } else {
                         elServerScriptStatus.innerHTML = "Not running";
-                        elServerScriptError.style.display = "none";
                     }
+                    elServerScriptError.style.display = data.errorInfo ? "block" : "none";
+                    elServerScriptError.innerHTML = data.errorInfo;
                 } else if (data.type == "update") {
 
                     if (data.selections.length == 0) {
