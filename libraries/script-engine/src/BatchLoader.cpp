@@ -60,10 +60,6 @@ void BatchLoader::start(int maxRetries) {
         connect(scriptCache.data(), &ScriptCache::destroyed, proxy, &ScriptCacheSignalProxy::deleteLater);
 
         connect(proxy, &ScriptCacheSignalProxy::contentAvailable, this, [this](const QString& url, const QString& contents, bool isURL, bool success, const QString& status) {
-            if (_finished) {
-                qCDebug(scriptengine) << "Batch loader disrupted; not emitting results" << url;
-                return;
-            }
             _status.insert(url, status);
             if (isURL && success) {
                 _data.insert(url, contents);

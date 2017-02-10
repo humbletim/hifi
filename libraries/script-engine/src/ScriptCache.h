@@ -43,7 +43,7 @@ class ScriptCache : public QObject, public Dependency {
 public:
     void clearCache();
     Q_INVOKABLE void clearATPScriptsFromCache();
-    void getScriptContents(const QString& scriptOrURL, contentAvailableCallback contentAvailable, bool forceDownload = false, int max_retries = ScriptRequest::MAX_RETRIES);
+    void getScriptContents(const QString& scriptOrURL, contentAvailableCallback contentAvailable, bool forceDownload = false, int maxRetries = ScriptRequest::MAX_RETRIES);
 
 
     QString getScript(const QUrl& unnormalizedURL, ScriptUser* scriptUser, bool& isPending, bool redownload = false);
@@ -57,7 +57,7 @@ private slots:
     void scriptDownloaded(); // old version
 
 private:
-    void scriptContentAvailable(int max_retries); // new version
+    void scriptContentAvailable(int maxRetries); // new version
     ScriptCache(QObject* parent = NULL);
     
     Mutex _containerLock;

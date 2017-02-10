@@ -130,7 +130,7 @@ void ScriptCache::scriptDownloaded() {
     req->deleteLater();
 }
 
-void ScriptCache::getScriptContents(const QString& scriptOrURL, contentAvailableCallback contentAvailable, bool forceDownload, int max_retries) {
+void ScriptCache::getScriptContents(const QString& scriptOrURL, contentAvailableCallback contentAvailable, bool forceDownload, int maxRetries) {
     #ifdef THREAD_DEBUGGING
     qCDebug(scriptengine) << "ScriptCache::getScriptContents() on thread [" << QThread::currentThread() << "] expected thread [" << thread() << "]";
     #endif
@@ -170,21 +170,20 @@ void ScriptCache::getScriptContents(const QString& scriptOrURL, contentAvailable
             qCDebug(scriptengine) << "Already downloading script at:" << url.toString()
                  << "(retry: " << scriptRequest.numRetries << "; waiters: " << scriptRequest.scriptUsers.size() << ")" ;
         } else {
-            scriptRequest.maxRetries = max_retries;
+            scriptRequest.maxRetries = maxRetries;
             #ifdef THREAD_DEBUGGING
             qCDebug(scriptengine) << "about to call: ResourceManager::createResourceRequest(this, url); on thread [" << QThread::currentThread() << "] expected thread [" << thread() << "]";
             #endif
             auto request = ResourceManager::createResourceRequest(nullptr, url);
             Q_ASSERT(request);
             request->setCacheEnabled(!forceDownload);
-            connect(request, &ResourceRequest::finished, this, [=]{ scriptContentAvailable(max_retries); });
+            connect(request, &ResourceRequest::finished, this, [=]{ scriptContentAvailable(maxRetries); });
             request->send();
         }
     }
 }
 
-void ScriptCache::scriptContentAvailable(int max_retries) {
-    qCDebug(scriptengine) << "ScriptCache::scriptContentAvailable(" << max_retries << ")";
+void ScriptCache::scriptContentAvailable(int maxRetries) {
     #ifdef THREAD_DEBUGGING
     qCDebug(scriptengine) << "ScriptCache::scriptContentAvailable() on thread [" << QThread::currentThread() << "] expected thread [" << thread() << "]";
     #endif
@@ -218,7 +217,7 @@ void ScriptCache::scriptContentAvailable(int max_retries) {
                     result == ResourceRequest::AccessDenied ||
                     result == ResourceRequest::InvalidURL ||
                     result == ResourceRequest::NotFound ||
-                    scriptRequest.numRetries >= max_retries;
+                    scriptRequest.numRetries >= maxRetries;
 
                 if (!irrecoverable) {
                     ++scriptRequest.numRetries;
@@ -226,11 +225,11 @@ void ScriptCache::scriptContentAvailable(int max_retries) {
                     int timeout = exp(scriptRequest.numRetries) * ScriptRequest::START_DELAY_BETWEEN_RETRIES;
                     int attempt = scriptRequest.numRetries;
                     qCDebug(scriptengine) << QString("Script request failed [%1]: %2 (will retry %3 more times; attempt #%4 in %5ms...)")
-                        .arg(status).arg(url.toString()).arg(max_retries - attempt + 1).arg(attempt).arg(timeout);
+                        .arg(status).arg(url.toString()).arg(maxRetries - attempt + 1).arg(attempt).arg(timeout);
 
-                    QTimer::singleShot(timeout, this, [this, url, attempt, max_retries]() {
+                    QTimer::singleShot(timeout, this, [this, url, attempt, maxRetries]() {
                         qCDebug(scriptengine) << QString("Retrying script request [%1 / %2]: %3")
-                            .arg(attempt).arg(max_retries).arg(url.toString());
+                            .arg(attempt).arg(maxRetries).arg(url.toString());
 
                         auto request = ResourceManager::createResourceRequest(nullptr, url);
                         Q_ASSERT(request);
@@ -238,7 +237,7 @@ void ScriptCache::scriptContentAvailable(int max_retries) {
                         // We've already made a request, so the cache must be disabled or it wasn't there, so enabling
                         // it will do nothing.
                         request->setCacheEnabled(false);
-                        connect(request, &ResourceRequest::finished, this, [=]{ scriptContentAvailable(max_retries); });
+                        connect(request, &ResourceRequest::finished, this, [=]{ scriptContentAvailable(maxRetries); });
                         request->send();
                     });
                 } else {
