@@ -246,8 +246,9 @@ void ScriptCache::scriptContentAvailable(int max_retries) {
 
                     allCallbacks = scriptRequest.scriptUsers;
 
-                    if (_scriptCache.contains(url))
+                    if (_scriptCache.contains(url)) {
                         scriptContent = _scriptCache[url];
+                    }
                     _activeScriptRequests.remove(url);
                     qCWarning(scriptengine) << "Error loading script from URL " << url << "(" << result <<")";
 

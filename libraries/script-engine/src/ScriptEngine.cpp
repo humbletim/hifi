@@ -174,7 +174,7 @@ QString ScriptEngine::reportUncaughtExceptions(const QString& fileName, QScriptE
     return QString();
 }
 
-void ScriptEngine::executeOnScriptThread(std::function<void()> function, bool blocking ) {
+void ScriptEngine::executeOnScriptThread(std::function<void()> function, bool blocking) {
     if (QThread::currentThread() != thread()) {
         QMetaObject::invokeMethod(this, "executeOnScriptThread", blocking ? Qt::BlockingQueuedConnection : Qt::QueuedConnection,
             Q_ARG(std::function<void()>, function));
@@ -1038,7 +1038,6 @@ void ScriptEngine::run() {
         // purgatory, constantly checking to see if our script was asked to end
         bool processedEvents = false;
         while (!_isFinished && clock::now() < sleepUntil) {
-
             QCoreApplication::processEvents(); // before we sleep again, give events a chance to process
             processedEvents = true;
 
