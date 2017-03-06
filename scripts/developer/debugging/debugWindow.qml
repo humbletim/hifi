@@ -120,6 +120,12 @@ Item {
         error: 'red',
     })
 
+    property var bottomY: Math.round(textArea.flickableItem.contentHeight - textArea.viewport.height);
+    property var currentY: Math.round(textArea.flickableItem.contentY)
+    property var atBottom: bottomY <= 0 || currentY === bottomY
+    property var autoscroll: (textArea.flickableItem.atYBeginning || atBottom) && !textArea.selectedText.length
+    property var buffered: ([])
+
     function fromScript(message) {
         console.info('fromScript: ' + message);
         if (message && typeof message === 'object') {
@@ -150,12 +156,11 @@ Item {
             message = message.split('\n').map(replaceIndent).join('<br />');
         }
         message = message.replace(/\n$/,'');
-        if (textArea.flickableItem.atYBeginning || textArea.flickableItem.atYEnd) {
-            // autoscroll
-            textArea.append(message);
-        } else {
-            // maintain user's scroll position
-            textArea.text += (textArea.text ? '\n' : '') + message;
+        buffered.push(message);
+        if (autoscroll || buffered.length > 250 || bottomY <= 0) {
+            buffered.splice(0, buffered.length).forEach(function(message) {
+                textArea.append(message);
+            });
         }
     }
 
