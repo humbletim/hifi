@@ -188,7 +188,7 @@ Item {
     default property alias contents: root.children
     property var window: null
     property var popoutwin: null
-    property var backupProperties: 'width,height,closable,destroyOnHidden,x,y,shown'.split(',')
+    property var backupProperties: 'width,height,closable,destroyOnHidden,x,y,shown,scale'.split(',')
     property var backup: ({})
     Binding { target: root; property: 'window'; value: parent.parent; when: Boolean(parent.parent) }
 
@@ -202,7 +202,7 @@ Item {
         });
         window.opacity = .9
         window.fadeIn();
-        textArea.flickableItem.contentY = textArea.flickableItem.contentHeight - textArea.viewport.height;
+        //textArea.flickableItem.contentY = textArea.flickableItem.contentHeight - textArea.viewport.height;
     }
 
     Connections {
@@ -229,6 +229,9 @@ Item {
 
         window.x = -9999;
         window.y = -9999;
+        window.scale = 0.01;
+        window.width = window.height = 1;
+
         window.closable = false;
         window.destroyOnHidden = false;
 
