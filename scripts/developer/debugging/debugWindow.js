@@ -11,37 +11,48 @@
 (function() { // BEGIN LOCAL_SCOPE
 
 // Set up the qml ui
-var qml = Script.resolvePath('debugWindow.qml');
+var qml = Script.resolvePath('').replace('.js','.qml');
 var window = new OverlayWindow({
     title: 'Debug Window',
     source: qml,
-    width: 400, height: 900,
+    width: 400, height: Math.min(Overlays.height()*.8, 900),
 });
 window.setPosition(25, 50);
 function killit() { if (window) { window=null; Script.stop(); } }
 window.closed.connect(killit);
 Script.scriptEnding.connect(function() { window && window.windowClosed &&window.windowClosed(); });
 
-var getFormattedDate = function() {
-    var date = new Date();
-    return date.getMonth() + "/" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
-};
-
 var sendToLogWindow = function(type, message, scriptFileName) {
-    var typeFormatted = "";
-    if (type) {
-        typeFormatted = type + " - ";
+    // special exception to trim jasmine.js unit test lines
+    if (~message.indexOf('jasmine/jasmine.js')) {
+        var cull = false, lastAt = -1;
+        message = message.split('\n').reduce(function(out, line, i) {
+            cull = cull || ~line.indexOf('jasmine/jasmine.js');
+            if (!cull) {
+                if (~line.indexOf(') at ')) {
+                    lastAt = i;
+                }
+                out.push(line);
+            }
+            return out;
+        }, []).slice(0, lastAt).join('\n');
     }
-    window.sendToQml("[" + getFormattedDate() + "] " + "[" + scriptFileName + "] " + typeFormatted + message);
+    window.sendToQml({
+        tstamp: new Date,
+        fileName: scriptFileName,
+        type: type,
+        message: message,
+    });
 };
-'printedMessage,warningMessage,errorMessage,infoMessage'.split(',').forEach(function(signal) {
-    var prefix = signal === 'printedMessage' ? '' : signal.toUpperCase().replace(/message/i,'');
+'printed,warning,error,info'.split(',').forEach(function(type) {
+    var prefix = type === 'printed' ? 'log' : type === 'warning' ? 'warn' : type;
+    var signal = type + 'Message';
     ScriptDiscoveryService[signal].connect(logit);
     Script.scriptEnding.connect(function() {
         ScriptDiscoveryService[signal].disconnect(logit);
     });
-        function logit(message, scriptFileName) {
-            sendToLogWindow(prefix, message, scriptFileName);
-        }
+    function logit(message, scriptFileName) {
+        sendToLogWindow(prefix, message, scriptFileName);
+    }
 });
 }()); // END LOCAL_SCOPE

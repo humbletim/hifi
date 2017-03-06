@@ -15,7 +15,7 @@
 //
 // Examples:
 //   - White on black background, bolded 12pt DejaVu Sans Mono font:
-//     var style = 'font: 12pt bold "DejaVu Sans Mono"; background-color: white; color: black;'
+//     var style = 'font: 12pt bold "DejaVu Sans Mono"; background-color: black; color: white;'
 //
 //   - Disable antialiasing, smoothing and word wrapping:
 //     var style = 'white-space: nowrap; text-rendering: optimizeLegibility;'
@@ -53,6 +53,15 @@ Item {
 
     property var textStyle: null
     property var iconFont: ''
+
+    property var debug: false
+    readonly property var settingName: "debugWindow/style"
+    readonly property var defaultStyle: ('
+        color: white;
+        background-color: black;
+        font: 12px "monospace";
+        -hifi-format: html;
+    ')
 
     Rectangle {
         id: logArea
@@ -103,7 +112,27 @@ Item {
         }
     }
 
+    readonly property var colors: ({
+        debug: 'darkgray',
+        log: 'gray',
+        info: 'steelblue',
+        warn: 'yellow',
+        error: 'red',
+    })
+
     function fromScript(message) {
+        console.info('fromScript: ' + message);
+        if (message && typeof message === 'object') {
+            var tstamp = message.tstamp.toJSON().replace('T', ' ').replace(/Z$/,'')
+            var type = textArea.textFormat === Text.RichText ?
+                "<font color=%1>%2</font>".arg(colors[message.type]).arg(message.type)
+                : message.type;
+            message = ("[%1] [%2] [%3] %4"
+                       .arg(tstamp)
+                       .arg(message.fileName)
+                       .arg(type)
+                       .arg(message.message));
+        }
         var MAX_LINE_COUNT = 2000;
         var TRIM_LINES = 500;
         if (textArea.lineCount > MAX_LINE_COUNT) {
@@ -111,9 +140,23 @@ Item {
             lines.splice(0, TRIM_LINES);
             textArea.text = lines.join('\n');
         }
-        if (textArea.textFormat === Text.RichText)
-            message = (''+message).replace(/\n/g,'<br />');
-        textArea.append((''+message).replace(/\n$/,''));
+        message = message + '';
+        if (textArea.textFormat === Text.RichText) {
+            function replaceIndent(line) {
+                return line.replace(/^ +/, function(s) {
+                    return s.replace(/ /g, '&nbsp;');
+                });
+            }
+            message = message.split('\n').map(replaceIndent).join('<br />');
+        }
+        message = message.replace(/\n$/,'');
+        if (textArea.flickableItem.atYBeginning || textArea.flickableItem.atYEnd) {
+            // autoscroll
+            textArea.append(message);
+        } else {
+            // maintain user's scroll position
+            textArea.text += (textArea.text ? '\n' : '') + message;
+        }
     }
 
     // make textStyle.renderType available for debug printing..
@@ -190,18 +233,8 @@ Item {
         });
         popoutwin.width = backup.width
         popoutwin.height = backup.height
-        setTimeout(function() {
-            /*window.visible = false;
-            window.opacity = 0.01;
-            window.fadeOut();
-            window.width = 100
-            window.height = 100;*/
-            console.info('timeout');
-        }, 100);
     }
-    property var css: myDecodeStyles(
-        Settings.getValue('debugWindow/style', Settings.getValue('debugWindow/css'))
-    )
+    property var css
 
     Binding { target: window;     property: 'width';          value: parseInt(css['width']); when: 'width' in css; }
     Binding { target: window;     property: 'height';         value: parseInt(css['height']); when: 'height' in css; }
@@ -213,10 +246,8 @@ Item {
     Binding { target: textArea;   property: 'font.bold';      value: /bold/.test([css['font-weight'],css['font']]); }
     Binding { target: textArea;   property: 'font.italic';    value: /italic/.test([css['font-weight'],css['font']]); }
     Binding { target: textArea;   property: 'font.family';    value: css['font-family']; when: css['font-family']; }
-    Binding { target: textArea;   property: 'font.pixelSize'; value: parseFloat((css['font-size']+' '+css['font']).match(/[.0-9]+px/));
-              when: /\b[.0-9]+px\b/.test(css['font-size']+' '+css['font']) }
-    Binding { target: textArea;   property: 'font.pointSize'; value: parseFloat((css['font-size']+' '+css['font']).match(/[.0-9]+pt/));
-              when: /\b[.0-9]+pt\b/.test(css['font-size']+' '+css['font']) }
+    Binding { target: textArea;   property: 'font.pixelSize'; value: parseFloat(css['font-size']); when: /px$/.test(css['font-size']) }
+    Binding { target: textArea;   property: 'font.pointSize'; value: parseFloat(css['font-size']); when: /pt$/.test(css['font-size']) }
 
     Binding { target: textStyle;  property: 'renderType';     value: css['-hifi-smooth'] ? Text.QtRendering : Text.NativeRendering }
     Binding { target: textArea;   property: 'smooth';         value: css['-hifi-smooth'] }
@@ -225,6 +256,7 @@ Item {
     Connections {
         target: root
         Component.onCompleted: {
+            css = myDecodeStyles(Settings.getValue(settingName, defaultStyle));
             popoutButton.visible = !HMD.active;
         }
     }
@@ -277,18 +309,22 @@ Item {
         if (window) {
             if (window.x < 0) window.x = 0;
             if (window.y < 0) window.y = 0;
-            fromScript(window);
-            'width,height'.split(',').forEach(function(p) {
-                fromScript(p + ': ' + window[p]);
-            });
-            'textFormat,antialiasing,smooth,width,height'.split(',').forEach(function(p) {
-                fromScript(p + ': ' + textArea[p]);
-            });
-            fromScript('renderType: '+ (textStyle.renderType === Text.NativeRendering ? 'NativeRendering' : 'QtRendering'));
-            'family,pointSize,pixelSize,italic,bold'.split(',').forEach(function(p) {
-                fromScript(p + ': ' + textArea.font[p]);
-            });
-            fromScript('css: ' + JSON.stringify(css));
+            if (debug) {
+                //fromScript(window);
+                'width,height'.split(',').forEach(function(p) {
+                    fromScript('window.'+ p + ': ' + window[p]);
+                });
+                'textFormat,antialiasing,smooth,width,height'.split(',').forEach(function(p) {
+                    fromScript(p + ': ' + textArea[p]);
+                });
+                fromScript('renderType: '+ (textStyle.renderType === Text.NativeRendering ? 'NativeRendering' : 'QtRendering'));
+                'family,pointSize,pixelSize,italic,bold'.split(',').forEach(function(p) {
+                    fromScript(p + ': ' + textArea.font[p]);
+                });
+            } else {
+                fromScript('textArea.font.family: ' + textArea.font.family);
+            }
+            fromScript('css: ' + JSON.stringify(css,0,2));
         }
     }
 
@@ -309,9 +345,12 @@ Item {
     // apply special roll-ups for font and -hifi-smooth pseudo-style
     function myDecodeStyles(css) {
         var style = decodeStyles(css);
-        style['font-family'] = style['font-family'] || (css['font']+'').replace(/bold|italic|\b[.0-9]+(pt|px)/g,'').trim();
+        style['font-family'] = style['font-family'] ||
+            (style['font']+'').replace(/bold|italic|\b[.0-9]+(pt|px)/g,'').trim();
+        style['font-size'] = style['font-size'] || ((style['font']+'').match(/[.0-9]+p[xt]\b/)||[])[0];
+
         if (!('-hifi-smooth' in style))
-            style['-hifi-smooth'] = !/legibil/i.test(css['text-rendering']); // !== 'optimizeLegibility'
+            style['-hifi-smooth'] = !/legibil/i.test(style['text-rendering']); // !== 'optimizeLegibility'
         return style;
     }
 
@@ -319,6 +358,7 @@ Item {
     function setTimeout(fn, ms) {
         return setTimeoutish.createObject(null, {
             running: true,
+            repeat: false,
             interval: ms,
             callback: fn
         });
@@ -331,7 +371,7 @@ Item {
             running: false
             property var callback: null
             onTriggered: {
-                console.info('timer.timeout', typeof callback)
+                //console.info('timer.timeout', typeof callback)
                 stop();
                 try {
                     callback && callback();
