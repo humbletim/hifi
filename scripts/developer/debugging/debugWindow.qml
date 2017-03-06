@@ -95,7 +95,7 @@ Item {
 
         TextArea {
             id: textArea
-            text: ""
+            text: "\n"
             anchors.fill: parent
             readOnly: true
             selectByMouse: true
@@ -258,6 +258,24 @@ Item {
         Component.onCompleted: {
             css = myDecodeStyles(Settings.getValue(settingName, defaultStyle));
             popoutButton.visible = !HMD.active;
+            if (debug) {
+                //fromScript(window);
+                if (window) {
+                    'width,height'.split(',').forEach(function(p) {
+                        fromScript('window.'+ p + ': ' + window[p]);
+                    });
+                }
+                'textFormat,antialiasing,smooth,width,height'.split(',').forEach(function(p) {
+                    fromScript(p + ': ' + textArea[p]);
+                });
+                fromScript('renderType: '+ (textStyle.renderType === Text.NativeRendering ? 'NativeRendering' : 'QtRendering'));
+                'family,pointSize,pixelSize,italic,bold'.split(',').forEach(function(p) {
+                    fromScript(p + ': ' + textArea.font[p]);
+                });
+            } else {
+                fromScript('textArea.font.family: ' + textArea.font.family);
+            }
+            fromScript('css: ' + JSON.stringify(css,0,2));
         }
     }
 
@@ -309,22 +327,6 @@ Item {
         if (window) {
             if (window.x < 0) window.x = 0;
             if (window.y < 0) window.y = 0;
-            if (debug) {
-                //fromScript(window);
-                'width,height'.split(',').forEach(function(p) {
-                    fromScript('window.'+ p + ': ' + window[p]);
-                });
-                'textFormat,antialiasing,smooth,width,height'.split(',').forEach(function(p) {
-                    fromScript(p + ': ' + textArea[p]);
-                });
-                fromScript('renderType: '+ (textStyle.renderType === Text.NativeRendering ? 'NativeRendering' : 'QtRendering'));
-                'family,pointSize,pixelSize,italic,bold'.split(',').forEach(function(p) {
-                    fromScript(p + ': ' + textArea.font[p]);
-                });
-            } else {
-                fromScript('textArea.font.family: ' + textArea.font.family);
-            }
-            fromScript('css: ' + JSON.stringify(css,0,2));
         }
     }
 
