@@ -20,7 +20,28 @@ var window = new OverlayWindow({
 window.setPosition(25, 50);
 function killit() { if (window) { window=null; Script.stop(); } }
 window.closed.connect(killit);
-Script.scriptEnding.connect(function() { window && window.windowClosed &&window.windowClosed(); });
+function onMessageReceived(channel, message, sender, local) {
+    if (local && channel === 'debugWindow.js' && window) {
+        window.sendToQml(message);
+    }
+}
+
+function onFromQml(message) {
+    var msg = JSON.parse(message);
+    if (msg.settingName) {
+        window.sendToQml('css=' + Settings.getValue(msg.settingName, msg.defaultStyle));
+    }
+}
+Messages.messageReceived.connect(onMessageReceived);
+Messages.subscribe('debugWindow.js');
+Script.scriptEnding.connect(function() {
+    Messages.unsubscribe('debugWindow.js');
+    Messages.messageReceived.disconnect(onMessageReceived);
+    window && window.fromQml && window.fromQml.disconnect(onFromQml);
+    window && window.closed && window.closed();
+});
+
+window.fromQml.connect(onFromQml);
 
 var sendToLogWindow = function(type, message, scriptFileName) {
     // special exception to trim jasmine.js unit test lines
@@ -55,4 +76,5 @@ var sendToLogWindow = function(type, message, scriptFileName) {
         sendToLogWindow(prefix, message, scriptFileName);
     }
 });
+print('//debugWindow.js')
 }()); // END LOCAL_SCOPE

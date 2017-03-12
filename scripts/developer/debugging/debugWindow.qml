@@ -120,16 +120,36 @@ Item {
         error: 'red',
     })
 
-    property var bottomY: Math.round(textArea.flickableItem.contentHeight - textArea.viewport.height);
-    property var currentY: Math.round(textArea.flickableItem.contentY)
-    property var atBottom: bottomY <= 0 || currentY === bottomY
+    property var bottomY: Math.floor(textArea.flickableItem.contentHeight - textArea.viewport.height);
+    property var currentY: Math.floor(textArea.flickableItem.contentY)
+    property var atBottom: bottomY <= 0 || Math.abs(currentY - bottomY) <= 16
     property var autoscroll: (textArea.flickableItem.atYBeginning || atBottom) && !textArea.selectedText.length
     property var buffered: ([])
 
     function fromScript(message) {
-        console.info('fromScript: ' + message);
+        //console.info('fromScript: ' + message);
+        if (message === 'popout') {
+            if (popoutwin && popoutwin.visible) {
+                return;
+            }
+            popWindowOut()
+            return;
+        } else if (message === 'popin') {
+            if (popoutwin && popoutwin.visible) {
+                popWindowIn();
+            }
+            return;
+        } else if (message === 'clear') {
+            textArea.text = '\n';
+        } else if (/^css=/.test(message)) {
+            css = myDecodeStyles(defaultStyle+';'+message.substr("css=".length));
+            desktopMode && debugDump(debug);
+        }
+
         if (message && typeof message === 'object') {
             var tstamp = message.tstamp.toJSON().replace('T', ' ').replace(/Z$/,'')
+            if (!desktopMode)
+                tstamp = tstamp.replace(/^[^ ]+ /,'');
             var type = textArea.textFormat === Text.RichText ?
                 "<font color=%1>%2</font>".arg(colors[message.type]).arg(message.type)
                 : message.type;
@@ -157,11 +177,11 @@ Item {
         }
         message = message.replace(/\n$/,'');
         buffered.push(message);
-        if (autoscroll || buffered.length > 250 || bottomY <= 0) {
+        if (autoscroll || buffered.length > 250 || bottomY <= 0 || (!desktopMode && bottomY <= 50)) {
             buffered.splice(0, buffered.length).forEach(function(message) {
                 textArea.append(message);
             });
-        }
+        } else console.info('>>>>' + JSON.stringify({bottomY:bottomY, atBottom: atBottom, currentY: currentY }));
     }
 
     // make textStyle.renderType available for debug printing..
@@ -193,12 +213,14 @@ Item {
     Binding { target: root; property: 'window'; value: parent.parent; when: Boolean(parent.parent) }
 
     function popWindowIn() {
-        console.info('popWindowIn', popoutwin.contents);
+        console.info('popWindowIn', popoutwin.contents, window);
         root.contents = popoutwin.contents;
         popoutwin.window = null;
         window.visible = true;
         backupProperties.forEach(function(p) {
-            window[p] = backup[p];
+            try {
+                window[p] = backup[p];
+            } catch(e) {}
         });
         window.opacity = .9
         window.fadeIn();
@@ -238,14 +260,16 @@ Item {
                 backup[p] = window[p];
             });
 
-        window.x = -9999;
-        window.y = -9999;
-        window.scale = 0.01;
-        window.width = window.height = 1;
+        try {
+            window.x = -9999;
+            window.y = -9999;
+            window.scale = 0.01;
+            window.width = window.height = 1;
 
-        window.closable = false;
-        window.destroyOnHidden = false;
-
+            window.closable = false;
+            window.destroyOnHidden = false;
+        } catch(e) {
+        }
         popoutwin = windowMaker.createObject(null, {
             window: window,
             contents: logArea
@@ -260,7 +284,7 @@ Item {
     Binding { target: textStyle;  property: 'backgroundColor';value: css['background-color'] || hifi.colors.white; }
     Binding { target: textArea;   property: 'textColor';      value: css['color'] || hifi.colors.black; }
     Binding { target: textArea;   property: 'wrapMode';       value: css['white-space'] === 'nowrap' ? Text.NoWrap : Text.WordWrap; }
-    Binding { target: textArea;   property: 'textFormat';     value: /html|rich/i.test(css['-hifi-format']+' '+Settings.getValue('debugWindow/format', '')) || 1? Text.RichText : Text.PlainText; }
+    Binding { target: textArea;   property: 'textFormat';     value: /html|rich/i.test(css['-hifi-format']) ? Text.RichText : Text.PlainText; }
 
     Binding { target: textArea;   property: 'font.bold';      value: /bold/.test([css['font-weight'],css['font']]); }
     Binding { target: textArea;   property: 'font.italic';    value: /italic/.test([css['font-weight'],css['font']]); }
@@ -272,32 +296,44 @@ Item {
     Binding { target: textArea;   property: 'smooth';         value: css['-hifi-smooth'] }
     Binding { target: textArea;   property: 'antialiasing';   value: css['-hifi-smooth'] }
 
+    function debugDump(debug) {
+        if (debug) {
+            //fromScript(window);
+            if (window) {
+                'width,height'.split(',').forEach(function(p) {
+                    fromScript('window.'+ p + ': ' + window[p]);
+                });
+            }
+            'textFormat,antialiasing,smooth,width,height'.split(',').forEach(function(p) {
+                fromScript(p + ': ' + textArea[p]);
+            });
+            fromScript('renderType: '+ (textStyle.renderType === Text.NativeRendering ? 'NativeRendering' : 'QtRendering'));
+            'family,pointSize,pixelSize,italic,bold'.split(',').forEach(function(p) {
+                fromScript(p + ': ' + textArea.font[p]);
+            });
+        } else {
+            fromScript('textArea.font.family: ' + textArea.font.family);
+        }
+        if (desktopMode)
+            fromScript('css: ' + JSON.stringify(css,0,2));
+    }
+    property var desktopMode: true
+
+    function _desktopMode() {
+        return !HMD.active && (!window || !/tabletroot/i.test(window));
+    }
     Connections {
         target: root
         Component.onCompleted: {
-            css = myDecodeStyles(Settings.getValue(settingName, defaultStyle));
-            popoutButton.visible = !HMD.active;
-            if (debug) {
-                //fromScript(window);
-                if (window) {
-                    'width,height'.split(',').forEach(function(p) {
-                        fromScript('window.'+ p + ': ' + window[p]);
-                    });
-                }
-                'textFormat,antialiasing,smooth,width,height'.split(',').forEach(function(p) {
-                    fromScript(p + ': ' + textArea[p]);
-                });
-                fromScript('renderType: '+ (textStyle.renderType === Text.NativeRendering ? 'NativeRendering' : 'QtRendering'));
-                'family,pointSize,pixelSize,italic,bold'.split(',').forEach(function(p) {
-                    fromScript(p + ': ' + textArea.font[p]);
-                });
-            } else {
-                fromScript('textArea.font.family: ' + textArea.font.family);
-            }
-            fromScript('css: ' + JSON.stringify(css,0,2));
+            if (typeof Settings === 'object' && Settings.getValue)
+                css = myDecodeStyles(Settings.getValue(settingName, defaultStyle));
+            else
+                sendToScript(JSON.stringify({ settingName: settingName, defaultStyle: defaultStyle }));
+            desktopMode = _desktopMode();
+            popoutButton.visible = desktopMode;
+            debugDump(debug);
         }
     }
-
     Component {
         id: windowMaker
         ApplicationWindow {
@@ -331,6 +367,7 @@ Item {
     Connections {
         target: window
         ignoreUnknownSignals: true
+        onDestroyed: console.info('window.onDestroyed')
         onShownChanged: console.info('window.onShownChanged')
         onParentChanged: console.info('window.onParentChanged')
         onWindowClosing: console.info('window.windowClosing')
@@ -347,6 +384,7 @@ Item {
             if (window.x < 0) window.x = 0;
             if (window.y < 0) window.y = 0;
         }
+        desktopMode = _desktopMode();
     }
 
     // helper functions
@@ -372,6 +410,16 @@ Item {
 
         if (!('-hifi-smooth' in style))
             style['-hifi-smooth'] = !/legibil/i.test(style['text-rendering']); // !== 'optimizeLegibility'
+        if (!('-hifi-format' in style) && typeof Settings === 'object')
+            style['-hifi-format'] = Settings.getValue('debugWindow/format', '');
+
+        if (!desktopMode) {
+            console.info('CLEARING WIDTH/HEIGHT bc TABLET ' + window);
+            delete style['width']; delete style['height'];
+            root.height = window.height;
+            root.width = window.width;
+            //css['height'] = window.height;
+        }
         return style;
     }
 
