@@ -205,6 +205,17 @@ Item {
         //textArea.flickableItem.contentY = textArea.flickableItem.contentHeight - textArea.viewport.height;
     }
 
+    Keys.onPressed: {
+        switch(event.key) {
+        case Qt.Key_W:
+            if (window && window.closable && (event.modifiers === Qt.ControlModifier)) {
+                event.accepted = true;
+                window && window.close && window.close();
+                window && window.windowClosed && window.windowClosed();
+            }
+        }
+    }
+
     Connections {
         target: popoutwin ? popoutwin : null
         ignoreUnknownSignals: true
