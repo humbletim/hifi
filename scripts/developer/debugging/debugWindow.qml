@@ -320,7 +320,7 @@ Item {
     property var desktopMode: true
 
     function _desktopMode() {
-        return !HMD.active && (!window || !/tabletroot/i.test(window));
+        return (!window || !/tabletroot/i.test(window));
     }
     Connections {
         target: root
@@ -330,7 +330,7 @@ Item {
             else
                 sendToScript(JSON.stringify({ settingName: settingName, defaultStyle: defaultStyle }));
             desktopMode = _desktopMode();
-            popoutButton.visible = desktopMode;
+            popoutButton.visible = !HMD.active && desktopMode;
             debugDump(debug);
         }
     }
