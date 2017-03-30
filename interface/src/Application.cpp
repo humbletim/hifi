@@ -596,8 +596,14 @@ Application::Application(int& argc, char** argv, QElapsedTimer& startupTimer, bo
         for (int i = 0; i < args.size() - 1; ++i) {
             if (args.at(i) == TEST_SCRIPT) {
                 QString testScriptPath = args.at(i + 1);
+                if (testScriptPath.startsWith("/~/")) {
+                    testScriptPath = expandScriptPath(testScriptPath);
+                }
                 if (QFileInfo(testScriptPath).exists()) {
+                    qCDebug(interfaceapp) << "testScriptPath" << testScriptPath;
                     setProperty(hifi::properties::TEST, QUrl::fromLocalFile(testScriptPath));
+                } else {
+                    qCDebug(interfaceapp) << "testScriptPath not found:" << testScriptPath;
                 }
             } else if (args.at(i) == TRACE_FILE) {
                 QString traceFilePath = args.at(i + 1);
