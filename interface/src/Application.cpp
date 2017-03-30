@@ -41,6 +41,7 @@
 
 #include <QtMultimedia/QMediaPlayer>
 
+#include <QClipboard>
 #include <QFontDatabase>
 #include <QProcessEnvironment>
 #include <QTemporaryDir>
@@ -1760,6 +1761,12 @@ void Application::cleanupBeforeQuit() {
     _settingsThread.quit();
     saveSettings();
     _window->saveGeometry();
+
+#if 1
+    //save clipboard (from being cleared at exit)
+    QEvent event { QEvent::Clipboard };
+    QCoreApplication::sendEvent(dynamic_cast<QObject*>(clipboard()), &event);
+#endif
 
     // Destroy third party processes after scripts have finished using them.
 #ifdef HAVE_DDE
