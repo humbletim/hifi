@@ -8,6 +8,7 @@
 #include <mutex>
 
 #include <QtCore/QDebug>
+#include <QtCore/QDateTime>
 #include <QtCore/QLoggingCategory>
 #include <QtCore/QObject>
 #include <QtCore/QStringList>
@@ -42,6 +43,9 @@ Q_LOGGING_CATEGORY(leopoly_log, ID)
 #include "SculptEngine.h"
 #include "SculptEngineStub.h"
 
+#ifdef Q_OS_WIN
+   #include "SculptLib.h"
+#endif
 
 class LeopolyManager;
 class SculptEngineDebug;
@@ -49,7 +53,7 @@ namespace leopoly {
     using API = QSharedPointer<ISculptEngine>;
     using DEBUGAPI = QSharedPointer<SculptEngineDebug>;
     using PLUGIN = QSharedPointer<LeopolyManager>;
-    const auto& INVALID_CLIENTID{ -1 };
+    const int INVALID_CLIENTID{ -1 };
     const auto& INVALID_TOOLNAME{ "INVALID" };
     const auto& INVALID_TOOL{ static_cast<ISculptEngine::Tool>(-1) };
 
@@ -71,26 +75,26 @@ namespace leopoly {
             { "edge", ISculptEngine::Tool::EdgeBrush },
             { "flatten", ISculptEngine::Tool::FlattenBrush },
             { "paint", ISculptEngine::Tool::PaintBrush },
-                });
+        });
     const auto& CursorRaycastMode = toEnumVariantMap<ISculptEngine::CursorRaycastMode>({
             { "none", ISculptEngine::CursorRaycastMode::None },
             { "continuous", ISculptEngine::CursorRaycastMode::Continuous },
             { "until_action_start", ISculptEngine::CursorRaycastMode::UntilActionStart },
-                });
+        });
     const auto& VertexAttribType = toEnumVariantMap<ISculptEngine::VertexAttribType>({
             { "float", ISculptEngine::VertexAttribType::Float },
             { "vec2", ISculptEngine::VertexAttribType::Float2 },
             { "vec3", ISculptEngine::VertexAttribType::Float3 },
             { "vec4", ISculptEngine::VertexAttribType::Float4 },
             { "u8vec4", ISculptEngine::VertexAttribType::R8G8B8A8_Unorm },
-                });
-    const auto& VertexAttribSizes = toEnumVariantMap<uint32_t>({
+        });
+    const auto& VertexAttribSizes = toEnumVariantMap<size_t>({
             { "float", sizeof(float) },
             { "vec2", sizeof(glm::vec2) },
             { "vec3", sizeof(glm::vec3) },
             { "vec4", sizeof(glm::vec4) },
-            { "u8vec4", sizeof(uint8_t)*4 },
-                });
+            { "u8vec4", sizeof(uint8_t) * 4 },
+        });
 }
 
 class SculptEngineDebug : public SculptEngineStub {
@@ -128,6 +132,7 @@ public:
         if (auto mesh = meshProxy ? meshProxy->getMeshPointer() : nullptr) {
             auto positions = mesh->getVertexBuffer();
             auto indices = mesh->getIndexBuffer();
+#ifdef __linux__
             packets[index] = {
                 .numVerts = (int)positions.getNumElements(),
                 .numInds = (int)indices.getNumElements(),
@@ -146,6 +151,7 @@ public:
                 .colorStream = {},
                 .indexBuffer = (const unsigned short*)indices._buffer->getData(),
             };
+#endif
             changedPackets[index] = true;
         }
         return 1;
@@ -172,28 +178,6 @@ public:
 
 class LeopolyAPI;
 
-namespace threadz {
-// https://stackoverflow.com/a/40382821/1684079
-    bool isSafe(QObject * obj) {
-        Q_ASSERT(obj->thread() || (qApp && qApp->thread() == QThread::currentThread()));
-        auto thread = obj->thread() ? obj->thread() : qApp->thread();
-        return thread == QThread::currentThread();
-    }
-
-    template <typename Fun> void postCall(QObject * obj, Fun && fun) {
-        qDebug() << __FUNCTION__;
-        struct Event : public QEvent {
-            using F = typename std::decay<Fun>::type;
-            F fun;
-            Event(F && fun) : QEvent(QEvent::None), fun(std::move(fun)) {}
-            Event(const F & fun) : QEvent(QEvent::None), fun(fun) {}
-            ~Event() { fun(); }
-        };
-        QCoreApplication::postEvent(
-            obj->thread() ? obj : qApp, new Event(std::forward<Fun>(fun)));
-    }
-}
-
 class LeopolyManager : public InputPlugin, public Dependency {
 public:
     // InputPlugin overrides
@@ -217,15 +201,30 @@ public:
     void setEnabled(bool enable) { _isEnabled = enable; }
     static QSharedPointer<LeopolyAPI> getScriptableAPI();
     static QSharedPointer<LeopolyManager> getInstance();
+    static leopoly::API _leopoly;
     static leopoly::API getLeopoly() {
-        static SculptEngineStub stub;
-        return leopoly::API(&stub, [](ISculptEngine*) {});
+        if (_leopoly) {
+            return _leopoly;
+        }
+#if defined(Q_OS_WIN) && !defined(USE_LEOPOLY_STUBS)
+        _leopoly = leopoly::API(leoSculptCreate(), leoSculptDestroy);
+#else
+        _leopoly = leopoly::API(new SculptEngineStub);
+#endif
+        return _leopoly;
     }
+
+    // static leopoly::API getLeopolyStub() {
+    //     static SculptEngineStub stub;
+    //     return leopoly::API(&stub, [](ISculptEngine*) {});
+    // }
+
     static leopoly::DEBUGAPI getLeopolyDebug() {
         return leopoly::DEBUGAPI(static_cast<SculptEngineDebug*>(getLeopoly().data()), [](SculptEngineDebug*) {});
     }
 
 };
+leopoly::API LeopolyManager::_leopoly;
 
 namespace leopoly {
     template <typename T, typename TT> QSharedPointer<TT> instance() { return QSharedPointer<TT>(); }
@@ -245,7 +244,7 @@ class LeopolyAPI : public QObject, QScriptable, ReadWriteLockable {
     //Q_PROPERTY(mesh::ModelProxy inputModel MEMBER inputModel NOTIFY inputModelChanged)
     Q_PROPERTY(mesh::MeshProxyPointer inputMesh MEMBER inputMesh NOTIFY inputMeshChanged)
     //Q_PROPERTY(int inputModelIndex MEMBER inputModelIndex NOTIFY inputModelChanged)
-    Q_PROPERTY(mesh::MeshProxyPointer outputMesh READ getOutputMeshSync)
+    Q_PROPERTY(mesh::MeshProxyPointer outputMesh READ exportMeshSync)
     Q_PROPERTY(mesh::ModelProxy outputModel READ getOutputModelSync)
     //Q_PROPERTY(int outputModelIndex MEMBER outputModelIndex NOTIFY outputModelChanged)
     Q_PROPERTY(QJsonObject _json READ toJson)
@@ -269,6 +268,9 @@ class LeopolyAPI : public QObject, QScriptable, ReadWriteLockable {
     Q_PROPERTY(QVariantList geometryPackets READ getGeometryPackets)
     Q_PROPERTY(int activeTool READ getActiveTool WRITE setActiveTool NOTIFY activeToolChanged)
     Q_PROPERTY(QString activeToolName READ getActiveToolName WRITE setActiveTool NOTIFY activeToolNameChanged)
+
+    Q_PROPERTY(qint32 maxVertexCount MEMBER _maxVertexCount NOTIFY maxVertexCountChanged)
+    Q_PROPERTY(qint32 maxTriangleCount MEMBER _maxTriangleCount NOTIFY maxTriangleCountChanged)
 public:
     static void registerMetaTypes(QScriptEngine* engine) {}
 
@@ -296,14 +298,11 @@ public:
         _withLeopolyRead<API>([&](QSharedPointer<API> api) { value = fun(api); });
         return value;
     }
-
     template <typename API, typename T, T defaultValue> T withLeopolyRead(std::function<T(QSharedPointer<API>)> fun) const {
         T value = defaultValue;
         _withLeopolyRead<API>([&](QSharedPointer<API> api) { value = fun(api); });
         return value;
     }
-
-
     template <typename T, T defaultValue> T withLeopolyRead(std::function<T(leopoly::API)> fun) const {
         T value = defaultValue;
         _withLeopolyRead<ISculptEngine>([&](leopoly::API api) { value = fun(api); });
@@ -368,7 +367,11 @@ public slots:
     }
 
     bool startAction() {
-        qDebug() << __FUNCTION__;
+        qCDebug(leopoly_log) << __FUNCTION__;
+        if (!inputMesh) {
+            qCDebug(leopoly_log) << "WARNING: startAction called without inputMesh";
+            return false;
+        }
         if (getActiveTool() != (int)leopoly::INVALID_TOOL) {
             qCDebug(leopoly_log) << "WARNING: startAction called when previous action still active:" << getActiveToolName();
         }
@@ -405,37 +408,183 @@ public slots:
     }
 
     bool importMesh(mesh::MeshProxyPointer meshProxy) {
-        return resultWithWriteLock<bool>([=](){
+        inputMeshChanged(inputMesh = meshProxy);
+        mesh::MeshPointer mesh = meshProxy ? meshProxy->getMeshPointer() : nullptr;
+        if (!mesh)  {
             return false;
-        });
-    }
+        }
 
-    mesh::ModelProxy getOutputModelSync() {
-        mesh::ModelProxy output;
-        exportMeshSync(output);
-        return output;
-    }
-    mesh::MeshProxyPointer getOutputMeshSync() {
-        return getOutputModelSync()._meshes.value(0);
-    }
-    //     auto handler = makeScopedHandlerObject(scopeOrCallback, methodOrName);
-    //     Q_ASSERT(handler.engine() == this->engine());
-    //     QPointer<BaseScriptEngine> engine = dynamic_cast<BaseScriptEngine*>(handler.engine());
-    // }
+        QVector<float> vertices;
+        QVector<int> indices;
+        QVector<unsigned char> colors;
 
-    bool exportMeshSync(mesh::ModelProxy& output) {
-        return withLeopolyRead<bool, false>([&](){
-            if (auto mesh = inputMesh ? inputMesh->getMeshPointer() : nullptr) {
-                auto scriptableMeshes = scriptable::Model();
-                scriptableMeshes.metadata = {
-                    { "type", "leopoly" },
-                };
-                scriptableMeshes << mesh;
-                output = SimpleModelProxy::fromScriptableModel(scriptableMeshes);
-                return true;
+        const gpu::BufferView& partBuffer = mesh->getPartBuffer();
+        const gpu::BufferView& indexBuffer = mesh->getIndexBuffer();
+        const gpu::BufferView& vertexBuffer = mesh->getVertexBuffer();
+
+        const gpu::BufferView& colorsBufferView = mesh->getAttributeBuffer(gpu::Stream::COLOR);
+        gpu::BufferView::Index numColors = (gpu::BufferView::Index)colorsBufferView.getNumElements();
+        gpu::BufferView::Index colorIndex = 0;
+
+        int vertexCount = 0;
+        gpu::BufferView::Iterator<const glm::vec3> vertexItr = vertexBuffer.cbegin<const glm::vec3>();
+        while (vertexItr != vertexBuffer.cend<const glm::vec3>()) {
+            glm::vec3 v = *vertexItr;
+            vertices << v[0];
+            vertices << v[1];
+            vertices << v[2];
+
+            if (colorIndex < numColors) {
+                glm::vec3 color = colorsBufferView.get<glm::vec3>(colorIndex);
+                colors << (unsigned char)(color[0] * 255.0f);
+                colors << (unsigned char)(color[1] * 255.0f);
+                colors << (unsigned char)(color[2] * 255.0f);
+                colors << (unsigned char)(0xff);
+                colorIndex++;
             }
-            return false;
+            vertexItr++;
+            vertexCount++;
+        }
+
+        model::Index partCount = (model::Index)mesh->getNumParts();
+        for (int partIndex = 0; partIndex < partCount; partIndex++) {
+            const model::Mesh::Part& part = partBuffer.get<model::Mesh::Part>(partIndex);
+
+            const bool shorts = indexBuffer._element == gpu::Element::INDEX_UINT16;
+            auto face = [&](uint32_t i0, uint32_t i1, uint32_t i2) {
+                uint32_t index0, index1, index2;
+                if (shorts) {
+                    index0 = indexBuffer.get<uint16_t>(i0);
+                    index1 = indexBuffer.get<uint16_t>(i1);
+                    index2 = indexBuffer.get<uint16_t>(i2);
+                } else {
+                    index0 = indexBuffer.get<uint32_t>(i0);
+                    index1 = indexBuffer.get<uint32_t>(i1);
+                    index2 = indexBuffer.get<uint32_t>(i2);
+                }
+
+                indices << index0;
+                indices << index1;
+                indices << index2;
+            };
+
+            uint32_t len = part._startIndex + part._numIndices;
+            if (part._topology == model::Mesh::QUADS) {
+                for (uint32_t idx = part._startIndex; idx+3 < len; idx += 4) {
+                    face(idx+0, idx+1, idx+3);
+                    face(idx+1, idx+2, idx+3);
+                }
+            } else if (part._topology == model::Mesh::TRIANGLES) {
+                for (uint32_t idx = part._startIndex; idx+2 < len; idx += 3) {
+                    face(idx+0, idx+1, idx+2);
+                }
+            }
+        }
+        auto numVertices = vertices.size() / 3;
+        auto numTriangles = indices.size() / 3;
+        auto packetTriLimit = _maxTriangleCount;
+        qCDebug(leopoly_log) << "importMesh" << "numVertices:" << numVertices << "numTriangles:" << numTriangles << "packetTriLimit:" << packetTriLimit;
+        bool result = false;
+        withLeopolyWrite<ISculptEngine>([&](leopoly::API leopoly){
+            result = leopoly->importMesh(numVertices, vertices.constData(), colors.constData(), numTriangles, indices.constData(), packetTriLimit);
         });
+        return result;
+    }
+
+    Q_INVOKABLE mesh::ModelProxy getOutputModelSync() {
+        auto scriptableMeshes = scriptable::Model();
+        scriptableMeshes.metadata = {
+            { "type", "leopoly" },
+            { "entityID",  getMetaData().value("entityID") },
+            { "lastModified", QDateTime::currentDateTime().toTimeSpec(Qt::OffsetFromUTC).toString(Qt::ISODate) },
+        };
+        scriptableMeshes << exportMeshSync()->getMeshPointer();
+        return SimpleModelProxy::fromScriptableModel(scriptableMeshes);
+    }
+
+    Q_INVOKABLE QScriptValue exportMeshProxy() {
+        return engine()->toScriptValue(exportMeshSync());
+    }
+
+    Q_INVOKABLE mesh::MeshProxyPointer exportMeshSync() {
+        QVector<glm::vec3> vertices;
+        QVector<glm::vec3> normals;
+        QVector<glm::vec3> colors;
+        QVector<uint32_t> indices;
+
+        QVector<glm::u8vec4> byteColors;
+        QVector<int> intIndices;
+
+        int numVertices = 0;
+        int numTriangles = 0;
+
+        bool result = withLeopolyRead<bool>([&](leopoly::API leopoly) {
+            if (leopoly->getNumGeometryPackets() <= 0) {
+                return false;
+            }
+            bool result = leopoly->exportMesh(&numVertices, nullptr, nullptr, nullptr, &numTriangles, nullptr);
+            int numIndices = numTriangles * 3;
+            qDebug() << "exportMesh -- preflight " << result << numVertices << "(max" << _maxVertexCount << ")" << numTriangles << numIndices;
+
+            vertices.resize(numVertices);
+            colors.resize(numVertices);
+            byteColors.resize(numVertices);
+            normals.resize(numVertices);
+            indices.resize(numIndices);
+            intIndices.resize(numIndices);
+            result = leopoly->exportMesh(&numVertices, (float *)vertices.data(), (float*)normals.data(), (unsigned char*)byteColors.data(), &numTriangles, intIndices.data());
+            return result;
+        });
+
+        qDebug() << "//exportMesh -- export " << result << numVertices << "(max" << _maxVertexCount << ")" << numTriangles;
+        for (int i = 0; i < numVertices; i++) {
+            colors[i] = glm::vec3(1.0f);//glm::vec3(byteColors[i]) / 255.0f;
+        }
+        for (int i = 0; i < numTriangles; i++) {
+            indices << (uint32_t) intIndices[i * 3 + 0];
+            indices << (uint32_t) intIndices[i * 3 + 1];
+            indices << (uint32_t) intIndices[i * 3 + 2];
+        }
+
+        model::MeshPointer mesh(new model::Mesh());
+        mesh->displayName = "leopoly::exportMesh";
+
+        // vertices
+        auto vertexBuffer = std::make_shared<gpu::Buffer>(vertices.size() * sizeof(glm::vec3), (gpu::Byte*)vertices.data());
+        auto vertexBufferPtr = gpu::BufferPointer(vertexBuffer);
+        gpu::BufferView vertexBufferView(vertexBufferPtr, 0, vertexBufferPtr->getSize(),
+                                         sizeof(glm::vec3), gpu::Element(gpu::VEC3, gpu::FLOAT, gpu::XYZ));
+        mesh->setVertexBuffer(vertexBufferView);
+
+        // normals
+        auto normalBuffer = std::make_shared<gpu::Buffer>(normals.size() * sizeof(glm::vec3), (gpu::Byte*)normals.data());
+        auto normalBufferPtr = gpu::BufferPointer(normalBuffer);
+        gpu::BufferView normalBufferView(normalBufferPtr, 0, normalBufferPtr->getSize(),
+                                         sizeof(glm::vec3), gpu::Element(gpu::VEC3, gpu::FLOAT, gpu::XYZ));
+        mesh->addAttribute(gpu::Stream::NORMAL, normalBufferView);
+
+        // colors
+        auto colorBuffer = std::make_shared<gpu::Buffer>(colors.size() * sizeof(glm::vec3), (gpu::Byte*)colors.data());
+        auto colorBufferPtr = gpu::BufferPointer(colorBuffer);
+        gpu::BufferView colorBufferView(colorBufferPtr, 0, colorBufferPtr->getSize(),
+                                        sizeof(glm::vec3), gpu::Element(gpu::VEC3, gpu::FLOAT, gpu::XYZ));
+        mesh->addAttribute(gpu::Stream::COLOR, colorBufferView);
+
+        // indices (faces)
+        auto indexBuffer = std::make_shared<gpu::Buffer>(indices.size() * sizeof(uint32_t), (gpu::Byte*)indices.data());
+        auto indexBufferPtr = gpu::BufferPointer(indexBuffer);
+        gpu::BufferView indexBufferView(indexBufferPtr, gpu::Element(gpu::SCALAR, gpu::UINT32, gpu::RAW));
+        mesh->setIndexBuffer(indexBufferView);
+
+        // parts
+        std::vector<model::Mesh::Part> parts;
+        parts.emplace_back(model::Mesh::Part((model::Index)0, // startIndex
+                                             (model::Index)indices.size(), // numIndices
+                                             (model::Index)0, // baseVertex
+                                             model::Mesh::TRIANGLES)); // topology
+        mesh->setPartBuffer(gpu::BufferView(new gpu::Buffer(parts.size() * sizeof(model::Mesh::Part),
+                                                            (gpu::Byte*) parts.data()), gpu::Element::PART_DRAWCALL));
+        return mesh::MeshProxyPointer(new SimpleMeshProxy(mesh));
     }
 
     QByteArray packFrameData() { return QByteArray(); }
@@ -449,13 +598,13 @@ public slots:
 
 protected:
     QVariantMap metadata;
-    double lastRadius = 1.0;
-    double lastStrength = 1.0;
+    double lastRadius{ 1.0 };
+    double lastStrength{ 1.0 };
     glm::u8vec4 lastColor;
     glm::bvec3 lastMirror;
-    ISculptEngine::Tool lastTool = leopoly::INVALID_TOOL;
-    ISculptEngine::Tool lastActiveTool = leopoly::INVALID_TOOL;
-    ISculptEngine::CursorRaycastMode lastCursorMode = ISculptEngine::CursorRaycastMode::None;
+    ISculptEngine::Tool lastTool{ leopoly::INVALID_TOOL };
+    ISculptEngine::Tool lastActiveTool{ leopoly::INVALID_TOOL };
+    ISculptEngine::CursorRaycastMode lastCursorMode{ ISculptEngine::CursorRaycastMode::None };
     glm::dvec3 lastPosition;
     glm::dquat lastRotation;
     QMap<int,bool> lastPacketStatus;
@@ -486,6 +635,8 @@ signals:
     void activeToolNameChanged(const QString& toolName);
     void packetCountChanged(int packetCount);
 
+    void maxVertexCountChanged(qint32 maxVertexCount);
+    void maxTriangleCountChanged(qint32 maxTriangleCount);
 public:
     QJsonObject toJson() const {
         return withLeopolyRead<SculptEngineDebug, QJsonObject>([this](leopoly::DEBUGAPI leopolyDebug) { return leopolyDebug->toJson(); });
@@ -602,7 +753,6 @@ public:
         });
     }
 
-
     int getActiveTool() const { return withLeopolyRead<int>([this]{ return (int)lastActiveTool; }); }
     bool setActiveTool(const QString& toolName) {
         return setActiveTool((int)leopoly::Tool.value(toolName, (int)leopoly::INVALID_TOOL).toInt());
@@ -699,7 +849,7 @@ public:
         return withLeopolyRead<QVariantList>([this](leopoly::API leopoly) {
             QVariantList result;
             auto packetCount = leopoly->getNumGeometryPackets();
-            for(int i =0; i < packetCount; i++) {
+            for(int i = 0; i < packetCount; i++) {
                 result << leopoly->isGeometryPacketChanged(i);
             }
             return result;
@@ -710,7 +860,7 @@ public:
         return withLeopolyRead<QVariantList>([this](leopoly::API leopoly) {
             QVariantList result;
             auto packetCount = leopoly->getNumGeometryPackets();
-            for(int i =0; i < packetCount; i++) {
+            for(int i = 0; i < packetCount; i++) {
                 result << _getGeometryPacket(i);
             }
             return result;
@@ -774,7 +924,7 @@ public:
         withLeopolyWrite<ISculptEngine>([=, &updated](leopoly::API leopoly) {
             QMap<int,bool> currentStatus;
             auto packetCount = leopoly->getNumGeometryPackets();
-            for(int i=0; i < packetCount; i++) {
+            for(int i = 0; i < packetCount; i++) {
                 currentStatus[i] = leopoly->isGeometryPacketChanged(i);
                 if (lastPacketStatus.value(i) != currentStatus.value(i)) {
                     lastPacketStatus[i] = currentStatus[i];
@@ -789,6 +939,10 @@ public:
         }
         return updated.size();
     }
+
+private:
+    qint32 _maxVertexCount{ 0xffff }; // 65535
+    qint32 _maxTriangleCount{ 20000 }; // from Leopoly SDK SculptEngine.cs example
 };
 
 class LeopolyProvider : public QObject, public InputProvider {
@@ -820,7 +974,10 @@ QSharedPointer<LeopolyAPI> LeopolyManager::getScriptableAPI() {
 QSharedPointer<LeopolyManager> LeopolyManager::getInstance() {
     static std::once_flag once;
     std::call_once(once, [&] {
-        DependencyManager::set<LeopolyManager>();
+        auto manager = DependencyManager::set<LeopolyManager>();
+#ifdef Q_OS_WIN
+        manager->setObjectName("Q_OS_WIN");
+#endif
         auto scriptInitializers = DependencyManager::get<ScriptInitializerMixin>();
         scriptInitializers->registerNativeScriptInitializer([](QScriptEngine* engine){
              auto manager = DependencyManager::get<LeopolyManager>();

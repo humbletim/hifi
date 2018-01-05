@@ -111,7 +111,7 @@ public:
         memset(buffer, 0, bufferSize);
         if ((size_t)bufferSize >= strlen("testing")+1) {
             strcpy((char *)buffer, "testing");
-            return strlen((char*)buffer)+1;
+            return (int)(strlen((char*)buffer)+1);
         }
         return bufferSize;
     }
