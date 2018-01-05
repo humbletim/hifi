@@ -5,11 +5,7 @@
 #  See the accompanying file LICENSE or http://www.apache.org/licenses/LICENSE-2.0.html
 #
 macro(TARGET_LEOPOLY)
-    if (XXWIN32XX)
-        add_dependency_external_projects(leopoly)
-    else()
-        add_dependency_external_projects(leopoly-stub)
-    endif()
+    add_dependency_external_projects(leopoly)
 
     find_package(LEOPOLY REQUIRED)
 

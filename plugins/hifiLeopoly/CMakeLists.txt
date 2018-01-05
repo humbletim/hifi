@@ -7,7 +7,9 @@
 
 set(TARGET_NAME hifiLeopoly)
 include_hifi_library_headers(shared animation fbx model gpu networking avatars entities audio script-engine)
-#add_dependency_external_projects(leopoly)
 setup_hifi_plugin()
 link_hifi_libraries(shared entities model gpu model-networking networking plugins)
+if (WIN32)
+  target_leopoly()
+endif()
 install_beside_console()

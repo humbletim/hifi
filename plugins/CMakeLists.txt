@@ -32,6 +32,8 @@ if (NOT SERVER_ONLY AND NOT ANDROID)
   add_subdirectory(${DIR})
   set(DIR "hifiLeapMotion")
   add_subdirectory(${DIR})
+  set(DIR "hifiLeopoly")
+  add_subdirectory(${DIR})
 endif()
 
 # server-side plugins
