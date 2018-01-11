@@ -314,6 +314,10 @@ function onActiveToolChanged(activeTool) {
     if (!sculpting) {
         DebugDraw.removeMarker('dominantHand');
         DebugDraw.removeMarker('actionPose');
+        updateMetadata({
+            atpID: null,
+            entityID: null,
+        });
     }
     toolButtons.forEach(function(button) {
         button.editProperties({
@@ -550,6 +554,11 @@ function cleanup() {
     Entities.deleteEntity(Leopoly.metadata.atpID);
     Entities.deleteEntity(Leopoly.metadata.lightID);
     Entities.deleteEntity(Leopoly.metadata.sphereID);
+    updateMetadata({
+        atpID: null,
+        lightID: null,
+        sphereID: null,
+    });
 }
 Script.scriptEnding.connect(cleanup);
 
@@ -692,7 +701,11 @@ function recacheLocalMesh(id, mesh, publish){
 function selectEntity(entityID, cb) {
     Entities.editEntity(Leopoly.metadata.entityID, { visible: true });
     Leopoly.inputMesh = null;
-    context.updateMetadata({ entityID: entityID });
+    context.updateMetadata({
+        entityID: entityID,
+        atpID: null,
+    });
+    context.atpMesh = null;
     Model.getMeshes(entityID, function(err, result) {
         print('selectEntity getMeshes...', err, result);
         if (result) {
