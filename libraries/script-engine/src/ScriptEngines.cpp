@@ -133,6 +133,20 @@ QUrl expandScriptUrl(const QUrl& rawScriptURL) {
 
 QObject* scriptsModel();
 
+bool NativeScriptInitializers::registerNativeScriptInitializer(NativeScriptInitializer initializer) {
+    return registerScriptInitializer([=](ScriptEnginePointer engine) {
+        initializer(qobject_cast<QScriptEngine*>(engine.data()));
+    });
+}
+
+bool NativeScriptInitializers::registerScriptInitializer(ScriptInitializer initializer) {
+    if (auto scriptEngines = DependencyManager::get<ScriptEngines>().data()) {
+        scriptEngines->registerScriptInitializer(initializer);
+        return true;
+    }
+    return false;
+}
+
 void ScriptEngines::registerScriptInitializer(ScriptInitializer initializer) {
     _scriptInitializers.push_back(initializer);
 }
