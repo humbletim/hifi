@@ -302,6 +302,149 @@ Menu.addMenu("Test Menu > Test Sub Menu");</code></pre>
     
 
     
+    <h4 class="name" id=".addMenuItem"><span class="type-signature">(static) </span>addMenuItem<span class="signature">(properties)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Add a new menu item to a menu.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>properties</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Menu.html#.MenuItemProperties">Menu.MenuItemProperties</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Properties of the menu item to create.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Add a menu item using <a href="Menu.html#.MenuItemProperties">Menu.MenuItemProperties</a>.</p>
+    
+    <pre class="prettyprint"><code>Menu.addMenuItem({
+    menuName:     "Developer",
+    menuItemName: "Test",
+    afterItem:    "Log",
+    shortcutKey:  "Ctrl+Shift+T",
+    grouping:     "Advanced"
+});</code></pre>
+
+
+
+        
+            
+
+    
+
+    
     <h4 class="name" id=".addMenuItem"><span class="type-signature">(static) </span>addMenuItem<span class="signature">(menuName, menuItem, shortcutKey<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
     
 
@@ -504,149 +647,6 @@ Menu.addMenu("Test Menu > Test Sub Menu");</code></pre>
         <p class="code-caption">Add a menu item to the end of the "Developer" menu.</p>
     
     <pre class="prettyprint"><code>Menu.addMenuItem("Developer", "Test", "Ctrl+Shift+T");</code></pre>
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id=".addMenuItem"><span class="type-signature">(static) </span>addMenuItem<span class="signature">(properties)</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Add a new menu item to a menu.
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>properties</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="Menu.html#.MenuItemProperties">Menu.MenuItemProperties</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Properties of the menu item to create.</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <h5>Example</h5>
-    
-        <p class="code-caption">Add a menu item using <a href="Menu.html#.MenuItemProperties">Menu.MenuItemProperties</a>.</p>
-    
-    <pre class="prettyprint"><code>Menu.addMenuItem({
-    menuName:     "Developer",
-    menuItemName: "Test",
-    afterItem:    "Log",
-    shortcutKey:  "Ctrl+Shift+T",
-    grouping:     "Advanced"
-});</code></pre>
 
 
 
@@ -3058,13 +3058,13 @@ the menu item will be placed at the end of the menu.
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Resource.html">Resource</a></li></ul><h3>Namespaces</h3><ul><li><a href="AnimationCache.html">AnimationCache</a></li><li><a href="Assets.html">Assets</a></li><li><a href="Camera.html">Camera</a></li><li><a href="Clipboard.html">Clipboard</a></li><li><a href="ContextOverlay.html">ContextOverlay</a></li><li><a href="DebugDraw.html">DebugDraw</a></li><li><a href="Entities.html">Entities</a></li><li><a href="location.html">location</a></li><li><a href="Menu.html">Menu</a></li><li><a href="MyAvatar.html">MyAvatar</a></li><li><a href="Overlays.html">Overlays</a></li><li><a href="Paths.html">Paths</a></li><li><a href="Picks.html">Picks</a></li><li><a href="Pointers.html">Pointers</a></li><li><a href="Quat.html">Quat</a></li><li><a href="ResourceCache.html">ResourceCache</a></li><li><a href="Users.html">Users</a></li><li><a href="Uuid.html">Uuid</a></li><li><a href="Window.html">Window</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Resource.html">Resource</a></li></ul><h3>Namespaces</h3><ul><li><a href="AnimationCache.html">AnimationCache</a></li><li><a href="Assets.html">Assets</a></li><li><a href="Camera.html">Camera</a></li><li><a href="Clipboard.html">Clipboard</a></li><li><a href="ContextOverlay.html">ContextOverlay</a></li><li><a href="DebugDraw.html">DebugDraw</a></li><li><a href="Entities.html">Entities</a></li><li><a href="Graphics.html">Graphics</a></li><li><a href="location.html">location</a></li><li><a href="Menu.html">Menu</a></li><li><a href="MyAvatar.html">MyAvatar</a></li><li><a href="Overlays.html">Overlays</a></li><li><a href="Paths.html">Paths</a></li><li><a href="Picks.html">Picks</a></li><li><a href="Pointers.html">Pointers</a></li><li><a href="Quat.html">Quat</a></li><li><a href="ResourceCache.html">ResourceCache</a></li><li><a href="Users.html">Users</a></li><li><a href="Uuid.html">Uuid</a></li><li><a href="Window.html">Window</a></li></ul><h3><a href="global.html">Global</a></h3>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Feb 28 2018 14:49:40 GMT-0500 (EST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Feb 28 2018 14:54:37 GMT-0500 (EST)
 </footer>
 
 <script> prettyPrint(); </script>

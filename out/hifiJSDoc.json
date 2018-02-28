@@ -14678,6 +14678,338 @@
         "scope": "global"
     },
     {
+        "description": "The experimental Graphics API <em>(experimental)</em> lets you query and manage certain graphics-related structures (like underlying meshes and textures) from scripting.",
+        "kind": "namespace",
+        "name": "Graphics",
+        "longname": "Graphics",
+        "scope": "global"
+    },
+    {
+        "description": "Returns a model reference object associated with the specified UUID ({@link EntityID}, {@link OverlayID}, or {@link AvatarID}).",
+        "kind": "function",
+        "name": "getModel",
+        "params": [
+            {
+                "type": {
+                    "names": [
+                        "UUID"
+                    ]
+                },
+                "description": "objectID of the model whose meshes are to be retrieved.",
+                "name": "The"
+            }
+        ],
+        "returns": [
+            {
+                "type": {
+                    "names": [
+                        "Graphics.Model"
+                    ]
+                },
+                "description": "the resulting Model object"
+            }
+        ],
+        "memberof": "Graphics",
+        "longname": "Graphics.getModel",
+        "scope": "static"
+    },
+    {
+        "description": "Create a new Mesh / Mesh Part with the specified data buffers.",
+        "kind": "function",
+        "name": "newMesh",
+        "params": [
+            {
+                "type": {
+                    "names": [
+                        "Graphics.IFSData"
+                    ]
+                },
+                "description": "Index-Faced Set (IFS) arrays used to create the new mesh.",
+                "name": "ifsMeshData"
+            }
+        ],
+        "returns": [
+            {
+                "type": {
+                    "names": [
+                        "Graphics.Mesh"
+                    ]
+                },
+                "description": "the resulting Mesh / Mesh Part object"
+            }
+        ],
+        "memberof": "Graphics",
+        "longname": "Graphics.newMesh",
+        "scope": "static"
+    },
+    {
+        "kind": "typedef",
+        "name": "IFSData",
+        "type": {
+            "names": [
+                "object"
+            ]
+        },
+        "properties": [
+            {
+                "type": {
+                    "names": [
+                        "string"
+                    ]
+                },
+                "optional": true,
+                "description": "mesh name (useful for debugging / debug prints).",
+                "name": "name"
+            },
+            {
+                "type": {
+                    "names": [
+                        "Array.<number>"
+                    ]
+                },
+                "description": "vertex indices to use for the mesh faces.",
+                "name": "indices"
+            },
+            {
+                "type": {
+                    "names": [
+                        "Array.<Vec3>"
+                    ]
+                },
+                "description": "vertex positions (model space)",
+                "name": "vertices"
+            },
+            {
+                "type": {
+                    "names": [
+                        "Array.<Vec3>"
+                    ]
+                },
+                "optional": true,
+                "description": "vertex normals (normalized)",
+                "name": "normals"
+            },
+            {
+                "type": {
+                    "names": [
+                        "Array.<Vec3>"
+                    ]
+                },
+                "optional": true,
+                "description": "vertex colors (normalized)",
+                "name": "colors"
+            },
+            {
+                "type": {
+                    "names": [
+                        "Array.<Vec2>"
+                    ]
+                },
+                "optional": true,
+                "description": "vertex texture coordinates (normalized)",
+                "name": "texCoords0"
+            }
+        ],
+        "memberof": "Graphics",
+        "longname": "Graphics.IFSData",
+        "scope": "static"
+    },
+    {
+        "kind": "typedef",
+        "name": "Mesh",
+        "type": {
+            "names": [
+                "object"
+            ]
+        },
+        "properties": [
+            {
+                "type": {
+                    "names": [
+                        "Array.<Graphics.MeshPart>"
+                    ]
+                },
+                "description": "Array of submesh part references.",
+                "name": "parts"
+            },
+            {
+                "type": {
+                    "names": [
+                        "Array.<string>"
+                    ]
+                },
+                "description": "Vertex attribute names (color, normal, etc.)",
+                "name": "attributeNames"
+            },
+            {
+                "type": {
+                    "names": [
+                        "number"
+                    ]
+                },
+                "description": "The number of parts contained in the mesh.",
+                "name": "numParts"
+            },
+            {
+                "type": {
+                    "names": [
+                        "number"
+                    ]
+                },
+                "description": "Total number of vertex indices in the mesh.",
+                "name": "numIndices"
+            },
+            {
+                "type": {
+                    "names": [
+                        "number"
+                    ]
+                },
+                "description": "Total number of vertices in the Mesh.",
+                "name": "numVertices"
+            },
+            {
+                "type": {
+                    "names": [
+                        "number"
+                    ]
+                },
+                "description": "Number of currently defined vertex attributes.",
+                "name": "numAttributes"
+            }
+        ],
+        "memberof": "Graphics",
+        "longname": "Graphics.Mesh",
+        "scope": "static"
+    },
+    {
+        "kind": "typedef",
+        "name": "MeshPart",
+        "type": {
+            "names": [
+                "object"
+            ]
+        },
+        "properties": [
+            {
+                "type": {
+                    "names": [
+                        "number"
+                    ]
+                },
+                "description": "The part index (within the containing Mesh).",
+                "name": "partIndex"
+            },
+            {
+                "type": {
+                    "names": [
+                        "Graphics.Topology"
+                    ]
+                },
+                "description": "element interpretation (currently only 'triangles' is supported).",
+                "name": "topology"
+            },
+            {
+                "type": {
+                    "names": [
+                        "Array.<string>"
+                    ]
+                },
+                "description": "Vertex attribute names (color, normal, etc.)",
+                "name": "attributeNames"
+            },
+            {
+                "type": {
+                    "names": [
+                        "number"
+                    ]
+                },
+                "description": "Number of vertex indices that this mesh part refers to.",
+                "name": "numIndices"
+            },
+            {
+                "type": {
+                    "names": [
+                        "number"
+                    ]
+                },
+                "description": "Number of vertices per face (eg: 3 when topology is 'triangles').",
+                "name": "numVerticesPerFace"
+            },
+            {
+                "type": {
+                    "names": [
+                        "number"
+                    ]
+                },
+                "description": "Number of faces represented by the mesh part (numIndices / numVerticesPerFace).",
+                "name": "numFaces"
+            },
+            {
+                "type": {
+                    "names": [
+                        "number"
+                    ]
+                },
+                "description": "Total number of vertices in the containing Mesh.",
+                "name": "numVertices"
+            },
+            {
+                "type": {
+                    "names": [
+                        "number"
+                    ]
+                },
+                "description": "Number of currently defined vertex attributes.",
+                "name": "numAttributes"
+            }
+        ],
+        "memberof": "Graphics",
+        "longname": "Graphics.MeshPart",
+        "scope": "static"
+    },
+    {
+        "kind": "typedef",
+        "name": "Model",
+        "type": {
+            "names": [
+                "object"
+            ]
+        },
+        "properties": [
+            {
+                "type": {
+                    "names": [
+                        "Uuid"
+                    ]
+                },
+                "description": "UUID of corresponding inworld object (if model is associated)",
+                "name": "objectID"
+            },
+            {
+                "type": {
+                    "names": [
+                        "number"
+                    ]
+                },
+                "description": "The number of submeshes contained in the model.",
+                "name": "numMeshes"
+            },
+            {
+                "type": {
+                    "names": [
+                        "Array.<Graphics.Mesh>"
+                    ]
+                },
+                "description": "Array of submesh references.",
+                "name": "meshes"
+            }
+        ],
+        "memberof": "Graphics",
+        "longname": "Graphics.Model",
+        "scope": "static"
+    },
+    {
         "kind": "package",
         "longname": "package:undefined",
         "files": [
