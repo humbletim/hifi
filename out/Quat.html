@@ -1,0 +1,5100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Namespace: Quat</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Namespace: Quat</h1>
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>Quat
+            <sup class="variation">0</sup></h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description">The Quat API provides facilities for generating and manipulating quaternions.
+Quaternions should be used in preference to Euler angles wherever possible because quaternions don't suffer from the problem
+of gimbal lock.</div>
+        
+
+        
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>IDENTITY</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Quat">Quat</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The identity rotation, i.e., no rotation.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+            <h3>Example</h3>
+            
+        <p class="code-caption">Print the <code>IDENTITY</code> value.</p>
+    
+    <pre class="prettyprint"><code>print(JSON.stringify(Quat.IDENTITY)); // { x: 0, y: 0, z: 0, w: 1 }
+print(JSON.stringify(Quat.safeEulerAngles(Quat.IDENTITY))); // { x: 0, y: 0, z: 0 }</code></pre>
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".angle"><span class="type-signature">(static) </span>angle<span class="signature">(q)</span><span class="type-signature"> &rarr; {number}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Get the rotation angle for a quaternion.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>q</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Quat">Quat</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The quaternion.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The rotation angle for <code>q</code>, in radians. <strong>WARNING:</strong> This value is in radians 
+whereas the value used by <a href="Quat.html#.angleAxis">Quat.angleAxis</a> is in degrees.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">number</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Get the rotation angle of a quaternion.</p>
+    
+    <pre class="prettyprint"><code>var forward = Quat.getForward(Camera.orientation);
+var rotation = Quat.angleAxis(90, forward);
+var angle = Quat.angle(rotation);
+print("Angle: " + angle * 180 / Math.PI);  // 90 degrees.</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".angleAxis"><span class="type-signature">(static) </span>angleAxis<span class="signature">(angle, axis)</span><span class="type-signature"> &rarr; {<a href="global.html#Quat">Quat</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Generate a quaternion given an angle to rotate through and an axis to rotate about.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>angle</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The angle to rotate through, in degrees.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>axis</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The unit axis to rotate about.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    A quaternion that is a rotation through <code>angle</code> degrees about the <code>axis</code>. 
+<strong>WARNING:</strong> This value is in degrees whereas the value returned by <a href="Quat.html#.angle">Quat.angle</a> is
+in radians.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="global.html#Quat">Quat</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Calculate a rotation of 90 degrees about the direction your camera is looking.</p>
+    
+    <pre class="prettyprint"><code>var rotation = Quat.angleAxis(90, Quat.getForward(Camera.orientation));</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".axis"><span class="type-signature">(static) </span>axis<span class="signature">(q)</span><span class="type-signature"> &rarr; {<a href="global.html#Vec3">Vec3</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Get the rotation axis for a quaternion.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>q</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Quat">Quat</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The quaternion.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The normalized rotation axis for <code>q</code>.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Get the rotation axis of a quaternion.</p>
+    
+    <pre class="prettyprint"><code>var forward = Quat.getForward(Camera.orientation);
+var rotation = Quat.angleAxis(90, forward);
+var axis = Quat.axis(rotation);
+print("Forward: " + JSON.stringify(forward));
+print("Axis: " + JSON.stringify(axis)); // Same value as forward.</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".cancelOutRoll"><span class="type-signature">(static) </span>cancelOutRoll<span class="signature">(orientation)</span><span class="type-signature"> &rarr; {<a href="global.html#Quat">Quat</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Cancels out the roll component of a quaternion so that its horizontal axis is level.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>orientation</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Quat">Quat</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">A quaternion representing an orientation.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <code>orientation</code> with its roll canceled out.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="global.html#Quat">Quat</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Two ways of calculating a camera orientation that points in the direction of a given quaternion but
+    keeps the camera's horizontal axis level.</p>
+    
+    <pre class="prettyprint"><code>var quaternion = Quat.fromPitchYawRollDegrees(10, 20, 30);
+
+var noRoll = Quat.cancelOutRoll(quaternion);
+Quat.print("", noRoll, true); // dvec3(-1.033004, 22.245996, -0.000000)
+
+var front = Quat.getFront(quaternion);
+var lookAt = Quat.lookAtSimple(Vec3.ZERO, front);
+Quat.print("", lookAt, true); // dvec3(-1.033004, 22.245996, -0.000000)
+    </code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".cancelOutRollAndPitch"><span class="type-signature">(static) </span>cancelOutRollAndPitch<span class="signature">(orientation)</span><span class="type-signature"> &rarr; {<a href="global.html#Quat">Quat</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Cancels out the roll and pitch component of a quaternion so that its completely horizontal with a yaw pointing in the 
+given quaternion's direction.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>orientation</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Quat">Quat</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">A quaternion representing an orientation.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <code>orientation</code> with its roll and pitch canceled out.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="global.html#Quat">Quat</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Two ways of calculating a camera orientation in the x-z plane with a yaw pointing in the direction of
+    a given quaternion.</p>
+    
+    <pre class="prettyprint"><code>var quaternion = Quat.fromPitchYawRollDegrees(10, 20, 30);
+
+var noRollOrPitch = Quat.cancelOutRollAndPitch(quaternion);
+Quat.print("", noRollOrPitch, true); // dvec3(0.000000, 22.245995, 0.000000)
+
+var front = Quat.getFront(quaternion);
+var lookAt = Quat.lookAtSimple(Vec3.ZERO, { x: front.x, y: 0, z: front.z });
+Quat.print("", lookAt, true); // dvec3(0.000000, 22.245996, 0.000000)</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".conjugate"><span class="type-signature">(static) </span>conjugate<span class="signature">(q)</span><span class="type-signature"> &rarr; {<a href="global.html#Quat">Quat</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Calculate the conjugate of a quaternion. For a unit quaternion, its conjugate is the same as its 
+    <a href="Quat.html#.inverse">Quat.inverse</a>.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>q</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Quat">Quat</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The quaternion to conjugate.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The conjugate of <code>q</code>.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="global.html#Quat">Quat</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">A unit quaternion multiplied by its conjugate is a zero rotation.</p>
+    
+    <pre class="prettyprint"><code>var quaternion = Quat.fromPitchYawRollDegrees(10, 20, 30);
+Quat.print("quaternion", quaternion, true); // dvec3(10.000000, 20.000004, 30.000004)
+var conjugate = Quat.conjugate(quaternion);
+Quat.print("conjugate", conjugate, true); // dvec3(1.116056, -22.242186, -28.451778)
+var identity = Quat.multiply(conjugate, quaternion);
+Quat.print("identity", identity, true); // dvec3(0.000000, 0.000000, 0.000000)</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".dot"><span class="type-signature">(static) </span>dot<span class="signature">(q1, q2)</span><span class="type-signature"> &rarr; {number}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Calculate the dot product of two quaternions. The closer the quaternions are to each other the more non-zero the value is
+(either positive or negative). Identical unit rotations have a dot product of +/- 1.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>q1</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Quat">Quat</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The first quaternion.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>q2</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Quat">Quat</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The second quaternion.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The dot product of <code>q1</code> and <code>q2</code>.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">number</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Testing unit quaternions for equality.</p>
+    
+    <pre class="prettyprint"><code>var q1 = Quat.fromPitchYawRollDegrees(0, 0, 0);
+var q2 = Quat.fromPitchYawRollDegrees(0, 0, 0);
+print(Quat.equal(q1, q2)); // true
+var q3 = Quat.fromPitchYawRollDegrees(0, 0, 359.95);
+print(Quat.equal(q1, q3)); // false
+
+var dot = Quat.dot(q1, q3);
+print(dot); // -0.9999999403953552
+var equal = Math.abs(1 - Math.abs(dot)) &lt; 0.000001;
+print(equal); // true</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".equal"><span class="type-signature">(static) </span>equal<span class="signature">(q1, q2)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Test whether two quaternions are equal. <strong>Note:</strong> The quaternions must be exactly equal in order for 
+<code>true</code> to be returned; it is often better to use <a href="Quat.html#.dot">Quat.dot</a> and test for closeness to +/-1.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>q1</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Quat">Quat</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The first quaternion.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>q2</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Quat">Quat</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The second quaternion.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <code>true</code> if the quaternions are equal, otherwise <code>false</code>.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Testing unit quaternions for equality.</p>
+    
+    <pre class="prettyprint"><code>var q1 = Quat.fromPitchYawRollDegrees(0, 0, 0);
+var q2 = Quat.fromPitchYawRollDegrees(0, 0, 0);
+print(Quat.equal(q1, q2)); // true
+var q3 = Quat.fromPitchYawRollDegrees(0, 0, 359.95);
+print(Quat.equal(q1, q3)); // false
+
+var dot = Quat.dot(q1, q3);
+print(dot); // -0.9999999403953552
+var equal = Math.abs(1 - Math.abs(dot)) &lt; 0.000001;
+print(equal); // true</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".fromPitchYawRollDegrees"><span class="type-signature">(static) </span>fromPitchYawRollDegrees<span class="signature">(pitch, yaw, roll)</span><span class="type-signature"> &rarr; {<a href="global.html#Quat">Quat</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Generate a quaternion from pitch, yaw, and roll values in degrees.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>pitch</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The pitch angle in degrees.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>yaw</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The yaw angle in degrees.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>roll</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The roll angle in degrees.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    A quaternion created using the <code>pitch</code>, <code>yaw</code>, and <code>roll</code> Euler angles.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="global.html#Quat">Quat</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Create a rotation of 180 degrees about the y axis.</p>
+    
+    <pre class="prettyprint"><code>var rotation = Quat.fromPitchYawRollDgrees(0, 180, 0 );</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".fromPitchYawRollRadians"><span class="type-signature">(static) </span>fromPitchYawRollRadians<span class="signature">(pitch, yaw, roll)</span><span class="type-signature"> &rarr; {<a href="global.html#Quat">Quat</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Generate a quaternion from pitch, yaw, and roll values in radians.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>pitch</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The pitch angle in radians.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>yaw</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The yaw angle in radians.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>roll</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The roll angle in radians.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    A quaternion created from the <code>pitch</code>, <code>yaw</code>, and <code>roll</code> Euler angles.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="global.html#Quat">Quat</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Create a rotation of 180 degrees about the y axis.</p>
+    
+    <pre class="prettyprint"><code>var rotation = Quat.fromPitchYawRollRadians(0, Math.PI, 0);</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".fromVec3Degrees"><span class="type-signature">(static) </span>fromVec3Degrees<span class="signature">(vector)</span><span class="type-signature"> &rarr; {<a href="global.html#Quat">Quat</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Generate a quaternion from a <a href="global.html#Vec3">Vec3</a> of Euler angles in degrees.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>vector</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">A vector of three Euler angles in degrees, the angles being the rotations about the x, y, and z
+    axes.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    A quaternion created from the Euler angles in <code>vector</code>.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="global.html#Quat">Quat</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Zero out pitch and roll from an orientation.</p>
+    
+    <pre class="prettyprint"><code>var eulerAngles = Quat.safeEulerAngles(orientation);
+eulerAngles.x = 0;
+eulerAngles.z = 0;
+var newOrientation = Quat.fromVec3Degrees(eulerAngles);</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".fromVec3Radians"><span class="type-signature">(static) </span>fromVec3Radians<span class="signature">(vector)</span><span class="type-signature"> &rarr; {<a href="global.html#Quat">Quat</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Generate a quaternion from a <a href="global.html#Vec3">Vec3</a> of Euler angles in radians.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>vector</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">A vector of three Euler angles in radians, the angles being the rotations about the x, y, and z
+    axes.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    A quaternion created using the Euler angles in <code>vector</code>.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="global.html#Quat">Quat</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Create a rotation of 180 degrees about the y axis.</p>
+    
+    <pre class="prettyprint"><code>var rotation = Quat.fromVec3Radians({ x: 0, y: Math.PI, z: 0 });</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".getForward"><span class="type-signature">(static) </span>getForward<span class="signature">(orientation)</span><span class="type-signature"> &rarr; {<a href="global.html#Vec3">Vec3</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Get the "forward" direction that the camera would face if its orientation was set to the quaternion value.
+This is a synonym for <a href="Quat.html#.getFront">Quat.getFront</a>.
+The High Fidelity camera has axes x = right, y = up, -z = forward.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>orientation</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Quat">Quat</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">A quaternion representing an orientation.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The negative z-axis rotated by <code>orientation</code>.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Demonstrate that the "forward" vector is for the negative z-axis.</p>
+    
+    <pre class="prettyprint"><code>var forward = Quat.getForward(Quat.IDENTITY);
+print(JSON.stringify(forward)); // {"x":0,"y":0,"z":-1}</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".getFront"><span class="type-signature">(static) </span>getFront<span class="signature">(orientation)</span><span class="type-signature"> &rarr; {<a href="global.html#Vec3">Vec3</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Get the "front" direction that the camera would face if its orientation was set to the quaternion value.
+This is a synonym for <a href="Quat.html#.getForward">Quat.getForward</a>.
+The High Fidelity camera has axes x = right, y = up, -z = forward.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>orientation</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Quat">Quat</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">A quaternion representing an orientation.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The negative z-axis rotated by <code>orientation</code>.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".getRight"><span class="type-signature">(static) </span>getRight<span class="signature">(orientation)</span><span class="type-signature"> &rarr; {<a href="global.html#Vec3">Vec3</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Get the "right" direction that the camera would have if its orientation was set to the quaternion value.
+The High Fidelity camera has axes x = right, y = up, -z = forward.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>orientation</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Quat">Quat</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">A quaternion representing an orientation.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The x-axis rotated by <code>orientation</code>.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".getUp"><span class="type-signature">(static) </span>getUp<span class="signature">(orientation)</span><span class="type-signature"> &rarr; {<a href="global.html#Vec3">Vec3</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Get the "up" direction that the camera would have if its orientation was set to the quaternion value.
+The High Fidelity camera has axes x = right, y = up, -z = forward.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>orientation</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Quat">Quat</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">A quaternion representing an orientation.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The y-axis rotated by <code>orientation</code>.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".inverse"><span class="type-signature">(static) </span>inverse<span class="signature">(q)</span><span class="type-signature"> &rarr; {<a href="global.html#Quat">Quat</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Calculate the inverse of a quaternion. For a unit quaternion, its inverse is the same as its
+    <a href="Quat.html#.conjugate">Quat.conjugate</a>.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>q</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Quat">Quat</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The quaternion.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The inverse of <code>q</code>.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="global.html#Quat">Quat</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">A quaternion multiplied by its inverse is a zero rotation.</p>
+    
+    <pre class="prettyprint"><code>var quaternion = Quat.fromPitchYawRollDegrees(10, 20, 30);
+Quat.print("quaternion", quaternion, true); // dvec3(10.000000, 20.000004, 30.000004)
+var inverse = Quat.invserse(quaternion);
+Quat.print("inverse", inverse, true); // dvec3(1.116056, -22.242186, -28.451778)
+var identity = Quat.multiply(inverse, quaternion);
+Quat.print("identity", identity, true); // dvec3(0.000000, 0.000000, 0.000000)</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".lookAt"><span class="type-signature">(static) </span>lookAt<span class="signature">(eye, target, up)</span><span class="type-signature"> &rarr; {<a href="global.html#Quat">Quat</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Calculate a camera orientation given eye position, point of interest, and "up" direction. The camera's negative z-axis is
+the forward direction. The result has zero roll about its forward direction with respect to the given "up" direction.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>eye</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The eye position.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>target</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The point to look at.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>up</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The "up" direction.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    A quaternion that orients the negative z-axis to point along the eye-to-target vector and the x-axis to
+be the cross product of the eye-to-target and up vectors.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="global.html#Quat">Quat</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Rotate your view in independent mode to look at the world origin upside down.</p>
+    
+    <pre class="prettyprint"><code>Camera.mode = "independent";
+Camera.orientation = Quat.lookAt(Camera.position, Vec3.ZERO, Vec3.UNIT_NEG_Y);</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".lookAtSimple"><span class="type-signature">(static) </span>lookAtSimple<span class="signature">(eye, target)</span><span class="type-signature"> &rarr; {<a href="global.html#Quat">Quat</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Calculate a camera orientation given eye position and point of interest. The camera's negative z-axis is the forward 
+direction. The result has zero roll about its forward direction.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>eye</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The eye position.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>target</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The point to look at.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    A quaternion that orients the negative z-axis to point along the eye-to-target vector and the x-axis to be
+    the cross product of the eye-to-target and an "up" vector. The "up" vector is the y-axis unless the eye-to-target
+    vector is nearly aligned with it (i.e., looking near vertically up or down), in which case the x-axis is used as the
+    "up" vector.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="global.html#Quat">Quat</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Rotate your view in independent mode to look at the world origin.</p>
+    
+    <pre class="prettyprint"><code>Camera.mode = "independent";
+Camera.orientation = Quat.lookAtSimple(Camera.position, Vec3.ZERO);</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".mix"><span class="type-signature">(static) </span>mix<span class="signature">(q1, q2, alpha)</span><span class="type-signature"> &rarr; {<a href="global.html#Quat">Quat</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Compute a spherical linear interpolation between two rotations, safely handling two rotations that are very similar.
+See also, <a href="Quat.html#.slerp">Quat.slerp</a>.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>q1</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Quat">Quat</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The beginning rotation.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>q2</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Quat">Quat</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The ending rotation.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>alpha</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The mixture coefficient between <code>0.0</code> and <code>1.0</code>. Specifies the proportion
+    of <code>q2</code>'s value to return in favor of <code>q1</code>'s value. A value of <code>0.0</code> returns 
+    <code>q1</code>'s value; <code>1.0</code> returns <code>q2s</code>'s value.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    A spherical linear interpolation between rotations <code>q1</code> and <code>q2</code>.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="global.html#Quat">Quat</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Animate between one rotation and another.</p>
+    
+    <pre class="prettyprint"><code>var dt = amountOfTimeThatHasPassed;
+var mixFactor = amountOfTimeThatHasPassed / TIME_TO_COMPLETE;
+if (mixFactor > 1) {
+    mixFactor = 1;
+}
+var newRotation = Quat.mix(startRotation, endRotation, mixFactor);</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".multiply"><span class="type-signature">(static) </span>multiply<span class="signature">(q1, q2)</span><span class="type-signature"> &rarr; {<a href="global.html#Quat">Quat</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Multiply two quaternions.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>q1</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Quat">Quat</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The first quaternion.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>q2</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Quat">Quat</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The second quaternion.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <code>q1</code> multiplied with <code>q2</code>.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="global.html#Quat">Quat</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Calculate the orientation of your avatar's right hand in world coordinates.</p>
+    
+    <pre class="prettyprint"><code>var handController = Controller.Standard.RightHand;
+var handPose = Controller.getPoseValue(handController);
+if (handPose.valid) {
+    var handOrientation = Quat.multiply(MyAvatar.orientation, handPose.rotation);
+}</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".normalize"><span class="type-signature">(static) </span>normalize<span class="signature">(q)</span><span class="type-signature"> &rarr; {<a href="global.html#Quat">Quat</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Normalizes a quaternion.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>q</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Quat">Quat</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The quaternion to normalize.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <code>q</code> normalized to have unit length.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="global.html#Quat">Quat</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Normalize a repeated delta rotation so that maths rounding errors don't accumulate.</p>
+    
+    <pre class="prettyprint"><code>var deltaRotation = Quat.fromPitchYawRollDegrees(0, 0.1, 0);
+var currentRotation = Quat.ZERO;
+while (Quat.safeEulerAngles(currentRotation).y &lt; 180) {
+    currentRotation = Quat.multiply(deltaRotation, currentRotation);
+    currentRotation = Quat.normalize(currentRotation);
+    // Use currentRotatation for something.
+}</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".print"><span class="type-signature">(static) </span>print<span class="signature">(label, q, asDegrees<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Print to the program log a text label followed by a quaternion's pitch, yaw, and roll Euler angles.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>label</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">The label to print.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>q</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Quat">Quat</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">The quaternion to print.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>asDegrees</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last">If <code>true</code> the angle values are printed in degrees, otherwise they are
+    printed in radians.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Two ways of printing a label plus a quaternion's Euler angles.</p>
+    
+    <pre class="prettyprint"><code>var quaternion = Quat.fromPitchYawRollDegrees(0, 45, 0);
+
+// Quaternion: dvec3(0.000000, 45.000004, 0.000000)
+Quat.print("Quaternion:", quaternion,  true);
+
+// Quaternion: {"x":0,"y":45.000003814697266,"z":0}
+print("Quaternion: " + JSON.stringify(Quat.safeEulerAngles(quaternion)));</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".rotationBetween"><span class="type-signature">(static) </span>rotationBetween<span class="signature">(v1, v2)</span><span class="type-signature"> &rarr; {<a href="global.html#Quat">Quat</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Calculate the shortest rotation from a first vector onto a second.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>v1</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The first vector.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>v2</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The second vector.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The rotation from <code>v1</code> onto <code>v2</code>.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="global.html#Quat">Quat</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Apply a change in velocity to an entity and rotate it to face the direction it's travelling.</p>
+    
+    <pre class="prettyprint"><code>var newVelocity = Vec3.sum(entityVelocity, deltaVelocity);
+var properties = { velocity: newVelocity };
+if (Vec3.length(newVelocity) > 0.001) {
+    properties.rotation = Quat.rotationBetween(entityVelocity, newVelocity);
+}
+Entities.editEntity(entityID, properties);
+entityVelocity = newVelocity;</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".safeEulerAngles"><span class="type-signature">(static) </span>safeEulerAngles<span class="signature">(orientation)</span><span class="type-signature"> &rarr; {<a href="global.html#Vec3">Vec3</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Calculate the Euler angles for the quaternion, in degrees. (The "safe" in the name signifies that the angle results will
+not be garbage even when the rotation is particularly difficult to decompose with pitches around +/-90 degrees.)
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>orientation</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Quat">Quat</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">A quaternion representing an orientation.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    A <a href="global.html#Vec3">Vec3</a> of Euler angles for the <code>orientation</code>, in degrees, the angles being the 
+rotations about the x, y, and z axes.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Report the camera yaw.</p>
+    
+    <pre class="prettyprint"><code>var eulerAngles = Quat.safeEulerAngles(Camera.orientation);
+print("Camera yaw: " + eulerAngles.y);</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".slerp"><span class="type-signature">(static) </span>slerp<span class="signature">(q1, q2, alpha)</span><span class="type-signature"> &rarr; {<a href="global.html#Quat">Quat</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Compute a spherical linear interpolation between two rotations, for rotations that are not very similar.
+See also, <a href="Quat.html#.mix">Quat.mix</a>.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>q1</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Quat">Quat</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The beginning rotation.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>q2</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Quat">Quat</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The ending rotation.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>alpha</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The mixture coefficient between <code>0.0</code> and <code>1.0</code>. Specifies the proportion
+    of <code>q2</code>'s value to return in favor of <code>q1</code>'s value. A value of <code>0.0</code> returns
+    <code>q1</code>'s value; <code>1.0</code> returns <code>q2s</code>'s value.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    A spherical linear interpolation between rotations <code>q1</code> and <code>q2</code>.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="global.html#Quat">Quat</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".squad"><span class="type-signature">(static) </span>squad<span class="signature">(q1, q2, s1, s2, alpha)</span><span class="type-signature"> &rarr; {<a href="global.html#Quat">Quat</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Compute a spherical quadrangle interpolation between two rotations along a path oriented toward two other rotations.
+Equivalent to: <code>Quat.slerp(Quat.slerp(q1, q2, alpha), Quat.slerp(s1, s2, alpha), 2 * alpha * (1.0 - alpha))</code>.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>q1</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Quat">Quat</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Initial rotation.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>q2</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Quat">Quat</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Final rotation.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>s1</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Quat">Quat</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">First control point.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>s2</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Quat">Quat</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Second control point.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>alpha</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The mixture coefficient between <code>0.0</code> and <code>1.0</code>. A value of 
+    <code>0.0</code> returns <code>q1</code>'s value; <code>1.0</code> returns <code>q2s</code>'s value.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    A spherical quadrangle interpolation between rotations <code>q1</code> and <code>q2</code> using control
+    points <code>s1</code> and <code>s2</code>.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="global.html#Quat">Quat</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Resource.html">Resource</a></li></ul><h3>Namespaces</h3><ul><li><a href="AnimationCache.html">AnimationCache</a></li><li><a href="Assets.html">Assets</a></li><li><a href="Camera.html">Camera</a></li><li><a href="Clipboard.html">Clipboard</a></li><li><a href="ContextOverlay.html">ContextOverlay</a></li><li><a href="DebugDraw.html">DebugDraw</a></li><li><a href="Entities.html">Entities</a></li><li><a href="location.html">location</a></li><li><a href="Menu.html">Menu</a></li><li><a href="MyAvatar.html">MyAvatar</a></li><li><a href="Overlays.html">Overlays</a></li><li><a href="Paths.html">Paths</a></li><li><a href="Picks.html">Picks</a></li><li><a href="Pointers.html">Pointers</a></li><li><a href="Quat.html">Quat</a></li><li><a href="ResourceCache.html">ResourceCache</a></li><li><a href="Users.html">Users</a></li><li><a href="Uuid.html">Uuid</a></li><li><a href="Window.html">Window</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Feb 28 2018 14:49:41 GMT-0500 (EST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

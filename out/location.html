@@ -1,0 +1,3541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Namespace: location</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Namespace: location</h1>
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>location</h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description">The location API provides facilities related to your current location in the metaverse.</div>
+        
+
+        
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>domainID</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Uuid.html">Uuid</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">A UUID uniquely identifying the domain you're visiting. Is <a href="Uuid.html">Uuid.NULL</a> if you're not
+    connected to the domain.
+    <em>Read-only.</em></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>domainId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Uuid.html">Uuid</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Synonym for <code>domainId</code>. <em>Read-only.</em> <strong>Deprecated:</strong> This property
+    is deprecated and will soon be removed.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>hostname</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The name of the domain for your current metaverse address (e.g., <code>"AvatarIsland"</code>,
+    <code>localhost</code>, or an IP address).
+    <em>Read-only.</em></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>href</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Your current metaverse address (e.g., <code>"hifi://avatarisland/15,-10,26/0,0,0,1"</code>)
+    regardless of whether or not you're connected to the domain.
+    <em>Read-only.</em></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>isConnected</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><code>true</code> if you're connected to the domain in your current <code>href</code>
+    metaverse address, otherwise <code>false</code>.
+    <em>Read-only.</em></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>pathname</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The location and orientation in your current <code>href</code> metaverse address 
+    (e.g., <code>"/15,-10,26/0,0,0,1"</code>).
+    <em>Read-only.</em></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>placename</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The place name in your current <code>href</code> metaverse address
+    (e.g., <code>"AvatarIsland"</code>). Is blank if your <code>hostname</code> is an IP address.
+    <em>Read-only.</em></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>protocol</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The protocol of your current <code>href</code> metaverse address (e.g., <code>"hifi"</code>).
+    <em>Read-only.</em></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".copyAddress"><span class="type-signature">(static) </span>copyAddress<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Copy your current metaverse address (i.e., <code>location.href</code> property value) to the OS clipboard.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".copyPath"><span class="type-signature">(static) </span>copyPath<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Copy your current metaverse location and orientation (i.e., <code>location.pathname</code> property value) to the OS 
+clipboard.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".goBack"><span class="type-signature">(static) </span>goBack<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Go back to the previous location in your navigation history, if there is one.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".goBackPossible"><span class="type-signature">(static) </span>goBackPossible<span class="signature">(isPossible)</span><span class="type-signature"> &rarr; {Signal}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Triggered when there's a change in whether or not there's a previous location that can be navigated to using
+<a href="location.html#.goBack">goBack</a>. (Reflects changes in the state of the "Goto" dialog's back arrow.)
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>isPossible</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><code>true</code> if there's a previous location to navigate to, otherwise 
+    <code>false</code>.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Signal</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Report when ability to navigate back changes.</p>
+    
+    <pre class="prettyprint"><code>function onGoBackPossible(isPossible) {
+    print("Go back possible: " + isPossible);
+}
+
+location.goBackPossible.connect(onGoBackPossible);</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".goForward"><span class="type-signature">(static) </span>goForward<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Go forward to the next location in your navigation history, if there is one.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".goForwardPossible"><span class="type-signature">(static) </span>goForwardPossible<span class="signature">(isPossible)</span><span class="type-signature"> &rarr; {Signal}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Triggered when there's a change in whether or not there's a forward location that can be navigated to using 
+<a href="location.html#.goForward">goForward</a>. (Reflects changes in the state of the "Goto" dialog's forward arrow.)
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>isPossible</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><code>true</code> if there's a forward location to navigate to, otherwise
+    <code>false</code>.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Signal</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Report when ability to navigate forward changes.</p>
+    
+    <pre class="prettyprint"><code>function onGoForwardPossible(isPossible) {
+    print("Go forward possible: " + isPossible);
+}
+
+location.goForwardPossible.connect(onGoForwardPossible);
+     </code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".goToEntry"><span class="type-signature">(static) </span>goToEntry<span class="signature">(trigger)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Go to the default "welcome" metaverse address.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>trigger</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="location.html#.LookupTrigger">location.LookupTrigger</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    StartupFromSettings
+                
+                </td>
+            
+
+            <td class="description last">The reason for the function call. Helps ensure that user's
+    location history is correctly maintained.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".goToLocalSandbox"><span class="type-signature">(static) </span>goToLocalSandbox<span class="signature">(path, trigger)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Go to the local Sandbox server that's running on the same PC as Interface.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>path</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    ""
+                
+                </td>
+            
+
+            <td class="description last">The position and orientation to go to (e.g., <code>"/0,0,0"</code>).</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>trigger</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="location.html#.LookupTrigger">location.LookupTrigger</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    StartupFromSettings
+                
+                </td>
+            
+
+            <td class="description last">The reason for the function call. Helps ensure that user's
+    location history is correctly maintained.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".goToUser"><span class="type-signature">(static) </span>goToUser<span class="signature">(username, matchOrientation)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Go to the specified user's location.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>username</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">The user's username.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>matchOrientation</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    true
+                
+                </td>
+            
+
+            <td class="description last">If <code>true</code> then go to a location just in front of the user and turn to face
+    them, otherwise go to the user's exact location and orientation.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".goToViewpointForPath"><span class="type-signature">(static) </span>goToViewpointForPath<span class="signature">(path, namedPath)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Go to a position and orientation resulting from a lookup for a named path in the domain (set in the domain server's 
+settings).
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>path</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The position and orientation corresponding to the named path.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>namedPath</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The named path that was looked up on the server.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <dt class="important tag-deprecated">Deprecated:</dt><dd><ul class="dummy"><li>This function is deprecated and will be removed.</li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".handleLookupString"><span class="type-signature">(static) </span>handleLookupString<span class="signature">(address, fromSuggestions)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Go to a specified metaverse address.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>address</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">The address to go to: a <code>"hifi:/"<code> address, an IP address (e.g., 
+<code>"127.0.0.1"</code> or <code>"localhost"</code>), a domain name, a named path on a domain (starts with 
+<code>"/"</code>), a position or position and orientation, or a user (starts with <code>"@"</code>).</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>fromSuggestions</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last">Set to <code>true</code> if the address is obtained from the "Goto" dialog.
+   Helps ensure that user's location history is correctly maintained.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".hostChanged"><span class="type-signature">(static) </span>hostChanged<span class="signature">(hostname)</span><span class="type-signature"> &rarr; {Signal}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Triggered when you navigate to a new domain.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>hostname</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The new domain's host name.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Signal</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Report when you navigate to a new domain.</p>
+    
+    <pre class="prettyprint"><code>function onHostChanged(host) {
+    print("Host changed to: " + host);
+}
+
+location.hostChanged.connect(onHostChanged);</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".locationChangeRequired"><span class="type-signature">(static) </span>locationChangeRequired<span class="signature">(position, hasOrientationChange, orientation, shouldFaceLocation)</span><span class="type-signature"> &rarr; {Signal}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Triggered when an attempt is made to send your avatar to a specified position on the current domain. For example, when
+you change domains or enter a position to go to in the "Goto" dialog.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>position</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The position to go to.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>hasOrientationChange</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">If <code>true</code> then a new <code>orientation</code> has been requested.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>orientation</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Quat">Quat</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The orientation to change to. Is <a href="Quat.html">Quat.IDENTITY</a> if 
+    <code>hasOrientationChange</code> is <code>false</code>.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>shouldFaceLocation</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">If <code>true</code> then the request is to go to a position near that specified 
+    and orient your avatar to face it. For example when you visit someone from the "People" dialog.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Signal</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Report location change requests.</p>
+    
+    <pre class="prettyprint"><code>function onLocationChangeRequired(newPosition, hasOrientationChange, newOrientation, shouldFaceLocation) {
+    print("Location change required:");
+    print("- New position = " + JSON.stringify(newPosition));
+    print("- Has orientation change = " + hasOrientationChange);
+    print("- New orientation = " + JSON.stringify(newOrientation));
+    print("- Should face location = " + shouldFaceLocation);
+}
+
+location.locationChangeRequired.connect(onLocationChangeRequired);</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".lookupResultIsNotFound"><span class="type-signature">(static) </span>lookupResultIsNotFound<span class="signature">()</span><span class="type-signature"> &rarr; {Signal}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Triggered when looking up the details of a metaverse user or location to go to has completed and the domain or user could
+not be found.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Signal</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".lookupResultIsOffline"><span class="type-signature">(static) </span>lookupResultIsOffline<span class="signature">()</span><span class="type-signature"> &rarr; {Signal}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Triggered when looking up the details of a metaverse user or location to go to has completed and the domain or user is 
+offline.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Signal</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".lookupResultsFinished"><span class="type-signature">(static) </span>lookupResultsFinished<span class="signature">()</span><span class="type-signature"> &rarr; {Signal}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Triggered when looking up the details of a metaverse user or location to go to has completed (successfully or
+unsuccessfully).
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Signal</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".lookupShareableNameForDomainID"><span class="type-signature">(static) </span>lookupShareableNameForDomainID<span class="signature">(domainID)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Retrieve and remember the place name for the given domain ID if the place name is not already known.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>domainID</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Uuid.html">Uuid</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The UUID of the domain.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <dt class="important tag-deprecated">Deprecated:</dt><dd><ul class="dummy"><li>This function is deprecated and will be removed.</li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".pathChangeRequired"><span class="type-signature">(static) </span>pathChangeRequired<span class="signature">(path)</span><span class="type-signature"> &rarr; {Signal}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Triggered when an attempt is made to send your avatar to a new named path on the domain (set in the domain server's
+settings). For example, when you enter a "/" followed by the path's name in the "GOTO" dialog.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>path</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The name of the path to go to.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Signal</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Report path change requests.</p>
+    
+    <pre class="prettyprint"><code>function onPathChangeRequired(newPath) {
+    print("onPathChangeRequired: newPath = " + newPath);
+}
+
+location.pathChangeRequired.connect(onPathChangeRequired);</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".possibleDomainChangeRequired"><span class="type-signature">(static) </span>possibleDomainChangeRequired<span class="signature">(hostName, port, domainID)</span><span class="type-signature"> &rarr; {Signal}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Triggered when a request is made to go to an IP address.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>hostName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The name of the domain to go do.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>port</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The integer number of the network port to connect to.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>domainID</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Uuid.html">Uuid</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The UUID of the domain to go to.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Signal</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".possibleDomainChangeRequiredViaICEForID"><span class="type-signature">(static) </span>possibleDomainChangeRequiredViaICEForID<span class="signature">(iceServerHostName, domainID)</span><span class="type-signature"> &rarr; {Signal}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Triggered when a request is made to go to a named domain or user.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>iceServerHostName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">IP address of the ICE server.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>domainID</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Uuid.html">Uuid</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The UUID of the domain to go to.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Signal</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".protocolVersion"><span class="type-signature">(static) </span>protocolVersion<span class="signature">()</span><span class="type-signature"> &rarr; {string}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Get Interface's protocol version.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <dt class="important tag-deprecated">Deprecated:</dt><dd><ul class="dummy"><li>This function is deprecated and will be removed. Use <a href="Window.html#.protocolSignature">Window.protocolSignature</a> instead.</li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    A string uniquely identifying the version of the metaverse protocol that Interface is using.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">string</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".refreshPreviousLookup"><span class="type-signature">(static) </span>refreshPreviousLookup<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Refresh the current address, e.g., after connecting to a domain in order to position the user to the desired location.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <dt class="important tag-deprecated">Deprecated:</dt><dd><ul class="dummy"><li>This function is deprecated and will be removed.</li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".storeCurrentAddress"><span class="type-signature">(static) </span>storeCurrentAddress<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Update your current metaverse location in Interface's Settings file as your last-known address. This can be used
+to ensure that you start up at that address if you exit Interface without a later address automatically being saved.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+    
+
+    
+        <h3 class="subsection-title">Type Definitions</h3>
+
+        
+                
+<h4 class="name" id=".LookupTrigger">LookupTrigger</h4>
+
+
+
+
+<div class="description">
+    <p>The reasons for an address lookup via the metaverse API are defined by numeric values:</p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Value</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>UserInput</strong></td>
+      <td><code>0</code></td>
+      <td>User-typed input.</td>
+    </tr>
+    <tr>
+      <td><strong>Back</strong></td>
+      <td><code>1</code></td>
+      <td>Address from a <a href="location.html#.goBack">goBack</a> call.</td>
+    </tr>
+    <tr>
+      <td><strong>Forward</strong></td>
+      <td><code>2</code></td>
+      <td>Address from a <a href="location.html#.goForward">goForward</a> call.</td>
+    </tr>
+    <tr>
+      <td><strong>StartupFromSettings</strong></td>
+      <td><code>3</code></td>
+      <td>Initial location at Interface start-up from settings.</td>
+    </tr>
+    <tr>
+      <td><strong>DomainPathResponse</strong></td>
+      <td><code>4</code></td>
+      <td>A named path in the domain.</td>
+    </tr>
+    <tr>
+      <td><strong>Internal</strong></td>
+      <td><code>5</code></td>
+      <td>An internal attempt to resolve an alternative path.</td>
+    </tr>
+    <tr>
+      <td><strong>AttemptedRefresh</strong></td>
+      <td><code>6</code></td>
+      <td>A refresh after connecting to a domain.</td>
+    </tr>
+    <tr>
+      <td><strong>Suggestions</strong></td>
+      <td><code>7</code></td>
+      <td>Address from the Goto dialog.</td>
+    </tr>
+    <tr>
+      <td><strong>VisitUserFromPAL</strong></td>
+      <td><code>8</code></td>
+      <td>User from the People dialog.</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+            
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Resource.html">Resource</a></li></ul><h3>Namespaces</h3><ul><li><a href="AnimationCache.html">AnimationCache</a></li><li><a href="Assets.html">Assets</a></li><li><a href="Camera.html">Camera</a></li><li><a href="Clipboard.html">Clipboard</a></li><li><a href="ContextOverlay.html">ContextOverlay</a></li><li><a href="DebugDraw.html">DebugDraw</a></li><li><a href="Entities.html">Entities</a></li><li><a href="location.html">location</a></li><li><a href="Menu.html">Menu</a></li><li><a href="MyAvatar.html">MyAvatar</a></li><li><a href="Overlays.html">Overlays</a></li><li><a href="Paths.html">Paths</a></li><li><a href="Picks.html">Picks</a></li><li><a href="Pointers.html">Pointers</a></li><li><a href="Quat.html">Quat</a></li><li><a href="ResourceCache.html">ResourceCache</a></li><li><a href="Users.html">Users</a></li><li><a href="Uuid.html">Uuid</a></li><li><a href="Window.html">Window</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Feb 28 2018 14:49:40 GMT-0500 (EST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
