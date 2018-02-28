@@ -74,7 +74,7 @@ public slots:
     bool updateMeshPart(scriptable::ScriptableMeshPointer mesh, scriptable::ScriptableMeshPartPointer part);
 #endif
 
-    QString exportModelToOBJ(const scriptable::ScriptableModel& in);
+    QString exportModelToOBJ(const scriptable::ScriptableModelPointer& in);
 
 private:
     scriptable::ModelProviderPointer getModelProvider(QUuid uuid);
