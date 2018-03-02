@@ -129,6 +129,9 @@ QVariantMap scriptable::ScriptableMesh::getBufferFormats() const {
     QVariantMap result;
     for (const auto& a : buffer_helpers::ATTRIBUTES.toStdMap()) {
         auto bufferView = buffer_helpers::mesh::getBufferView(getMeshPointer(), a.second);
+        if (!bufferView.getNumElements()) {
+            continue;
+        }
         result[a.first] = QVariantMap{
             { "slot", a.second },
             { "length", (glm::uint32)bufferView.getNumElements() },
