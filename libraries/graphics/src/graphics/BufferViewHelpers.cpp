@@ -472,13 +472,13 @@ template<> QVector<glm::vec2> variantToVector<glm::vec2>(const QVariant& value) 
 template<> QVector<glm::vec3> variantToVector<glm::vec3>(const QVariant& value) { return qVariantListToGlmVector<glm::vec3>(value.toList()); }
 template<> QVector<glm::vec4> variantToVector<glm::vec4>(const QVariant& value) { return qVariantListToGlmVector<glm::vec4>(value.toList()); }
 
-template<> gpu::BufferView newFromVector<QVariant>(const QVector<QVariant>& _elements, const gpu::Element& elementType) {
-    glm::uint32 numElements = _elements.size();
+template<> gpu::BufferView newFromVector<QVariant>(const QVector<QVariant>& elements, const gpu::Element& elementType) {
+    glm::uint32 numElements = elements.size();
     auto buffer = new gpu::Buffer();
     buffer->resize(elementType.getSize() * numElements);
     auto bufferView = gpu::BufferView(buffer, elementType);
     for (glm::uint32 i = 0; i < numElements; i++) {
-        setValue<QVariant>(bufferView, i, _elements[i]);
+        setValue<QVariant>(bufferView, i, elements[i]);
     }
     return bufferView;
 }

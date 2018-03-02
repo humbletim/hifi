@@ -247,24 +247,21 @@ scriptable::ScriptableMeshPointer GraphicsScriptingInterface::newMesh(const QVar
     return scriptable::make_scriptowned<scriptable::ScriptableMesh>(mesh, nullptr);
 }
 
-QString GraphicsScriptingInterface::exportModelToOBJ(const scriptable::ScriptableModelPointer& _in) {
-    if (!_in) {
+QString GraphicsScriptingInterface::exportModelToOBJ(const scriptable::ScriptableModelPointer& model) {
+    if (!model) {
         jsThrowError("null model");
         return QString();
     }
-    const auto& in = _in->getConstMeshes();
-    if (in.size()) {
-        QList<scriptable::MeshPointer> meshes;
-        foreach (auto meshProxy, in) {
-            if (meshProxy) {
-                meshes.append(getMeshPointer(meshProxy));
-            }
-        }
-        if (meshes.size()) {
-            return writeOBJToString(meshes);
+    QList<scriptable::MeshPointer> meshes;
+    foreach (auto meshProxy, model->getConstMeshes()) {
+        if (meshProxy) {
+            meshes.append(getMeshPointer(meshProxy));
         }
     }
-    jsThrowError("null mesh");
+    if (meshes.size()) {
+        return writeOBJToString(meshes);
+    }
+    jsThrowError("no meshes");
     return QString();
 }
 
