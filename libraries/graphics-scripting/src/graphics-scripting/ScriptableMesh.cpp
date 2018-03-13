@@ -375,6 +375,13 @@ scriptable::ScriptableMeshBase::ScriptableMeshBase(
 #endif
         strongMesh = weakMesh.lock();
     }
+    auto mesh = getMeshPointer();
+    QString name = mesh ? QString::fromStdString(mesh->modelName) : "";
+    if (name.isEmpty()) {
+        name = mesh ? QString::fromStdString(mesh->displayName) : "";
+    }
+    auto parentModel = getModelBasePointer();
+    setObjectName(QString("%1#%2").arg(parentModel ? parentModel->objectName() : "").arg(name));
 }
 
 scriptable::ScriptableMeshBase::ScriptableMeshBase(scriptable::WeakMeshPointer weakMesh, QObject* parent) :
