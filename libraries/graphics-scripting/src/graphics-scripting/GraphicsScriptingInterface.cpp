@@ -48,8 +48,22 @@ bool GraphicsScriptingInterface::updateModel(QUuid uuid, const scriptable::Scrip
 
     auto base = model->operator scriptable::ScriptableModelBasePointer();
     if (!base) {
-        jsThrowError("could not get base model pointer");
-        return false;
+        base = qobject_cast<scriptable::ScriptableModel*>(model.data());
+        if (!base) {
+            base = static_cast<scriptable::ScriptableModel*>(model.data());
+            if (!base) {
+                jsThrowError("could not get base model pointer");
+                return false;
+            } else {
+#ifdef SCRIPTABLE_MESH_DEBUG
+                qWarning(graphics_scripting) << "got base via static_cast" << base;
+#endif
+            }
+        } else {
+#ifdef SCRIPTABLE_MESH_DEBUG
+            qWarning(graphics_scripting) << "got base via qobject_cast" << base;
+#endif
+        }
     }
 
     auto provider = getModelProvider(uuid);
@@ -322,7 +336,7 @@ namespace scriptable {
                     out = QPointer<T>(tmp);
                     return;
                 }
-#if 0
+#if 1
                 if (auto tmp = static_cast<T*>(obj)) {
 #ifdef SCRIPTABLE_MESH_DEBUG
                     qCInfo(graphics_scripting) << "qpointer_qobject_cast -- via static_cast" << obj << tmp << value.toString();
