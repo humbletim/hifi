@@ -69,6 +69,7 @@
 #include <AudioInjectorManager.h>
 #include <AvatarBookmarks.h>
 #include <CursorManager.h>
+#include <VirtualPadManager.h>
 #include <DebugDraw.h>
 #include <DeferredLightingEffect.h>
 #include <EntityScriptClient.h>
@@ -137,6 +138,7 @@
 #include <recording/Recorder.h>
 #include <shared/StringHelpers.h>
 #include <QmlWebWindowClass.h>
+#include <QmlFragmentClass.h>
 #include <Preferences.h>
 #include <display-plugins/CompositorHelper.h>
 #include <trackers/EyeTracker.h>
@@ -777,6 +779,7 @@ bool setupEssentials(int& argc, char** argv, bool runningMarkerExisted) {
     DependencyManager::set<PointerScriptingInterface>();
     DependencyManager::set<PickScriptingInterface>();
     DependencyManager::set<Cursor::Manager>();
+    DependencyManager::set<VirtualPad::Manager>();
     DependencyManager::set<DesktopPreviewProvider>();
     DependencyManager::set<AccountManager>(std::bind(&Application::getUserAgent, qApp));
     DependencyManager::set<StatTracker>();
@@ -978,15 +981,6 @@ Application::Application(int& argc, char** argv, QElapsedTimer& startupTimer, bo
     qInstallMessageHandler(messageHandler);
 
     QFontDatabase::addApplicationFont(PathUtils::resourcesPath() + "styles/Inconsolata.otf");
-    QFontDatabase::addApplicationFont(PathUtils::resourcesPath() + "fonts/fontawesome-webfont.ttf");
-    QFontDatabase::addApplicationFont(PathUtils::resourcesPath() + "fonts/hifi-glyphs.ttf");
-    QFontDatabase::addApplicationFont(PathUtils::resourcesPath() + "fonts/AnonymousPro-Regular.ttf");
-    QFontDatabase::addApplicationFont(PathUtils::resourcesPath() + "fonts/FiraSans-Regular.ttf");
-    QFontDatabase::addApplicationFont(PathUtils::resourcesPath() + "fonts/FiraSans-SemiBold.ttf");
-    QFontDatabase::addApplicationFont(PathUtils::resourcesPath() + "fonts/Raleway-Light.ttf");
-    QFontDatabase::addApplicationFont(PathUtils::resourcesPath() + "fonts/Raleway-Regular.ttf");
-    QFontDatabase::addApplicationFont(PathUtils::resourcesPath() + "fonts/Raleway-Bold.ttf");
-    QFontDatabase::addApplicationFont(PathUtils::resourcesPath() + "fonts/Raleway-SemiBold.ttf");
     _window->setWindowTitle("High Fidelity Interface");
 
     Model::setAbstractViewStateInterface(this); // The model class will sometimes need to know view state details from us
@@ -1531,11 +1525,14 @@ Application::Application(int& argc, char** argv, QElapsedTimer& startupTimer, bo
         return DependencyManager::get<OffscreenUi>()->navigationFocused() ? 1 : 0;
     });
 
-    // Setup the _keyboardMouseDevice, _touchscreenDevice and the user input mapper with the default bindings
+    // Setup the _keyboardMouseDevice, _touchscreenDevice, _touchscreenVirtualPadDevice and the user input mapper with the default bindings
     userInputMapper->registerDevice(_keyboardMouseDevice->getInputDevice());
     // if the _touchscreenDevice is not supported it will not be registered
     if (_touchscreenDevice) {
         userInputMapper->registerDevice(_touchscreenDevice->getInputDevice());
+    }
+    if (_touchscreenVirtualPadDevice) {
+        userInputMapper->registerDevice(_touchscreenVirtualPadDevice->getInputDevice());
     }
 
     // this will force the model the look at the correct directory (weird order of operations issue)
@@ -2620,6 +2617,9 @@ void Application::initializeUi() {
         if (TouchscreenDevice::NAME == inputPlugin->getName()) {
             _touchscreenDevice = std::dynamic_pointer_cast<TouchscreenDevice>(inputPlugin);
         }
+        if (TouchscreenVirtualPadDevice::NAME == inputPlugin->getName()) {
+            _touchscreenVirtualPadDevice = std::dynamic_pointer_cast<TouchscreenVirtualPadDevice>(inputPlugin);
+        }
     }
 
     auto compositorHelper = DependencyManager::get<CompositorHelper>();
@@ -2725,12 +2725,7 @@ void Application::onDesktopRootContextCreated(QQmlContext* surfaceContext) {
 
 void Application::onDesktopRootItemCreated(QQuickItem* rootItem) {
     Stats::show();
-    auto surfaceContext = DependencyManager::get<OffscreenUi>()->getSurfaceContext();
-    surfaceContext->setContextProperty("Stats", Stats::getInstance());
-
-    auto offscreenUi = DependencyManager::get<OffscreenUi>();
-    auto qml = PathUtils::qmlUrl("AvatarInputsBar.qml");
-    offscreenUi->show(qml, "AvatarInputsBar");
+    AvatarInputs::show();
 }
 
 void Application::updateCamera(RenderArgs& renderArgs, float deltaTime) {
@@ -3030,7 +3025,9 @@ void Application::handleSandboxStatus(QNetworkReply* reply) {
 
         // If this is a first run we short-circuit the address passed in
         if (firstRun.get()) {
+#if !defined(Q_OS_ANDROID)
             showHelp();
+#endif            
             if (sandboxIsRunning) {
                 qCDebug(interfaceapp) << "Home sandbox appears to be running, going to Home.";
                 DependencyManager::get<AddressManager>()->goToLocalSandbox();
@@ -3814,6 +3811,9 @@ void Application::touchUpdateEvent(QTouchEvent* event) {
     if (_touchscreenDevice && _touchscreenDevice->isActive()) {
         _touchscreenDevice->touchUpdateEvent(event);
     }
+    if (_touchscreenVirtualPadDevice && _touchscreenVirtualPadDevice->isActive()) {
+        _touchscreenVirtualPadDevice->touchUpdateEvent(event);
+    }
 }
 
 void Application::touchBeginEvent(QTouchEvent* event) {
@@ -3835,6 +3835,9 @@ void Application::touchBeginEvent(QTouchEvent* event) {
     if (_touchscreenDevice && _touchscreenDevice->isActive()) {
         _touchscreenDevice->touchBeginEvent(event);
     }
+    if (_touchscreenVirtualPadDevice && _touchscreenVirtualPadDevice->isActive()) {
+        _touchscreenVirtualPadDevice->touchBeginEvent(event);
+    }
 
 }
 
@@ -3855,13 +3858,18 @@ void Application::touchEndEvent(QTouchEvent* event) {
     if (_touchscreenDevice && _touchscreenDevice->isActive()) {
         _touchscreenDevice->touchEndEvent(event);
     }
-
+    if (_touchscreenVirtualPadDevice && _touchscreenVirtualPadDevice->isActive()) {
+        _touchscreenVirtualPadDevice->touchEndEvent(event);
+    }
     // put any application specific touch behavior below here..
 }
 
 void Application::touchGestureEvent(QGestureEvent* event) {
     if (_touchscreenDevice && _touchscreenDevice->isActive()) {
         _touchscreenDevice->touchGestureEvent(event);
+    }
+    if (_touchscreenVirtualPadDevice && _touchscreenVirtualPadDevice->isActive()) {
+        _touchscreenVirtualPadDevice->touchGestureEvent(event);
     }
 }
 
@@ -5332,7 +5340,9 @@ void Application::update(float deltaTime) {
     bool showWarnings = Menu::getInstance()->isOptionChecked(MenuOption::PipelineWarnings);
     PerformanceWarning warn(showWarnings, "Application::update()");
 
+#if !defined(Q_OS_ANDROID)
     updateLOD(deltaTime);
+#endif
 
     // TODO: break these out into distinct perfTimers when they prove interesting
     {
@@ -6061,6 +6071,7 @@ void Application::registerScriptEngineWithApplicationServices(ScriptEnginePointe
     scriptEngine->registerFunction("OverlayWebWindow", QmlWebWindowClass::constructor);
 #endif
     scriptEngine->registerFunction("OverlayWindow", QmlWindowClass::constructor);
+    scriptEngine->registerFunction("QmlFragment", QmlFragmentClass::constructor);
 
     scriptEngine->registerGlobalObject("Menu", MenuScriptingInterface::getInstance());
     scriptEngine->registerGlobalObject("DesktopPreviewProvider", DependencyManager::get<DesktopPreviewProvider>().data());
@@ -6135,6 +6146,7 @@ void Application::registerScriptEngineWithApplicationServices(ScriptEnginePointe
     scriptEngine->registerGlobalObject("Selection", DependencyManager::get<SelectionScriptingInterface>().data());
     scriptEngine->registerGlobalObject("ContextOverlay", DependencyManager::get<ContextOverlayInterface>().data());
     scriptEngine->registerGlobalObject("Wallet", DependencyManager::get<WalletScriptingInterface>().data());
+    scriptEngine->registerGlobalObject("AddressManager", DependencyManager::get<AddressManager>().data());
 
     qScriptRegisterMetaType(scriptEngine.data(), OverlayIDtoScriptValue, OverlayIDfromScriptValue);
 
@@ -6621,17 +6633,17 @@ void Application::addAssetToWorld(QString path, QString zipFile, bool isZip, boo
 
     addAssetToWorldInfo(filename, "Adding " + mapping.mid(1) + " to the Asset Server.");
 
-    addAssetToWorldWithNewMapping(path, mapping, 0, isZip, isBlocks);
+    addAssetToWorldWithNewMapping(path, mapping, 0);
 }
 
-void Application::addAssetToWorldWithNewMapping(QString filePath, QString mapping, int copy, bool isZip, bool isBlocks) {
+void Application::addAssetToWorldWithNewMapping(QString filePath, QString mapping, int copy) {
     auto request = DependencyManager::get<AssetClient>()->createGetMappingRequest(mapping);
 
     QObject::connect(request, &GetMappingRequest::finished, this, [=](GetMappingRequest* request) mutable {
         const int MAX_COPY_COUNT = 100;  // Limit number of duplicate assets; recursion guard.
         auto result = request->getError();
         if (result == GetMappingRequest::NotFound) {
-            addAssetToWorldUpload(filePath, mapping, isZip, isBlocks);
+            addAssetToWorldUpload(filePath, mapping);
         } else if (result != GetMappingRequest::NoError) {
             QString errorInfo = "Could not map asset name: "
                 + mapping.left(mapping.length() - QString::number(copy).length() - 1);
@@ -6643,7 +6655,7 @@ void Application::addAssetToWorldWithNewMapping(QString filePath, QString mappin
             }
             copy++;
             mapping = mapping.insert(mapping.lastIndexOf("."), "-" + QString::number(copy));
-            addAssetToWorldWithNewMapping(filePath, mapping, copy, isZip, isBlocks);
+            addAssetToWorldWithNewMapping(filePath, mapping, copy);
         } else {
             QString errorInfo = "Too many copies of asset name: "
                 + mapping.left(mapping.length() - QString::number(copy).length() - 1);
@@ -6656,7 +6668,7 @@ void Application::addAssetToWorldWithNewMapping(QString filePath, QString mappin
     request->start();
 }
 
-void Application::addAssetToWorldUpload(QString filePath, QString mapping, bool isZip, bool isBlocks) {
+void Application::addAssetToWorldUpload(QString filePath, QString mapping) {
     qInfo(interfaceapp) << "Uploading" << filePath << "to Asset Server as" << mapping;
     auto upload = DependencyManager::get<AssetClient>()->createUpload(filePath);
     QObject::connect(upload, &AssetUpload::finished, this, [=](AssetUpload* upload, const QString& hash) mutable {
@@ -6665,7 +6677,7 @@ void Application::addAssetToWorldUpload(QString filePath, QString mapping, bool 
             qWarning(interfaceapp) << "Error downloading model: " + errorInfo;
             addAssetToWorldError(filenameFromPath(filePath), errorInfo);
         } else {
-            addAssetToWorldSetMapping(filePath, mapping, hash, isZip, isBlocks);
+            addAssetToWorldSetMapping(filePath, mapping, hash);
         }
 
         // Remove temporary directory created by Clara.io market place download.
@@ -6682,7 +6694,7 @@ void Application::addAssetToWorldUpload(QString filePath, QString mapping, bool 
     upload->start();
 }
 
-void Application::addAssetToWorldSetMapping(QString filePath, QString mapping, QString hash, bool isZip, bool isBlocks) {
+void Application::addAssetToWorldSetMapping(QString filePath, QString mapping, QString hash) {
     auto request = DependencyManager::get<AssetClient>()->createSetMappingRequest(mapping, hash);
     connect(request, &SetMappingRequest::finished, this, [=](SetMappingRequest* request) mutable {
         if (request->getError() != SetMappingRequest::NoError) {
@@ -6690,10 +6702,9 @@ void Application::addAssetToWorldSetMapping(QString filePath, QString mapping, Q
             qWarning(interfaceapp) << "Error downloading model: " + errorInfo;
             addAssetToWorldError(filenameFromPath(filePath), errorInfo);
         } else {
-            // to prevent files that aren't models or texture files from being loaded into world automatically
-            if ((filePath.toLower().endsWith(OBJ_EXTENSION) || filePath.toLower().endsWith(FBX_EXTENSION)) || 
-                ((filePath.toLower().endsWith(JPG_EXTENSION) || filePath.toLower().endsWith(PNG_EXTENSION)) &&
-                ((!isBlocks) && (!isZip)))) {
+            // to prevent files that aren't models from being loaded into world automatically
+            if (filePath.toLower().endsWith(OBJ_EXTENSION) || filePath.toLower().endsWith(FBX_EXTENSION) || 
+                filePath.toLower().endsWith(JPG_EXTENSION) || filePath.toLower().endsWith(PNG_EXTENSION)) {
                 addAssetToWorldAddEntity(filePath, mapping);
             } else {
                 qCDebug(interfaceapp) << "Zipped contents are not supported entity files";
@@ -6710,7 +6721,7 @@ void Application::addAssetToWorldAddEntity(QString filePath, QString mapping) {
     EntityItemProperties properties;
     properties.setType(EntityTypes::Model);
     properties.setName(mapping.right(mapping.length() - 1));
-    if (filePath.endsWith(PNG_EXTENSION) || filePath.endsWith(JPG_EXTENSION)) {
+    if (filePath.toLower().endsWith(PNG_EXTENSION) || filePath.toLower().endsWith(JPG_EXTENSION)) {
         QJsonObject textures {
             {"tex.picture", QString("atp:" + mapping) }
         };
@@ -6806,7 +6817,9 @@ void Application::addAssetToWorldCheckModelSize() {
             EntityItemProperties properties;
             properties.setDimensions(dimensions);
             properties.setVisible(true);
-            properties.setCollisionless(false);
+            if (!name.toLower().endsWith(PNG_EXTENSION) && !name.toLower().endsWith(JPG_EXTENSION)) {
+                properties.setCollisionless(false);
+            }
             properties.setUserData(GRABBABLE_USER_DATA);
             properties.setLastEdited(usecTimestampNow());
             entityScriptingInterface->editEntity(entityID, properties);

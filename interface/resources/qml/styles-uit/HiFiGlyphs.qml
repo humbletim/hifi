@@ -12,11 +12,12 @@ import QtQuick 2.5
 
 Text {
     id: root
+    FontLoader { id: hiFiGlyphs; source: "qrc:/fonts/hifi-glyphs.ttf"; }
     property int size: 32
     font.pixelSize: size
     width: size
     height: size
     verticalAlignment: Text.AlignVCenter
     horizontalAlignment: Text.AlignLeft
-    font.family: "hifi-glyphs"
+    font.family: hiFiGlyphs.name
 }

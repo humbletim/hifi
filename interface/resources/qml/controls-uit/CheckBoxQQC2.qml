@@ -109,9 +109,9 @@ CheckBox {
 
     contentItem: Text {
         id: root
+        FontLoader { id: ralewaySemiBold; source: "qrc:/fonts/Raleway-SemiBold.ttf"; }
         font.pixelSize: hifi.fontSizes.inputLabel
-        font.family: "Raleway"
-        font.weight: Font.DemiBold
+        font.family: ralewaySemiBold.name
         text: checkBox.text
         color: checkBox.color
         x: 2

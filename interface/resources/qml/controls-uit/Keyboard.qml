@@ -125,7 +125,8 @@ Rectangle {
         TextInput {
             id: mirrorText
             visible: showMirrorText
-            font.family: "Fira Sans"
+            FontLoader { id: font; source: "qrc:/fonts/FiraSans-Regular.ttf"; }
+            font.family: font.name
             font.pixelSize: 20
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignHCenter
@@ -163,6 +164,8 @@ Rectangle {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 0
+
+        FontLoader { id: hiFiGlyphs; source: "qrc:/fonts/hifi-glyphs.ttf"; }
 
         Column {
             id: columnAlpha
@@ -247,7 +250,7 @@ Rectangle {
                 Key { width: 43; glyph: ","; }
                 Key { width: 43; glyph: "."; }
                 Key {
-                    fontFamily: "hifi-glyphs";
+                    fontFamily: hiFiGlyphs.name;
                     fontPixelSize: 48;
                     letterAnchors.topMargin: -4;
                     verticalAlignment: Text.AlignVCenter;
@@ -340,7 +343,7 @@ Rectangle {
                 Key { width: 43; glyph: ","; }
                 Key { width: 43; glyph: "."; }
                 Key {
-                    fontFamily: "hifi-glyphs";
+                    fontFamily: hiFiGlyphs.name;
                     fontPixelSize: 48;
                     letterAnchors.topMargin: -4;
                     verticalAlignment: Text.AlignVCenter;

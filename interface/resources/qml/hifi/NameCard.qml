@@ -177,7 +177,8 @@ Item {
             anchors.right: parent.right
             anchors.rightMargin: editGlyph.width + editGlyph.anchors.rightMargin
             // Style
-            font.family: "Fira Sans SemiBold"
+            FontLoader { id: firaSansSemiBold; source: "qrc:/fonts/FiraSans-SemiBold.ttf"; }
+            font.family: firaSansSemiBold.name
             font.pixelSize: displayNameTextPixelSize
             selectionColor: hifi.colors.blueAccent
             selectedTextColor: "black"

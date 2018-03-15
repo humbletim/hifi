@@ -496,6 +496,9 @@ TabletModalWindow {
             itemDelegate: Item {
                 clip: true
 
+                //FontLoader { id: firaSansSemiBold; source: "qrc:/fonts/FiraSans-SemiBold.ttf"; }
+                //FontLoader { id: firaSansRegular; source: "qrc:/fonts/FiraSans-Regular.ttf"; }
+
                 FiraSansSemiBold {
                     text: getText();
                     elide: styleData.elideMode
@@ -509,7 +512,7 @@ TabletModalWindow {
                     size: hifi.fontSizes.tableText
                     color: hifi.colors.baseGrayHighlight
                     //font.family: (styleData.row !== -1 && fileTableView.model.get(styleData.row).fileIsDir)
-                        //? "Fira Sans SemiBold" : "Fira Sans"
+                        //? firaSansSemiBold.name : firaSansRegular.name
 
                     function getText() {
                         if (styleData.row === -1) {
