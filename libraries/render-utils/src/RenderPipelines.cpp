@@ -18,6 +18,8 @@
 #include <gpu/StandardShaderLib.h>
 #include <model-networking/TextureCache.h>
 
+#include <graphics/Material.h>
+
 #include "StencilMaskPass.h"
 #include "DeferredLightingEffect.h"
 #include "TextureCache.h"

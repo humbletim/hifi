@@ -12,21 +12,42 @@
 #include <graphics/BufferViewHelpers.h>
 #include <AABox.h>
 #include <Extents.h>
+#include <glm/gtc/type_ptr.hpp>
 
 using buffer_helpers::glmVecToVariant;
 
 Q_LOGGING_CATEGORY(graphics_scripting, "hifi.scripting.graphics")
+Q_DECLARE_METATYPE(QByteArray*)
+
 
 namespace scriptable {
 
+// common IFS property aliases for js::Graphics::newMesh
+const QMap<QString, QStringList> JSVectorAdapter::ALIASES{
+    { "indices", QStringList{ "indices", "indexes", "index", }},
+    { "positions", QStringList{ "positions", "position", "vertices", "vertexPositions", }},
+    { "normals", QStringList{ "normals", "normal", "vertexNormals", }},
+    { "colors", QStringList{ "colors", "color", "vertexColors", }},
+    { "texCoords0", QStringList{ "texCoords0", "texCoord0", "uvs", "vertexUVs", "texcoord", "texCoord",  "vertexTextureCoords" }},
+};
+
 QVariant toVariant(const glm::mat4& mat4) {
-    QVector<float> floats;
-    floats.resize(16);
-    memcpy(floats.data(), &mat4, sizeof(glm::mat4));
+    const auto ptr = glm::value_ptr(mat4);
     QVariant v;
-    v.setValue<QVector<float>>(floats);
+    v.setValue(QVector<float>::fromStdVector(std::vector<float>{ptr, ptr + 16}));
     return v;
 };
+
+QVariant toVariant(const std::string& str) {
+    return QString::fromStdString(str);
+}
+QVariant toVariant(const std::vector<std::string>& strings) {
+    QStringList result;
+    for (const auto& s : strings) {
+        result << QString::fromStdString(s);
+    }
+    return result;
+}
 
 QVariant toVariant(const Extents& box) {
     return QVariantMap{
@@ -92,23 +113,93 @@ QScriptValue jsBindCallback(QScriptValue value) {
     return ::makeScopedHandlerObject(scope,  method);
 }
 
-template <typename T>
-T this_qobject_cast(QScriptEngine* engine) {
-    auto context = engine ? engine->currentContext() : nullptr;
-    return qscriptvalue_cast<T>(context ? context->thisObject() : QScriptValue::NullValue);
-}
 QString toDebugString(QObject* tmp) {
     QString s;
     QTextStream out(&s);
     out << tmp;
     return s;
-    // return QString("%0 (0x%1%2)")
-    //     .arg(tmp ? tmp->metaObject()->className() : "QObject")
-    //     .arg(qulonglong(tmp), 16, 16, QChar('0'))
-    //     .arg(tmp && tmp->objectName().size() ? " name=" + tmp->objectName() : "");
 }
 template <typename T> QString toDebugString(std::shared_ptr<T> tmp) {
     return toDebugString(qobject_cast<QObject*>(tmp.get()));
+}
+
+QScriptValue toTypedArray(QScriptValue global, const QByteArray& bytes, const QString& typedArrayName) {
+    auto ArrayBuffer = global.property("ArrayBuffer");
+    auto TypedArray = global.property(typedArrayName);
+    auto buffer = ArrayBuffer.construct(QScriptValueList{ bytes.size() });
+    if (QByteArray* output = qscriptvalue_cast<QByteArray*>(buffer.data())) {
+        ::memcpy(output->data(), bytes.constData(), output->size());
+    }
+    return TypedArray.construct(QScriptValueList{ buffer });
+}
+
+template <typename T, typename U> QByteArray convertBytes(const QByteArray& bytes) {
+    const QVector<T> input = buffer_helpers::variantToVector<T>(bytes);
+    std::vector<U> output;
+    output.reserve(input.size());
+    std::transform(input.begin(), input.end(), std::back_inserter(output), [](T x) { return static_cast<U>(x); });
+    return { (const char*)output.data(), (int)(output.size() * sizeof(U)) };
+}
+
+template <typename T> QByteArray coerceJSTypedArray(QScriptValue value, const QString& typedArrayName, const QString& property) {
+    auto engine = value.engine();
+    if (!engine) {
+        return QByteArray();
+    }
+    auto global = engine->globalObject();
+    auto context = engine->currentContext();
+    auto ArrayBuffer = global.property("ArrayBuffer");
+    auto Uint8Array = global.property("Uint8Array");
+    auto Uint16Array = global.property("Uint16Array");
+    auto Uint32Array = global.property("Uint32Array");
+    auto Int8Array = global.property("Int8Array");
+    auto Int16Array = global.property("Int16Array");
+    auto Int32Array = global.property("Int32Array");
+    auto Float32Array = global.property("Float32Array");
+    auto TypedArray = global.property(typedArrayName);
+    auto buffer = value.property("buffer");
+    auto bytes = qscriptvalue_cast<QByteArray>(buffer);
+    if (buffer.instanceOf(ArrayBuffer)) {
+        qDebug() << "buffer.isValid" << typedArrayName << property << bytes.size();
+        if (value.instanceOf(TypedArray)) {
+            qDebug() << "instanceof TypedArray" << typedArrayName;
+            // already in the desired native format
+            return bytes;
+        } else if (value.instanceOf(Uint8Array)) {
+            qDebug() << "instanceof Uint8Array";
+            return convertBytes<glm::uint8, T>(bytes);
+        } else if (value.instanceOf(Int8Array)) {
+            qDebug() << "instanceof Int8Array";
+            return convertBytes<glm::int8, T>(bytes);
+        } else if (value.instanceOf(Uint16Array)) {
+            qDebug() << "instanceof Uint16Array";
+            return convertBytes<glm::uint16, T>(bytes);
+        } else if (value.instanceOf(Int16Array)) {
+            qDebug() << "instanceof Int16Array";
+            return convertBytes<glm::int16, T>(bytes);
+        } else if (value.instanceOf(Uint32Array)) {
+            qDebug() << "instanceof Uint32Array";
+            return convertBytes<glm::uint32, T>(bytes);
+        } else if (value.instanceOf(Int32Array)) {
+            qDebug() << "instanceof Int32Array";
+            return convertBytes<glm::int32, T>(bytes);
+        } else if (value.instanceOf(Float32Array)) {
+            qDebug() << "instanceof Float32Array";
+            return convertBytes<glm::float32, T>(bytes);
+        } else {
+            qDebug() << "... TypedArray not recognized";
+            context->throwError(QString("unsupported TypedArray (%1) for property '%2'")
+                                .arg(value.property("constructor").data().toString()).arg(property));
+            return QByteArray();
+        }
+    } else {
+        if (value.instanceOf(ArrayBuffer)) {
+            context->throwError(QString("please pass JS TypedArray (not ArrayBuffer) for property '%1'").arg(property));
+            return QByteArray();
+        }
+    }
+    context->throwError(QString("coerceJSTypedArray -- unrecognized value %1").arg(value.toString()));
+    return QByteArray();
 }
 
 }

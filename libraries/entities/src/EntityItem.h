@@ -38,6 +38,13 @@
 
 #include "graphics/Material.h"
 
+namespace plugins {
+    namespace entity {
+        class ObjectProxy;
+        using ObjectProxyPointer = std::shared_ptr<ObjectProxy>;
+    }
+}
+
 class EntitySimulation;
 class EntityTreeElement;
 class EntityTreeElementExtraEncodeData;
@@ -185,6 +192,7 @@ public:
     /// Dimensions in meters (0.0 - TREE_SCALE)
     glm::vec3 getScaledDimensions() const;
     virtual void setScaledDimensions(const glm::vec3& value);
+    virtual glm::vec3 getRaycastDimensions() const { return getScaledDimensions(); }
 
     inline const glm::vec3 getUnscaledDimensions() const { return _unscaledDimensions; }
     virtual void setUnscaledDimensions(const glm::vec3& value);
@@ -239,7 +247,7 @@ public:
     // position, size, and bounds related helpers
     virtual AACube getMaximumAACube(bool& success) const override;
     AACube getMinimumAACube(bool& success) const;
-    AABox getAABox(bool& success) const; /// axis aligned bounding box in world-frame (meters)
+    virtual AABox getAABox(bool& success) const; /// axis aligned bounding box in world-frame (meters)
 
     using SpatiallyNestable::getQueryAACube;
     virtual AACube getQueryAACube(bool& success) const override;
@@ -494,6 +502,8 @@ public:
     void setSimulationOwnershipExpiry(uint64_t expiry) { _simulationOwnershipExpiry = expiry; }
     uint64_t getSimulationOwnershipExpiry() const { return _simulationOwnershipExpiry; }
 
+    virtual plugins::entity::ObjectProxyPointer getEntityProxy() const { return nullptr; }
+    virtual void setEntityProxy(plugins::entity::ObjectProxyPointer proxy) {}
 signals:
     void requestRenderUpdate();
 

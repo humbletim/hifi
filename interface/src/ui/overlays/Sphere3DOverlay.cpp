@@ -125,13 +125,14 @@ Transform Sphere3DOverlay::evalRenderTransform() {
 }
 
 
-scriptable::ScriptableModelBase Sphere3DOverlay::getScriptableModel() {
+js::Graphics::ModelPointer Sphere3DOverlay::getScriptableModel() {
     auto geometryCache = DependencyManager::get<GeometryCache>();
     auto vertexColor = ColorUtils::toVec3(_color);
-    scriptable::ScriptableModelBase result;
     if (auto mesh = geometryCache->meshFromShape(GeometryCache::Sphere, vertexColor)) {
-        result.objectID = getID();
-        result.append(mesh);
+        auto result = js::Graphics::ModelPointer::create();
+        result->objectID = getID();
+        result->append(mesh);
+        return result;
     }
-    return result;
+    return nullptr;
 }

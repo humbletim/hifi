@@ -37,12 +37,16 @@ glm::mat4 Mat4::createFromColumns(const glm::vec4& col0, const glm::vec4& col1, 
     return glm::mat4(col0, col1, col2, col3);
 }
 
-glm::mat4 Mat4::createFromArray(const QVector<float>& floats) const {
+std::vector<float> Mat4::toArray(const glm::mat4& m) const {
+    return std::vector<float>{ glm::value_ptr(m), glm::value_ptr(m) + 16 };
+}
+
+glm::mat4 Mat4::createFromArray(const std::vector<float>& floats) const {
     if (floats.size() != 16 && floats.size() != 9) {
         context()->throwError("createFromVector requires 16 floats for mat4 (or 9 if providing a mat3)");
         return glm::mat4();
     }
-    return floats.size() == 9 ? glm::mat4(glm::make_mat3(floats.constData())) : glm::make_mat4(floats.constData());
+    return floats.size() == 9 ? glm::mat4(glm::make_mat3(floats.data())) : glm::make_mat4(floats.data());
 }
 
 glm::vec3 Mat4::extractTranslation(const glm::mat4& m) const {

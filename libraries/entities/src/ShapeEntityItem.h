@@ -27,6 +27,7 @@ namespace entity {
         Torus,
         Cone,
         Cylinder,
+        Proxy,
         NUM_SHAPES,
     };
 
@@ -38,6 +39,7 @@ class ShapeEntityItem : public EntityItem {
     using Pointer = std::shared_ptr<ShapeEntityItem>;
     static Pointer baseFactory(const EntityItemID& entityID, const EntityItemProperties& properties);
 public:
+    static const std::string SHAPE_PROXY_PLUGIN_URI;
     static EntityItemPointer factory(const EntityItemID& entityID, const EntityItemProperties& properties);
     static EntityItemPointer sphereFactory(const EntityItemID& entityID, const EntityItemProperties& properties);
     static EntityItemPointer boxFactory(const EntityItemID& entityID, const EntityItemProperties& properties);
@@ -81,6 +83,8 @@ public:
     void setColor(const rgbColor& value);
 
     void setUnscaledDimensions(const glm::vec3& value) override;
+    virtual glm::vec3 getRaycastDimensions() const override;
+    virtual AABox getAABox(bool& success) const override;
 
     xColor getXColor() const;
     void setColor(const xColor& value);
@@ -103,6 +107,10 @@ public:
 
     std::shared_ptr<graphics::Material> getMaterial() { return _material; }
 
+    virtual void emitScriptEvent(const QVariant& message) override;
+    virtual plugins::entity::ObjectProxyPointer getEntityProxy() const override { return _proxy; }
+    virtual void setEntityProxy(plugins::entity::ObjectProxyPointer proxy) override { _proxy = proxy; }
+
 protected:
 
     float _alpha { 1.0f };
@@ -115,6 +123,8 @@ protected:
     ShapeType _collisionShapeType{ ShapeType::SHAPE_TYPE_ELLIPSOID };
 
     std::shared_ptr<graphics::Material> _material;
+
+    plugins::entity::ObjectProxyPointer _proxy;
 };
 
 #endif // hifi_ShapeEntityItem_h

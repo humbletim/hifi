@@ -598,106 +598,35 @@ MeshProxyList Model::getMeshes() const {
     return result;
 }
 
-bool Model::replaceScriptableModelMeshPart(scriptable::ScriptableModelBasePointer newModel, int meshIndex, int partIndex) {
+js::Graphics::ModelPointer Model::getScriptableModel() {
     QMutexLocker lock(&_mutex);
-
-    if (!isLoaded()) {
-        qDebug() << "!isLoaded" << this;
-        return false;
-    }
-
-    if (!newModel || !newModel->meshes.size()) {
-        qDebug() << "!newModel.meshes.size()" << this;
-        return false;
-    }
-
-    const auto& meshes = newModel->meshes;
-    render::Transaction transaction;
-    const render::ScenePointer& scene = AbstractViewStateInterface::instance()->getMain3DScene();
-
-    meshIndex = max(meshIndex, 0);
-    partIndex = max(partIndex, 0);
-
-    if (meshIndex >= (int)meshes.size()) {
-        qDebug() << meshIndex << "meshIndex >= newModel.meshes.size()" << meshes.size();
-        return false;
-    }
-
-    auto mesh = meshes[meshIndex].getMeshPointer();
-
-    if (partIndex >= (int)mesh->getNumParts()) {
-        qDebug() << partIndex << "partIndex >= mesh->getNumParts()" << mesh->getNumParts();
-        return false;
-    }
-    {
-        // update visual geometry
-        render::Transaction transaction;
-        for (int i = 0; i < (int) _modelMeshRenderItemIDs.size(); i++) {
-            auto itemID = _modelMeshRenderItemIDs[i];
-            auto shape = _modelMeshRenderItemShapes[i];
-            // TODO: check to see if .partIndex matches too
-            if (shape.meshIndex == meshIndex) {
-                transaction.updateItem<ModelMeshPartPayload>(itemID, [=](ModelMeshPartPayload& data) {
-                    data.updateMeshPart(mesh, partIndex);
-                });
-            }
-        }
-        scene->enqueueTransaction(transaction);
-    }
-    // update triangles for ray picking
-    {
-        FBXGeometry geometry;
-        for (const auto& newMesh : meshes) {
-            FBXMesh mesh;
-            mesh._mesh = newMesh.getMeshPointer();
-            mesh.vertices = buffer_helpers::mesh::attributeToVector<glm::vec3>(mesh._mesh, gpu::Stream::POSITION);
-            int numParts = (int)newMesh.getMeshPointer()->getNumParts();
-            for (int partID = 0; partID < numParts; partID++) {
-                FBXMeshPart part;
-                part.triangleIndices = buffer_helpers::bufferToVector<int>(mesh._mesh->getIndexBuffer(), "part.triangleIndices");
-                mesh.parts << part;
-            }
-            {
-                foreach (const glm::vec3& vertex, mesh.vertices) {
-                    glm::vec3 transformedVertex = glm::vec3(mesh.modelTransform * glm::vec4(vertex, 1.0f));
-                    geometry.meshExtents.minimum = glm::min(geometry.meshExtents.minimum, transformedVertex);
-                    geometry.meshExtents.maximum = glm::max(geometry.meshExtents.maximum, transformedVertex);
-                    mesh.meshExtents.minimum = glm::min(mesh.meshExtents.minimum, transformedVertex);
-                    mesh.meshExtents.maximum = glm::max(mesh.meshExtents.maximum, transformedVertex);
-                }
-            }
-            geometry.meshes << mesh;
-        }
-        calculateTriangleSets(geometry);
-    }
-    return true;
-}
-
-scriptable::ScriptableModelBase Model::getScriptableModel() {
-    QMutexLocker lock(&_mutex);
-    scriptable::ScriptableModelBase result;
+    js::Graphics::ModelPointer result;
 
     if (!isLoaded()) {
         qCDebug(renderutils) << "Model::getScriptableModel -- !isLoaded";
         return result;
     }
 
+    result = js::Graphics::ModelPointer::create();
     const FBXGeometry& geometry = getFBXGeometry();
     int numberOfMeshes = geometry.meshes.size();
     int shapeID = 0;
     for (int i = 0; i < numberOfMeshes; i++) {
         const FBXMesh& fbxMesh = geometry.meshes.at(i);
         if (auto mesh = fbxMesh._mesh) {
-            result.append(mesh);
+            result->append(mesh);
 
             int numParts = (int)mesh->getNumParts();
             for (int partIndex = 0; partIndex < numParts; partIndex++) {
-                result.appendMaterial(graphics::MaterialLayer(getGeometry()->getShapeMaterial(shapeID), 0), shapeID, _modelMeshMaterialNames[shapeID]);
+                auto name = shapeID < (int)_modelMeshMaterialNames.size() ? _modelMeshMaterialNames[shapeID] : "<invalid>";
+                result->appendMaterial(
+                    graphics::MaterialLayer(getGeometry()->getShapeMaterial(shapeID), 0), shapeID, name
+                );
                 shapeID++;
             }
         }
     }
-    result.appendMaterialNames(_modelMeshMaterialNames);
+    result->appendMaterialNames(_modelMeshMaterialNames);
     return result;
 }
 

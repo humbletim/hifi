@@ -18,13 +18,14 @@
 #include "AbstractViewStateInterface.h"
 #include "EntitiesRendererLogging.h"
 #include <graphics-scripting/Forward.h>
+#include <object-plugins/Forward.h>
 
 class EntityTreeRenderer;
 
 namespace render { namespace entities {
 
 // Base class for all renderable entities
-class EntityRenderer : public QObject, public std::enable_shared_from_this<EntityRenderer>, public PayloadProxyInterface, protected ReadWriteLockable, public scriptable::ModelProvider {
+class EntityRenderer : public QObject, public std::enable_shared_from_this<EntityRenderer>, public PayloadProxyInterface, protected ReadWriteLockable, public js::Graphics::ModelProvider {
     Q_OBJECT
 
     using Pointer = std::shared_ptr<EntityRenderer>;
@@ -58,7 +59,8 @@ public:
     virtual void addMaterial(graphics::MaterialLayer material, const std::string& parentMaterialName);
     virtual void removeMaterial(graphics::MaterialPointer material, const std::string& parentMaterialName);
 
-    virtual scriptable::ScriptableModelBase getScriptableModel() override { return scriptable::ScriptableModelBase(); }
+    virtual js::Graphics::ModelPointer getScriptableModel() override { return js::Graphics::ModelPointer(); }
+    virtual plugins::entity::ObjectProxy::Pointer getEntityProxy() const { return nullptr; }
 
 protected:
     virtual bool needsRenderUpdateFromEntity() const final { return needsRenderUpdateFromEntity(_entity); }

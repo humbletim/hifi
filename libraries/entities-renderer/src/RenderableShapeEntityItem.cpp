@@ -24,6 +24,9 @@
 
 #include "RenderPipelines.h"
 
+#include <graphics/BufferViewHelpers.h>
+#include <graphics-scripting/GraphicsScriptingUtil.h>
+
 //#define SHAPE_ENTITY_USE_FADE_EFFECT
 #ifdef SHAPE_ENTITY_USE_FADE_EFFECT
 #include <FadeEffect.h>
@@ -31,7 +34,7 @@
 using namespace render;
 using namespace render::entities;
 
-// Sphere entities should fit inside a cube entity of the same size, so a sphere that has dimensions 1x1x1 
+// Sphere entities should fit inside a cube entity of the same size, so a sphere that has dimensions 1x1x1
 // is a half unit sphere.  However, the geometry cache renders a UNIT sphere, so we need to scale down.
 static const float SPHERE_ENTITY_SCALE = 0.5f;
 
@@ -81,6 +84,12 @@ bool ShapeEntityRenderer::needsRenderUpdateFromTypedEntity(const TypedEntityPoin
         return true;
     }
 
+    if (auto proxy = getEntityProxy()) {
+        if (proxy->flags & js::Graphics::RenderFlag::DIRTY) {
+            return true;
+        }
+    }
+
     return false;
 }
 
@@ -107,6 +116,18 @@ void ShapeEntityRenderer::doRenderUpdateSynchronousTyped(const ScenePointer& sce
         }
 
         _renderTransform.postScale(_dimensions);
+        if (auto proxy = getEntityProxy()) {
+            proxy->setProperties({ { "renderTransform", scriptable::toVariant(_renderTransform.getMatrix()) }});
+            if (_pendingMeshPartReplacement) {
+                auto replace = _pendingMeshPartReplacement;
+                _pendingMeshPartReplacement = { nullptr, -1, -1 };
+                if (auto meshProxy = std::dynamic_pointer_cast<plugins::entity::MeshObjectProxy>(proxy)) {
+                    meshProxy->replaceScriptableModelMeshPart(replace.model, replace.meshIndex, replace.partIndex);
+                }
+            }
+            const float deltaTime = NAN; // TODO
+            _needsRenderUpdate = proxy->update(scene, transaction, deltaTime);
+        }
     });
 }
 
@@ -115,6 +136,13 @@ void ShapeEntityRenderer::doRenderUpdateAsynchronousTyped(const TypedEntityPoint
         if (_procedural.isEnabled() && _procedural.isFading()) {
             float isFading = Interpolate::calculateFadeRatio(_procedural.getFadeStartTime()) < 1.0f;
             _procedural.setIsFading(isFading);
+        }
+        if (entity->getEntityProxy() != _proxy) {
+            auto old = _proxy;
+            _proxy = entity->getEntityProxy();
+            qDebug() << "ShapeEntityRenderer::setEntityProxy" << "_proxy = " << _proxy.get() << "(was:" << old.get() << ")";
+            entity->markDirtyFlags(Simulation::DIRTY_SHAPE);
+            _needsRenderUpdate = true;
         }
     });
 }
@@ -217,6 +245,11 @@ void ShapeEntityRenderer::doRender(RenderArgs* args) {
     PerformanceTimer perfTimer("RenderableShapeEntityItem::render");
     Q_ASSERT(args->_batch);
 
+    if (auto proxy = getEntityProxy()) {
+        proxy->debugRender(args);
+        return;
+    }
+
     gpu::Batch& batch = *args->_batch;
 
     std::shared_ptr<graphics::Material> mat;
@@ -269,21 +302,81 @@ void ShapeEntityRenderer::doRender(RenderArgs* args) {
     args->_details._trianglesRendered += (int)triCount;
 }
 
-scriptable::ScriptableModelBase ShapeEntityRenderer::getScriptableModel()  {
-    scriptable::ScriptableModelBase result;
+js::Graphics::ModelPointer ShapeEntityRenderer::getScriptableModel()  {
+    js::Graphics::ModelPointer result;
+    if (auto meshProxy = std::dynamic_pointer_cast<plugins::entity::MeshObjectProxy>(getEntityProxy())) {
+        if (auto result = meshProxy->getScriptableModel()) {
+            std::lock_guard<std::mutex> lock(_materialsLock);
+            result->appendMaterials(_materials);
+            return result;
+        }
+    }
     auto geometryCache = DependencyManager::get<GeometryCache>();
     auto geometryShape = geometryCache->getShapeForEntityShape(_shape);
-    glm::vec3 vertexColor;
+    glm::vec3 vertexColor{ 1.0f };
     {
         std::lock_guard<std::mutex> lock(_materialsLock);
-        result.appendMaterials(_materials);
         if (_materials["0"].top().material) {
             vertexColor = _materials["0"].top().material->getAlbedo();
         }
     }
     if (auto mesh = geometryCache->meshFromShape(geometryShape, vertexColor)) {
-        result.objectID = getEntity()->getID();
-        result.append(mesh);
+        result = js::Graphics::ModelPointer::create();
+        result->objectID = getEntity()->getID();
+        result->append(mesh);
+        {
+            std::lock_guard<std::mutex> lock(_materialsLock);
+            result->appendMaterials(_materials);
+        }
     }
     return result;
+}
+
+bool ShapeEntityRenderer::canReplaceModelMeshPart(int meshIndex, int partIndex) {
+    if (auto meshProxy = std::dynamic_pointer_cast<plugins::entity::MeshObjectProxy>(getEntityProxy())) {
+        return meshProxy->canReplaceModelMeshPart(meshIndex, partIndex);
+    }
+    return false;
+}
+
+bool ShapeEntityRenderer::replaceScriptableModelMeshPart(const js::Graphics::ModelPointer& model, int meshIndex, int partIndex) {
+    if (auto meshProxy = std::dynamic_pointer_cast<plugins::entity::MeshObjectProxy>(getEntityProxy())) {
+        if (canReplaceModelMeshPart(meshIndex, partIndex)) {
+            withWriteLock([=]{ _pendingMeshPartReplacement = { model, meshIndex, partIndex }; });
+            emit requestRenderUpdate();
+            return true;
+        }
+    }
+    return false;
+}
+
+bool ShapeEntityRenderer::overrideModelRenderFlags(js::Graphics::RenderFlags flagsToSet, js::Graphics::RenderFlags flagsToClear) {
+    if (auto meshProxy = std::dynamic_pointer_cast<plugins::entity::MeshObjectProxy>(getEntityProxy())) {
+        if (meshProxy->overrideModelRenderFlags(flagsToSet, flagsToClear)) {
+            _needsRenderUpdate = true;
+            return true;
+        }
+    }
+    return false;
+}
+
+void ShapeEntityRenderer::onRemoveFromSceneTyped(const TypedEntityPointer& entity) {
+    withWriteLock([this]{
+        if (_proxy) {
+            qDebug() << "...unloading ObjectProxy" << _proxy.get();
+            _proxy->unload();
+            _proxy.reset();
+        }
+    });
+    Parent::onRemoveFromSceneTyped(entity);
+}
+
+void ShapeEntityRenderer::onAddToSceneTyped(const TypedEntityPointer& entity) {
+    withWriteLock([this]{
+        if (_proxy) {
+            qDebug() << "...preloading ObjectProxy" << _proxy.get();
+            _proxy->preload();
+        }
+    });
+    Parent::onAddToSceneTyped(entity);
 }

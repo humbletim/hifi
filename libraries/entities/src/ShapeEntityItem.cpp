@@ -6,7 +6,6 @@
 //  See the accompanying file LICENSE or http://www.apache.org/licenses/LICENSE-2.0.html
 //
 
-#include "ShapeEntityItem.h"
 
 #include <glm/gtx/transform.hpp>
 
@@ -18,6 +17,9 @@
 #include "EntityItemProperties.h"
 #include "EntityTree.h"
 #include "EntityTreeElement.h"
+#include "ShapeEntityItem.h"
+#include "EntityScriptingInterface.h"
+#include <object-plugins/Forward.h>
 
 namespace entity {
 
@@ -43,6 +45,7 @@ namespace entity {
      *     <tr><td><code>"Tetrahedron"</code></td><td>3D</td><td></td></tr>
      *     <tr><td><code>"Torus"</code></td><td>3D</td><td><em>Not implemented.</em></td></tr>
      *     <tr><td><code>"Triangle"</code></td><td>3D</td><td>A triangular prism.</td></tr>
+     *     <tr><td><code>"Proxy"</code></td><td>3D</td><td><em>(experimental)</em>A proxied 3D shape or mesh.</td></tr>
      *   </tbody>
      * </table>
      * @typedef {string} Entities.Shape
@@ -61,7 +64,8 @@ namespace entity {
         "Icosahedron", 
         "Torus",  // Not implemented yet.
         "Cone", 
-        "Cylinder" 
+        "Cylinder",
+        "Proxy",
     } };
 
     Shape shapeFromString(const ::QString& shapeString) {
@@ -77,6 +81,8 @@ namespace entity {
         return shapeStrings[shape];
     }
 }
+
+const std::string ShapeEntityItem::SHAPE_PROXY_PLUGIN_URI{ "plugin://entity::Shape::Proxy" };
 
 // hullShapeCalculator is a hook for external code that knows how to configure a ShapeInfo
 // for given entity::Shape and dimensions
@@ -142,9 +148,19 @@ void ShapeEntityItem::setShape(const entity::Shape& shape) {
             // Quad is implicitly flat so we enforce flat dimensions
             setUnscaledDimensions(getUnscaledDimensions());
             break;
+        case entity::Shape::Proxy:
+            _proxy = plugins::entity::ProxyManager::createObjectPlugin(getID(), SHAPE_PROXY_PLUGIN_URI,{});
+            // fallthrough
         default:
             _type = EntityTypes::Shape;
             break;
+    }
+
+    // TODO: move this logic to EntityItem and rely on Graphics.setRenderPlugin instead of implicit shape: 'Proxy' approach
+    if (_proxy && _shape != entity::Shape::Proxy) {
+        qDebug() << "ShapeEntityItem... shape not Proxy, resetting current object plugin" << _proxy.get();
+        plugins::entity::ProxyManager::resetObjectPlugin(getID());
+        _proxy.reset();
     }
 
     if (_shape != prevShape) {
@@ -159,6 +175,10 @@ bool ShapeEntityItem::setProperties(const EntityItemProperties& properties) {
     SET_ENTITY_PROPERTY_FROM_PROPERTIES(alpha, setAlpha);
     SET_ENTITY_PROPERTY_FROM_PROPERTIES(color, setColor);
     SET_ENTITY_PROPERTY_FROM_PROPERTIES(shape, setShape);
+
+    if (auto proxy = getEntityProxy()) {
+        proxy->setProperties(EntityItemPropertiesToVariantMap(properties));
+    }
 
     if (somethingChanged) {
         bool wantDebug = false;
@@ -193,6 +213,7 @@ EntityPropertyFlags ShapeEntityItem::getEntityProperties(EncodeBitstreamParams& 
     requestedProperties += PROP_SHAPE;
     requestedProperties += PROP_COLOR;
     requestedProperties += PROP_ALPHA;
+
     return requestedProperties;
 }
 
@@ -238,6 +259,28 @@ void ShapeEntityItem::setAlpha(float alpha) {
     _material->setOpacity(alpha);
 }
 
+AABox ShapeEntityItem::getAABox(bool& success) const {
+    auto box = EntityItem::getAABox(success);
+    if (auto proxy = getEntityProxy()) {
+        proxy->recomputeAABox(box);
+    }
+    return box;
+}
+
+glm::vec3 ShapeEntityItem::getRaycastDimensions() const {
+    glm::vec3 dimensions = EntityItem::getRaycastDimensions();
+    if (auto proxy = getEntityProxy()) {
+        proxy->recomputeDimensions(dimensions);
+    }
+    return dimensions;
+}
+
+void ShapeEntityItem::emitScriptEvent(const QVariant& message) {
+    if (auto proxy = getEntityProxy()) {
+        proxy->messageReceived(message);
+    }
+}
+
 void ShapeEntityItem::setUnscaledDimensions(const glm::vec3& value) {
     const float MAX_FLAT_DIMENSION = 0.0001f;
     if ((_shape == entity::Shape::Circle || _shape == entity::Shape::Quad) && value.y > MAX_FLAT_DIMENSION) {
@@ -251,7 +294,7 @@ void ShapeEntityItem::setUnscaledDimensions(const glm::vec3& value) {
 }
 
 bool ShapeEntityItem::supportsDetailedRayIntersection() const {
-    return _shape == entity::Sphere;
+    return _shape == entity::Sphere || (_shape == entity::Proxy && getEntityProxy());
 }
 
 bool ShapeEntityItem::findDetailedRayIntersection(const glm::vec3& origin, const glm::vec3& direction,
@@ -264,28 +307,46 @@ bool ShapeEntityItem::findDetailedRayIntersection(const glm::vec3& origin, const
     glm::vec3 entityFrameOrigin = glm::vec3(worldToEntityMatrix * glm::vec4(origin, 1.0f));
     glm::vec3 entityFrameDirection = glm::normalize(glm::vec3(worldToEntityMatrix * glm::vec4(direction, 0.0f)));
 
+    bool success = false;
     float localDistance;
-    // NOTE: unit sphere has center of 0,0,0 and radius of 0.5
-    if (findRaySphereIntersection(entityFrameOrigin, entityFrameDirection, glm::vec3(0.0f), 0.5f, localDistance)) {
-        // determine where on the unit sphere the hit point occured
-        glm::vec3 entityFrameHitAt = entityFrameOrigin + (entityFrameDirection * localDistance);
-        // then translate back to work coordinates
-        glm::vec3 hitAt = glm::vec3(entityToWorldMatrix * glm::vec4(entityFrameHitAt, 1.0f));
-        distance = glm::distance(origin, hitAt);
-        bool success;
-        surfaceNormal = glm::normalize(hitAt - getCenterPosition(success));
-        if (!success) {
-            return false;
-        }
-        return true;
+
+    if (auto proxy = getEntityProxy()) {
+        plugins::entity::IntersectionResultRef resultRef{ localDistance, face, surfaceNormal, extraInfo };
+        plugins::entity::MeshRay ray{
+            entityFrameOrigin,
+            entityFrameDirection,
+            {
+                { "precisionPicking", precisionPicking },
+                { "allowBackface", false },
+            }
+        };
+        success = proxy->findRayIntersection(ray, resultRef);
+    } else {
+        // NOTE: unit sphere has center of 0,0,0 and radius of 0.5
+        success = findRaySphereIntersection(entityFrameOrigin, entityFrameDirection, glm::vec3(0.0f), 0.5f, localDistance);;
     }
-    return false;
+
+    if (!success) {
+        return false;
+    }
+
+    // determine where the hit point occured
+    glm::vec3 entityFrameHitAt = entityFrameOrigin + (entityFrameDirection * localDistance);
+    // then translate back to world coordinates
+    glm::vec3 hitAt = glm::vec3(entityToWorldMatrix * glm::vec4(entityFrameHitAt, 1.0f));
+    distance = glm::distance(origin, hitAt);
+    surfaceNormal = glm::normalize(hitAt - getCenterPosition(success));
+    if (!success) {
+        return false;
+    }
+    return true;
 }
 
 void ShapeEntityItem::debugDump() const {
     quint64 now = usecTimestampNow();
     qCDebug(entities) << "SHAPE EntityItem id:" << getEntityItemID() << "---------------------------------------------";
     qCDebug(entities) << "               name:" << _name;
+    qCDebug(entities) << "               proxy:" << (_proxy ? _proxy->toString() : "n/a");
     qCDebug(entities) << "              shape:" << stringFromShape(_shape) << " (EnumId: " << _shape << " )";
     qCDebug(entities) << " collisionShapeType:" << ShapeInfo::getNameForShapeType(getShapeType());
     qCDebug(entities) << "              color:" << _color[0] << "," << _color[1] << "," << _color[2];

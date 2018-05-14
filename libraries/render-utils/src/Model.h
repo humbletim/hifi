@@ -65,7 +65,7 @@ using ModelWeakPointer = std::weak_ptr<Model>;
 
 
 /// A generic 3D model displaying geometry loaded from a URL.
-class Model : public QObject, public std::enable_shared_from_this<Model>, public scriptable::ModelProvider {
+class Model : public QObject, public std::enable_shared_from_this<Model>, public js::Graphics::ModelProvider {
     Q_OBJECT
 
 public:
@@ -316,8 +316,7 @@ public:
     int getResourceDownloadAttemptsRemaining() { return _renderWatcher.getResourceDownloadAttemptsRemaining(); }
 
     Q_INVOKABLE MeshProxyList getMeshes() const;
-    virtual scriptable::ScriptableModelBase getScriptableModel() override;
-    virtual bool replaceScriptableModelMeshPart(scriptable::ScriptableModelBasePointer model, int meshIndex, int partIndex) override;
+    virtual js::Graphics::ModelPointer getScriptableModel() override;
 
     void scaleToFit();
     bool getUseDualQuaternionSkinning() const { return _useDualQuaternionSkinning; }

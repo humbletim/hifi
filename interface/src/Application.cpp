@@ -169,6 +169,8 @@
 #include "scripting/HMDScriptingInterface.h"
 #include "scripting/MenuScriptingInterface.h"
 #include "graphics-scripting/GraphicsScriptingInterface.h"
+#include "graphics-scripting/ScriptableGeometryResource.h"
+#include "object-plugins/ProxyManager.h"
 #include "scripting/SettingsScriptingInterface.h"
 #include "scripting/WindowScriptingInterface.h"
 #include "scripting/ControllerScriptingInterface.h"
@@ -626,9 +628,9 @@ void messageHandler(QtMsgType type, const QMessageLogContext& context, const QSt
 }
 
 
-class ApplicationMeshProvider : public scriptable::ModelProviderFactory  {
+class ApplicationMeshProvider : public js::Graphics::ModelProviderFactory  {
 public:
-    virtual scriptable::ModelProviderPointer lookupModelProvider(const QUuid& uuid) override {
+    virtual js::Graphics::ModelProviderPointer lookupModelProvider(const QUuid& uuid) override {
         bool success;
         if (auto nestable = DependencyManager::get<SpatialParentFinder>()->find(uuid, success).lock()) {
             auto type = nestable->getNestableType();
@@ -648,13 +650,13 @@ public:
     }
 
 private:
-    scriptable::ModelProviderPointer getEntityModelProvider(EntityItemID entityID) {
-        scriptable::ModelProviderPointer provider;
+    js::Graphics::ModelProviderPointer getEntityModelProvider(EntityItemID entityID) {
+        js::Graphics::ModelProviderPointer provider;
         auto entityTreeRenderer = qApp->getEntities();
         auto entityTree = entityTreeRenderer->getTree();
         if (auto entity = entityTree->findEntityByID(entityID)) {
             if (auto renderer = entityTreeRenderer->renderableForEntityId(entityID)) {
-                provider = std::dynamic_pointer_cast<scriptable::ModelProvider>(renderer);
+                provider = std::dynamic_pointer_cast<js::Graphics::ModelProvider>(renderer);
                 provider->modelProviderType = NestableType::Entity;
             } else {
                 qCWarning(interfaceapp) << "no renderer for entity ID" << entityID.toString();
@@ -663,12 +665,12 @@ private:
         return provider;
     }
 
-    scriptable::ModelProviderPointer getOverlayModelProvider(OverlayID overlayID) {
-        scriptable::ModelProviderPointer provider;
+    js::Graphics::ModelProviderPointer getOverlayModelProvider(OverlayID overlayID) {
+        js::Graphics::ModelProviderPointer provider;
         auto &overlays = qApp->getOverlays();
         if (auto overlay = overlays.getOverlay(overlayID)) {
             if (auto base3d = std::dynamic_pointer_cast<Base3DOverlay>(overlay)) {
-                provider = std::dynamic_pointer_cast<scriptable::ModelProvider>(base3d);
+                provider = std::dynamic_pointer_cast<js::Graphics::ModelProvider>(base3d);
                 provider->modelProviderType = NestableType::Overlay;
             } else {
                 qCWarning(interfaceapp) << "no renderer for overlay ID" << overlayID.toString();
@@ -679,11 +681,11 @@ private:
         return provider;
     }
 
-    scriptable::ModelProviderPointer getAvatarModelProvider(QUuid sessionUUID) {
-        scriptable::ModelProviderPointer provider;
+    js::Graphics::ModelProviderPointer getAvatarModelProvider(QUuid sessionUUID) {
+        js::Graphics::ModelProviderPointer provider;
         auto avatarManager = DependencyManager::get<AvatarManager>();
         if (auto avatar = avatarManager->getAvatarBySessionID(sessionUUID)) {
-            provider = std::dynamic_pointer_cast<scriptable::ModelProvider>(avatar);
+            provider = std::dynamic_pointer_cast<js::Graphics::ModelProvider>(avatar);
             provider->modelProviderType = NestableType::Avatar;
         }
         return provider;
@@ -884,7 +886,8 @@ bool setupEssentials(int& argc, char** argv, bool runningMarkerExisted) {
     DependencyManager::set<DesktopScriptingInterface>();
     DependencyManager::set<EntityScriptingInterface>(true);
     DependencyManager::set<GraphicsScriptingInterface>();
-    DependencyManager::registerInheritance<scriptable::ModelProviderFactory, ApplicationMeshProvider>();
+    DependencyManager::set<plugins::entity::ProxyManager>();
+    DependencyManager::registerInheritance<js::Graphics::ModelProviderFactory, ApplicationMeshProvider>();
     DependencyManager::set<ApplicationMeshProvider>();
     DependencyManager::set<RecordingScriptingInterface>();
     DependencyManager::set<WindowScriptingInterface>();
@@ -6522,6 +6525,7 @@ void Application::registerScriptEngineWithApplicationServices(ScriptEnginePointe
     // Caches
     scriptEngine->registerGlobalObject("AnimationCache", DependencyManager::get<AnimationCache>().data());
     scriptEngine->registerGlobalObject("TextureCache", DependencyManager::get<TextureCache>().data());
+    ScriptableGeometryResource::registerMetaTypes(scriptEngine.data());
     scriptEngine->registerGlobalObject("ModelCache", DependencyManager::get<ModelCache>().data());
     scriptEngine->registerGlobalObject("SoundCache", DependencyManager::get<SoundCache>().data());
 

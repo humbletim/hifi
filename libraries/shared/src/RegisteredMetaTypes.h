@@ -34,6 +34,9 @@ Q_DECLARE_METATYPE(glm::mat4)
 Q_DECLARE_METATYPE(xColor)
 Q_DECLARE_METATYPE(QVector<glm::vec3>)
 Q_DECLARE_METATYPE(QVector<float>)
+Q_DECLARE_METATYPE(glm::uint32)
+Q_DECLARE_METATYPE(std::vector<glm::uint32>)
+Q_DECLARE_METATYPE(std::vector<float>)
 Q_DECLARE_METATYPE(AACube)
 Q_DECLARE_METATYPE(std::function<void()>);
 Q_DECLARE_METATYPE(std::function<QVariant()>);

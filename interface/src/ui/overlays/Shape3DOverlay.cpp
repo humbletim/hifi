@@ -194,13 +194,14 @@ Transform Shape3DOverlay::evalRenderTransform() {
     return transform;
 }
 
-scriptable::ScriptableModelBase Shape3DOverlay::getScriptableModel() {
+js::Graphics::ModelPointer Shape3DOverlay::getScriptableModel() {
     auto geometryCache = DependencyManager::get<GeometryCache>();
     auto vertexColor = ColorUtils::toVec3(_color);
-    scriptable::ScriptableModelBase result;
-    result.objectID = getID();
     if (auto mesh = geometryCache->meshFromShape(_shape, vertexColor)) {
-        result.append(mesh);
+        auto result = js::Graphics::ModelPointer::create();
+        result->objectID = getID();
+        result->append(mesh);
+        return result;
     }
-    return result;
+    return nullptr;
 }

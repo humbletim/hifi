@@ -7,13 +7,6 @@
 
 #pragma once
 
-#include "ScriptableModel.h"
-
-#include <glm/glm.hpp>
-#include <graphics/BufferViewHelpers.h>
-#include <DependencyManager.h>
-
-#include <memory>
 #include <QPointer>
 #include <QtCore/QList>
 #include <QtCore/QObject>
@@ -22,12 +15,16 @@
 #include <QtCore/QVector>
 #include <QtScript/QScriptValue>
 #include <QtScript/QScriptable>
+#include <memory>
+#include <glm/glm.hpp>
 
+#include "Forward.h"
 #include "GraphicsScriptingUtil.h"
-
+#include <DependencyManager.h>
+#include <graphics/BufferViewHelpers.h>
 #include <graphics/Geometry.h>
 
-namespace scriptable {
+namespace js { namespace Graphics {
     /**jsdoc
      * @typedef {object} Graphics.Mesh
      * @property {Graphics.MeshPart[]} parts - Array of submesh part references.
@@ -37,55 +34,57 @@ namespace scriptable {
      * @property {number} numVertices - Total number of vertices in the Mesh.
      * @property {number} numAttributes - Number of currently defined vertex attributes.
      */
-    class ScriptableMesh : public ScriptableMeshBase, QScriptable {
+    class MeshPrototype : public QObject, public QScriptable {
         Q_OBJECT
-    public:
         Q_PROPERTY(glm::uint32 numParts READ getNumParts)
         Q_PROPERTY(glm::uint32 numAttributes READ getNumAttributes)
         Q_PROPERTY(glm::uint32 numVertices READ getNumVertices)
         Q_PROPERTY(glm::uint32 numIndices READ getNumIndices)
-        Q_PROPERTY(QVector<QString> attributeNames READ getAttributeNames)
-        Q_PROPERTY(QVector<scriptable::ScriptableMeshPartPointer> parts READ getMeshParts)
+        Q_PROPERTY(std::vector<std::string> attributeNames READ getAttributeNames)
+        Q_PROPERTY(std::vector<js::Graphics::MeshPartPointer> parts READ getMeshParts)
         Q_PROPERTY(bool valid READ isValid)
-        Q_PROPERTY(bool strong READ hasValidStrongMesh)
-        Q_PROPERTY(QVariantMap extents READ getMeshExtents)
+        Q_PROPERTY(bool _strong READ hasValidStrongMesh)
+        Q_PROPERTY(AABox extents READ getMeshExtents)
         Q_PROPERTY(QVariantMap bufferFormats READ getBufferFormats)
-        QVariantMap getBufferFormats() const;
+    public:
 
-        operator const ScriptableMeshBase*() const { return (qobject_cast<const scriptable::ScriptableMeshBase*>(this)); }
+        MeshPrototype(const js::Graphics::MeshPointer& meshBase) : QObject(nullptr), QScriptable(), _nativeObject(meshBase) { }
 
-        ScriptableMesh(WeakModelProviderPointer provider, ScriptableModelBasePointer model, MeshPointer mesh, QObject* parent)
-            : ScriptableMeshBase(provider, model, mesh, parent), QScriptable() { strongMesh = mesh; }
-        ScriptableMesh(MeshPointer mesh, QObject* parent)
-            : ScriptableMeshBase(WeakModelProviderPointer(), nullptr, mesh, parent), QScriptable() { strongMesh = mesh; }
-        ScriptableMesh(const ScriptableMeshBase& other);
-        ScriptableMesh(const ScriptableMesh& other) : ScriptableMeshBase(other), QScriptable() {};
-        virtual ~ScriptableMesh();
-
-        const scriptable::MeshPointer getOwnedMeshPointer() const { return strongMesh; }
-        scriptable::ScriptableMeshPointer getSelf() const { return const_cast<scriptable::ScriptableMesh*>(this); }
-        bool isValid() const { return !weakMesh.expired(); }
-        bool hasValidStrongMesh() const { return (bool)strongMesh; }
+        js::Graphics::MeshPointer getNativeObject() const {
+            return _nativeObject ? _nativeObject : qscriptvalue_cast<js::Graphics::MeshPointer>(thisObject());
+        }
+        graphics::MeshPointer getMeshPointer() const { return getNativeObject() ? getNativeObject()->getMeshPointer() : nullptr; }
+        const graphics::MeshPointer getOwnedMeshPointer() const { return getNativeObject() ? getNativeObject()->strongMesh : nullptr; }
+        virtual bool isValid() const { return getNativeObject() && !getNativeObject()->weakMesh.expired(); }
+        bool hasValidStrongMesh() const { return (bool)getOwnedMeshPointer(); }
         glm::uint32 getNumParts() const;
         glm::uint32 getNumVertices() const;
         glm::uint32 getNumAttributes() const;
         glm::uint32 getNumIndices() const;
-        QVector<QString> getAttributeNames() const;
-        QVector<scriptable::ScriptableMeshPartPointer> getMeshParts() const;
-        QVariantMap getMeshExtents() const;
+        std::vector<std::string> getAttributeNames() const;
+        std::vector<js::Graphics::MeshPartPointer> getMeshParts() const;
+        AABox getMeshExtents() const;
 
-        operator bool() const { return !weakMesh.expired(); }
+        operator bool() const { return isValid();  }
         int getSlotNumber(const QString& attributeName) const;
+        QVariantMap getBufferFormats() const;
 
     public slots:
-        const scriptable::ScriptableModelPointer getParentModel() const { return qobject_cast<scriptable::ScriptableModel*>(model); }
-        QVector<glm::uint32> getIndices() const;
-        QVector<glm::uint32> findNearbyVertexIndices(const glm::vec3& origin, float epsilon = 1e-6) const;
+        const js::Graphics::ModelPointer getParentModel() const { return getNativeObject() ? getNativeObject()->model : nullptr; }
+        //qobject_cast<js::Graphics::Model*>(model); }
+        std::vector<glm::uint32> getIndices() const;
+        std::vector<glm::uint32> findRayVertexIndices(
+            const glm::vec3& start, const glm::vec3& end, float epsilon = 1e-6,
+            const std::vector<glm::uint32>& indices = std::vector<glm::uint32>()) const;
+        std::vector<glm::uint32> findNearbyVertexIndices(
+            const glm::vec3& origin, float epsilon = 1e-6,
+            const std::vector<glm::uint32>& indices = std::vector<glm::uint32>()) const;
 
         glm::uint32 addAttribute(const QString& attributeName, const QVariant& defaultValue = QVariant());
         glm::uint32 fillAttribute(const QString& attributeName, const QVariant& value);
         bool removeAttribute(const QString& attributeName);
 
+        js::Graphics::MeshPointer cloneMesh() const;
         QVariantList queryVertexAttributes(QVariant selector) const;
         QVariantMap getVertexAttributes(glm::uint32 vertexIndex) const;
         bool setVertexAttributes(glm::uint32 vertexIndex, const QVariantMap& attributeValues);
@@ -93,15 +92,29 @@ namespace scriptable {
         QVariant getVertexProperty(glm::uint32 vertexIndex, const QString& attributeName) const;
         bool setVertexProperty(glm::uint32 vertexIndex, const QString& attributeName, const QVariant& value);
 
-        scriptable::ScriptableMeshPointer cloneMesh();
+        js::Graphics::MeshPointer scaleToFit(float unitScale);
+        js::Graphics::MeshPointer recenter(const glm::vec3& = glm::vec3(NAN));
+        js::Graphics::MeshPointer translate(const glm::vec3& translation);
+        js::Graphics::MeshPointer scale(const glm::vec3& scale, const glm::vec3& origin = glm::vec3(NAN));
+        js::Graphics::MeshPointer rotateVec3Degrees(const glm::vec3& eulerAngles, const glm::vec3& origin = glm::vec3(NAN));
+        js::Graphics::MeshPointer rotateDegrees(float x, float y, float z, const glm::vec3& origin = glm::vec3(NAN));
+        js::Graphics::MeshPointer rotate(const glm::quat& rotation, const glm::vec3& origin = glm::vec3(NAN));
+        js::Graphics::MeshPointer transform(const glm::mat4& transform);
+
+        QString toString() const;
+        bool isValidIndex(glm::uint32 vertexIndex, const QString& attributeName = QString()) const;
 
         // QScriptEngine-specific wrappers
         glm::uint32 updateVertexAttributes(QScriptValue callback);
         glm::uint32 forEachVertex(QScriptValue callback);
-        bool isValidIndex(glm::uint32 vertexIndex, const QString& attributeName = QString()) const;
+        QScriptValue attributeToTypedArray(const QString& attributeName);
+        bool attributeFromTypedArray(const QString& attributeName, QScriptValue array);
+
+    protected:
+        js::Graphics::MeshPointer _nativeObject;
     };
 
-}
+}}
 
-Q_DECLARE_METATYPE(scriptable::ScriptableMeshPointer)
-Q_DECLARE_METATYPE(QVector<scriptable::ScriptableMeshPointer>)
+Q_DECLARE_METATYPE(js::Graphics::MeshPointer)
+Q_DECLARE_METATYPE(std::vector<js::Graphics::MeshPointer>)

@@ -154,6 +154,7 @@ public:
     ///         specified entityShapeEnum
     static GeometryCache::Shape getShapeForEntityShape(int entityShapeEnum);
     static QString stringFromShape(GeometryCache::Shape geoShape);
+    static GeometryCache::Shape shapeFromString(const QString& shapeString);
 
     static void computeSimpleHullPointListForShape(int entityShape, const glm::vec3 &entityExtents, QVector<glm::vec3> &outPointList);
 

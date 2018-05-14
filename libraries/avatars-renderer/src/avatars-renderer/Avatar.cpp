@@ -582,7 +582,7 @@ void Avatar::addToScene(AvatarSharedPointer self, const render::ScenePointer& sc
     }
 
     _mustFadeIn = true;
-    emit DependencyManager::get<scriptable::ModelProviderFactory>()->modelAddedToScene(getSessionUUID(), NestableType::Avatar, _skeletonModel);
+    emit DependencyManager::get<js::Graphics::ModelProviderFactory>()->modelAddedToScene(getSessionUUID(), NestableType::Avatar, _skeletonModel);
 }
 
 void Avatar::fadeIn(render::ScenePointer scene) {
@@ -632,7 +632,7 @@ void Avatar::removeFromScene(AvatarSharedPointer self, const render::ScenePointe
     for (auto& attachmentModel : _attachmentModels) {
         attachmentModel->removeFromScene(scene, transaction);
     }
-    emit DependencyManager::get<scriptable::ModelProviderFactory>()->modelRemovedFromScene(getSessionUUID(), NestableType::Avatar, _skeletonModel);
+    emit DependencyManager::get<js::Graphics::ModelProviderFactory>()->modelRemovedFromScene(getSessionUUID(), NestableType::Avatar, _skeletonModel);
 }
 
 void Avatar::updateRenderItem(render::Transaction& transaction) {
@@ -1799,15 +1799,17 @@ void Avatar::processMaterials() {
     }
 }
 
-scriptable::ScriptableModelBase Avatar::getScriptableModel() {
+js::Graphics::ModelPointer Avatar::getScriptableModel() {
     if (!_skeletonModel || !_skeletonModel->isLoaded()) {
-        return scriptable::ScriptableModelBase();
+        return js::Graphics::ModelPointer();
     }
     auto result = _skeletonModel->getScriptableModel();
-    result.objectID = getSessionUUID().isNull() ? AVATAR_SELF_ID : getSessionUUID();
-    {
-        std::lock_guard<std::mutex> lock(_materialsLock);
-        result.appendMaterials(_materials);
+    if (result) {
+        result->objectID = getSessionUUID().isNull() ? AVATAR_SELF_ID : getSessionUUID();
+        {
+            std::lock_guard<std::mutex> lock(_materialsLock);
+            result->appendMaterials(_materials);
+        }
     }
     return result;
 }

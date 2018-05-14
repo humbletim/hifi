@@ -16,7 +16,7 @@
 #include <graphics-scripting/Forward.h>
 #include "Overlay.h"
 
-class Base3DOverlay : public Overlay, public SpatiallyNestable, public scriptable::ModelProvider {
+class Base3DOverlay : public Overlay, public SpatiallyNestable, public js::Graphics::ModelProvider {
     Q_OBJECT
     using Parent = Overlay;
 
@@ -36,7 +36,7 @@ public:
     virtual bool is3D() const override { return true; }
 
     virtual uint32_t fetchMetaSubItems(render::ItemIDs& subItems) const override { subItems.push_back(getRenderItemID()); return (uint32_t) subItems.size(); }
-    virtual scriptable::ScriptableModelBase getScriptableModel() override { return scriptable::ScriptableModelBase(); }
+    virtual js::Graphics::ModelPointer getScriptableModel() override { return js::Graphics::ModelPointer(); }
 
     // TODO: consider implementing registration points in this class
     glm::vec3 getCenter() const { return getWorldPosition(); }

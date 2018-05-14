@@ -54,7 +54,7 @@ class Texture;
 
 using AvatarPhysicsCallback = std::function<void(uint32_t)>;
 
-class Avatar : public AvatarData, public scriptable::ModelProvider {
+class Avatar : public AvatarData, public js::Graphics::ModelProvider {
     Q_OBJECT
 
     // This property has JSDoc in MyAvatar.h.
@@ -359,7 +359,7 @@ public:
     void addMaterial(graphics::MaterialLayer material, const std::string& parentMaterialName) override;
     void removeMaterial(graphics::MaterialPointer material, const std::string& parentMaterialName) override;
 
-    virtual scriptable::ScriptableModelBase getScriptableModel() override;
+    virtual js::Graphics::ModelPointer getScriptableModel() override;
 
 public slots:
 

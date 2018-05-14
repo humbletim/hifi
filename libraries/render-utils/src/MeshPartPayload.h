@@ -43,6 +43,7 @@ public:
     virtual render::ItemKey getKey() const;
     virtual render::Item::Bound getBound() const;
     virtual render::ShapeKey getShapeKey() const; // shape interface
+    void setIsWireframe(bool isWireframe) { _isWireframe = isWireframe; }
     virtual void render(RenderArgs* args);
 
     // ModelMeshPartPayload functions to perform render
@@ -63,6 +64,7 @@ public:
 
     graphics::MultiMaterial _drawMaterials;
     graphics::Mesh::Part _drawPart;
+    bool _isWireframe{ false };
 
     size_t getVerticesCount() const { return _drawMesh ? _drawMesh->getNumVertices() : 0; }
     size_t getMaterialTextureSize() { return topMaterialExists() ? _drawMaterials.top().material->getTextureSize() : 0; }

@@ -188,13 +188,14 @@ Transform Cube3DOverlay::evalRenderTransform() {
     return transform;
 }
 
-scriptable::ScriptableModelBase Cube3DOverlay::getScriptableModel() {
+js::Graphics::ModelPointer Cube3DOverlay::getScriptableModel() {
     auto geometryCache = DependencyManager::get<GeometryCache>();
     auto vertexColor = ColorUtils::toVec3(_color);
-    scriptable::ScriptableModelBase result;
     if (auto mesh = geometryCache->meshFromShape(GeometryCache::Cube, vertexColor)) {
-        result.objectID = getID();
-        result.append(mesh);
+        auto result = js::Graphics::ModelPointer::create();
+        result->objectID = getID();
+        result->append(mesh);
+        return result;
     }
-    return result;
+    return nullptr;
 }

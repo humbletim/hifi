@@ -410,6 +410,7 @@ Q_DECLARE_METATYPE(EntityPropertyFlags);
 QScriptValue EntityPropertyFlagsToScriptValue(QScriptEngine* engine, const EntityPropertyFlags& flags);
 void EntityPropertyFlagsFromScriptValue(const QScriptValue& object, EntityPropertyFlags& flags);
 
+QVariantMap EntityItemPropertiesToVariantMap(const EntityItemProperties& properties);
 
 // define these inline here so the macros work
 inline void EntityItemProperties::setPosition(const glm::vec3& value)

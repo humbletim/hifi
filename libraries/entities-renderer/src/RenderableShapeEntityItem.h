@@ -22,11 +22,16 @@ class ShapeEntityRenderer : public TypedEntityRenderer<ShapeEntityItem> {
 public:
     ShapeEntityRenderer(const EntityItemPointer& entity);
 
-    virtual scriptable::ScriptableModelBase getScriptableModel() override;
-
+    virtual plugins::entity::ObjectProxy::Pointer getEntityProxy() const override { return _proxy; }
+    virtual js::Graphics::ModelPointer getScriptableModel() override;
+    virtual bool canReplaceModelMeshPart(int meshIndex, int partIndex) override;
+    virtual bool replaceScriptableModelMeshPart(const js::Graphics::ModelPointer& model, int meshIndex, int partIndex) override;
+    virtual bool overrideModelRenderFlags(js::Graphics::RenderFlags flagsToSet, js::Graphics::RenderFlags flagsToClear) override;
 protected:
     ItemKey getKey() override;
     ShapeKey getShapeKey() override;
+    virtual void onAddToSceneTyped(const TypedEntityPointer& entity) override;
+    virtual void onRemoveFromSceneTyped(const TypedEntityPointer& entity) override;
 
 private:
     virtual bool needsRenderUpdate() const override;
@@ -46,6 +51,15 @@ private:
     glm::vec3 _position;
     glm::vec3 _dimensions;
     glm::quat _orientation;
+    plugins::entity::ObjectProxy::Pointer _proxy;
+
+    struct PendingMeshPartReplacement {
+        js::Graphics::ModelPointer model;
+        int meshIndex;
+        int partIndex;
+        operator bool() { return (bool)model; }
+    };
+    PendingMeshPartReplacement _pendingMeshPartReplacement;
 };
 
 } } 

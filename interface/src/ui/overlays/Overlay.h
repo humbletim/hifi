@@ -14,6 +14,7 @@
 // include this before QGLWidget, which includes an earlier version of OpenGL
 #include <SharedUtil.h> // for xColor
 #include <render/Scene.h>
+#include <graphics/Material.h>
 
 class OverlayID : public QUuid {
 public:
