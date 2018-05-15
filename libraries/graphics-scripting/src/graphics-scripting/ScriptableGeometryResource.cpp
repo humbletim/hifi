@@ -21,6 +21,7 @@ namespace {
 
 void ScriptableGeometryResource::registerMetaTypes(QScriptEngine* engine) {
     scriptable::registerPrototype<GeometryResource::Pointer>(engine, new ScriptableGeometryResource());
+    Q_UNUSED(metaType);
 }
 
 QString ScriptableGeometryResource::getStateName() const {

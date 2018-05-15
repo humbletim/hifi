@@ -37,10 +37,13 @@
 #include <shared/QtHelpers.h>
 #include <SpatiallyNestable.h>
 
+#include <Extents.h>
+#include <AABox.h>
 #include <object-plugins/Forward.h>
 
 #include <unordered_map>
-
+#include <string>
+#include <vector>
 
 Q_DECLARE_METATYPE(std::string)
 Q_DECLARE_METATYPE(std::vector<std::string>)
