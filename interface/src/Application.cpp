@@ -170,7 +170,7 @@
 #include "scripting/MenuScriptingInterface.h"
 #include "graphics-scripting/GraphicsScriptingInterface.h"
 #include "graphics-scripting/ScriptableGeometryResource.h"
-#include "object-plugins/ProxyManager.h"
+#include "object-plugins/Forward.h"
 #include "scripting/SettingsScriptingInterface.h"
 #include "scripting/WindowScriptingInterface.h"
 #include "scripting/ControllerScriptingInterface.h"

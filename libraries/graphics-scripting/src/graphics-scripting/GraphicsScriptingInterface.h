@@ -21,6 +21,10 @@
 #include "ScriptableModel.h"
 #include <DependencyManager.h>
 
+namespace scriptable {
+    struct JSVectorAdapter;
+}
+
 /**jsdoc
  * The Graphics API <em>(experimental)</em> lets you query and manage certain graphics-related structures (like underlying meshes and textures) from scripting.
  * @namespace Graphics
@@ -36,6 +40,7 @@ class GraphicsScriptingInterface : public QObject, public QScriptable, public De
 public:
     static void registerMetaTypes(QScriptEngine* engine);
     GraphicsScriptingInterface(QObject* parent = nullptr);
+    js::Graphics::MeshPointer newMesh(scriptable::JSVectorAdapter adapter);
 
 public slots:
     /**jsdoc
@@ -118,7 +123,8 @@ public slots:
     *   <li>texCoords0 :: texCoords0 | texCoord0 | uvs | uv | vertexUVs | texcoord | texCoord | vertexTextureCoords</li>
     * </p>
     */
-    js::Graphics::MeshPointer newMesh(const QVariantMap& ifsMeshData);
+    js::Graphics::MeshPointer newMesh(QScriptValue ifsMeshData);
+    js::Graphics::MeshPointer newMeshFromVariant(QVariantMap ifsMeshData);
 
     /**jsdoc
      * Returns a mesh object representing the specified primitive {@link Shape}.

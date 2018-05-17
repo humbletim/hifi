@@ -35,6 +35,7 @@
 #include <graphics/BufferViewHelpers.h>
 #include <graphics/GpuHelpers.h>
 #include <shared/QtHelpers.h>
+#include <shared/Scriptable.h>
 #include <SpatiallyNestable.h>
 
 #include <Extents.h>
@@ -180,23 +181,27 @@ js::Graphics::ModelPointer GraphicsScriptingInterface::getModel(QUuid uuid) {
     return nullptr;
 }
 
-js::Graphics::MeshPointer GraphicsScriptingInterface::newMesh(const QVariantMap& ifsMeshData) {
+js::Graphics::MeshPointer GraphicsScriptingInterface::newMesh(QScriptValue ifsMeshData) {
+    return newMesh(scriptable::JSVectorAdapter{ ifsMeshData.toVariant().toMap(), ifsMeshData });
+}
+js::Graphics::MeshPointer GraphicsScriptingInterface::newMeshFromVariant(QVariantMap ifsMeshData) {
+    return newMesh(scriptable::JSVectorAdapter{ ifsMeshData, argument(0) });
+}
+
+js::Graphics::MeshPointer GraphicsScriptingInterface::newMesh(scriptable::JSVectorAdapter adapter) {
     // TODO: this is bare-bones way for now to improvise a new mesh from the scripting side
     //  in the future we want to support a formal C++ structure data type here instead
-    std::string meshName = ifsMeshData.value("name").toString().toStdString();
-    QString topologyName = ifsMeshData.value("topology").toString();
+    std::string meshName = adapter.qt.value("name").toString().toStdString();
+    QString topologyName = adapter.qt.value("topology").toString();
 
-    scriptable::JSVectorAdapter adapter{ ifsMeshData, context()->argument(0) };
-    // auto posit = context()->argument(0).property("position");
-    // qDebug() << "POSITIONS" << posit.toString() << qscriptvalue_cast<QByteArray>(posit.property("buffer")).size();
-
-    QVector<glm::uint32> indices = adapter.getVector<glm::uint32>("indices", "Uint32Array");
-    QVector<glm::vec3> vertices = adapter.getVector<glm::vec3>("positions", "Float32Array");
-    QVector<glm::vec3> normals = adapter.getVector<glm::vec3>("normals", "Float32Array");
-    QVector<glm::vec3> colors = adapter.getVector<glm::vec3>("colors", "Float32Array");
-    QVector<glm::vec2> texCoords0 = adapter.getVector<glm::vec2>("texCoords0", "Float32Array");
+    std::vector<glm::uint32> indices = adapter.getVector<glm::uint32>("indices", "Uint32Array");
+    std::vector<glm::vec3> vertices = adapter.getVector<glm::vec3>("positions", "Float32Array");
+    std::vector<glm::vec3> normals = adapter.getVector<glm::vec3>("normals", "Float32Array");
+    std::vector<glm::vec3> colors = adapter.getVector<glm::vec3>("colors", "Float32Array");
+    std::vector<glm::vec2> texCoords0 = adapter.getVector<glm::vec2>("texCoords0", "Float32Array");
 
     if (engine()->hasUncaughtException()) {
+        qDebug() << "hasUncaughtException" << engine()->uncaughtException().toString();
         return nullptr;
     }
 
@@ -214,7 +219,7 @@ js::Graphics::MeshPointer GraphicsScriptingInterface::newMesh(const QVariantMap&
     if (!topologyName.isEmpty() && !acceptableTopologies.contains(topologyName)) {
         error = QString("expected .topology to be %1").arg(acceptableTopologies.join(" | "));
     } else if (!numIndices) {
-        error = QString("expected non-empty [uint32,...] array for .indices (got type=%1)").arg(ifsMeshData.value("indices").typeName());
+        error = QString("expected non-empty [uint32,...] array for .indices (got type=%1)").arg(adapter.qt.value("indices").typeName());
     } else if (numIndices % 3 != 0) {
         error = QString("expected .indices to define %1 faces (ie: .length needs to be divisible by %2) length=%3")
             .arg("triangles").arg(3).arg(numIndices);
@@ -236,19 +241,19 @@ js::Graphics::MeshPointer GraphicsScriptingInterface::newMesh(const QVariantMap&
         return nullptr;
     }
 
-    if (ifsMeshData.contains("normals") && normals.size() < numVertices) {
+    if (adapter.qt.contains("normals") && normals.size() < numVertices) {
         qCInfo(graphics_scripting) << "newMesh -- expanding .normals to #" << numVertices;
         normals.resize(numVertices);
     }
-    if (ifsMeshData.contains("colors") && colors.size() < numVertices) {
+    if (adapter.qt.contains("colors") && colors.size() < numVertices) {
         qCInfo(graphics_scripting) << "newMesh -- expanding .colors to #" << numVertices;
         colors.resize(numVertices);
     }
-    if (ifsMeshData.contains("texCoords0") && texCoords0.size() < numVertices) {
+    if (adapter.qt.contains("texCoords0") && texCoords0.size() < numVertices) {
         qCInfo(graphics_scripting) << "newMesh -- expanding .texCoords0 to #" << numVertices;
         texCoords0.resize(numVertices);
     }
-    if (ifsMeshData.contains("texCoords1")) {
+    if (adapter.qt.contains("texCoords1")) {
         qCWarning(graphics_scripting) << "newMesh - texCoords1 not yet supported; ignoring";
     }
 
@@ -269,7 +274,7 @@ js::Graphics::MeshPointer GraphicsScriptingInterface::newMesh(const QVariantMap&
     if (texCoords0.size()) {
         mesh->addAttribute(gpu::Stream::TEXCOORD0, buffer_helpers::newFromVector(texCoords0, gpu::Format::VEC2F_UV));
     }
-    QVector<graphics::Mesh::Part> parts = {{ 0, indices.size(), 0, topology }};
+    std::vector<graphics::Mesh::Part> parts{{ 0, (int)indices.size(), 0, topology }};
     mesh->setPartBuffer(buffer_helpers::newFromVector(parts, gpu::Element::PART_DRAWCALL));
     return js::Graphics::MeshPointer::create(mesh);
 }
@@ -320,7 +325,7 @@ graphics::MeshPointer GraphicsScriptingInterface::getNativeMesh(js::Graphics::Me
 }
 
 namespace {
-    QVector<int> metaTypeIds{
+    std::vector<int> metaTypeIds{
         qRegisterMetaType<uint64_t>("uint64_t"),
         qRegisterMetaType<glm::uint32>("glm::uint32"),
         qRegisterMetaType<std::vector<glm::uint32>>("std::vector<glm::uint32>"),
@@ -524,7 +529,7 @@ js::Graphics::MeshPointer GraphicsScriptingInterface::dedupeVertices(const js::G
 
     const auto& indices = buffer_helpers::bufferToVector<glm::uint32>(mesh->getIndexBuffer());
     glm::uint32 numIndices = (glm::uint32)indices.size();
-    QVector<glm::uint32> newIndices;
+    std::vector<glm::uint32> newIndices;
     newIndices.resize(indices.size());
     for (glm::uint32 i = 0; i < numIndices; i++) {
         const auto& index = indices[i];
@@ -534,13 +539,15 @@ js::Graphics::MeshPointer GraphicsScriptingInterface::dedupeVertices(const js::G
     }
 
     {
-        // remove degenerate triangles
-        for (int i = 0; i < newIndices.size() - 2;) {
+        // remove degenerate triagles
+        const int maxStartIndex = (int)newIndices.size() - 2;
+        for (int i = 0; i < maxStartIndex;) {
             auto a = newIndices[i+0];
             auto b = newIndices[i+1];
             auto c = newIndices[i+2];
             if (a == b || b == c || a == c) {
-                newIndices.remove(i, 3);
+                auto it = newIndices.begin() + i;
+                newIndices.erase(it, std::next(it, 3));
                 // preserve i for next pass
             } else {
                 i += 3;
@@ -563,17 +570,17 @@ js::Graphics::MeshPointer GraphicsScriptingInterface::dedupeVertices(const js::G
             continue;
         }
         if (attribute == gpu::Stream::NORMAL && resetNormals) {
-            QVector<glm::vec3> normals;
-            normals.resize(numUniqueVerts);
+            std::vector<glm::vec3> normals;
+            normals.reserve(numUniqueVerts);
             for (const auto& p : uniqueVerts) {
-                normals << glm::normalize(p);
+                normals.emplace_back(glm::normalize(p));
             }
             newMesh->addAttribute(gpu::Stream::NORMAL, buffer_helpers::newFromVector(normals, gpu::Element::VEC3F_XYZ));
             continue;
         }
         if (attribute == gpu::Stream::COLOR || attribute == gpu::Stream::NORMAL) {
             const auto& input = buffer_helpers::mesh::attributeToVector<glm::vec3>(mesh, static_cast<gpu::Stream::InputSlot>(attribute));
-            QVector<glm::vec3> output;
+            std::vector<glm::vec3> output;
             output.resize(numUniqueVerts);
             QMap<glm::uint32,bool> seen;
             glm::uint32 numElements = (glm::uint32)input.size();
@@ -607,7 +614,7 @@ js::Graphics::MeshPointer GraphicsScriptingInterface::dedupeVertices(const js::G
         newMesh->addAttribute(attribute, newView);
     }
 
-    QVector<graphics::Mesh::Part> parts = {{ 0, newIndices.size(), 0, graphics::Mesh::Topology::TRIANGLES }};
+    std::vector<graphics::Mesh::Part> parts{{ 0, (int)newIndices.size(), 0, graphics::Mesh::Topology::TRIANGLES }};
     newMesh->setPartBuffer(buffer_helpers::newFromVector(parts, gpu::Element::PART_DRAWCALL));
     return js::Graphics::MeshPointer::create(newMesh);
 }

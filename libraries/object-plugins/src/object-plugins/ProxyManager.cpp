@@ -64,7 +64,6 @@ namespace plugins { namespace entity {
     bool ProxyManager::associate(const QUuid& uuid, ProxyResolver::Pointer resolver) {
         std::lock_guard<std::mutex> locker(_lock);
         bool result = !_assigned.contains(uuid);
-        qDebug() << "associate" << uuid << resolver->pluginURI;
         _assigned[uuid] = resolver;
         return result;
     }

@@ -343,7 +343,7 @@ bool ShapeEntityRenderer::replaceScriptableModelMeshPart(const js::Graphics::Mod
     if (auto meshProxy = std::dynamic_pointer_cast<plugins::entity::MeshObjectProxy>(getEntityProxy())) {
         if (canReplaceModelMeshPart(meshIndex, partIndex)) {
             withWriteLock([=]{ _pendingMeshPartReplacement = { model, meshIndex, partIndex }; });
-            emit requestRenderUpdate();
+            _needsRenderUpdate = true;
             return true;
         }
     }

@@ -31,25 +31,14 @@ const QMap<QString, QStringList> JSVectorAdapter::ALIASES{
     { "texCoords0", QStringList{ "texCoords0", "texCoord0", "uvs", "vertexUVs", "texcoord", "texCoord",  "vertexTextureCoords" }},
 };
 
-QVariant toVariant(const glm::mat4& mat4) {
+template<> QVariant toVariant(const glm::mat4& mat4) {
     const auto ptr = glm::value_ptr(mat4);
     QVariant v;
     v.setValue(QVector<float>::fromStdVector(std::vector<float>{ptr, ptr + 16}));
     return v;
 };
 
-QVariant toVariant(const std::string& str) {
-    return QString::fromStdString(str);
-}
-QVariant toVariant(const std::vector<std::string>& strings) {
-    QStringList result;
-    for (const auto& s : strings) {
-        result << QString::fromStdString(s);
-    }
-    return result;
-}
-
-QVariant toVariant(const Extents& box) {
+template<> QVariant toVariant(const Extents& box) {
     return QVariantMap{
         { "center", glmVecToVariant(box.minimum + (box.size() / 2.0f)) },
         { "minimum", glmVecToVariant(box.minimum) },
@@ -58,7 +47,7 @@ QVariant toVariant(const Extents& box) {
     };
 }
 
-QVariant toVariant(const AABox& box) {
+template<> QVariant toVariant(const AABox& box) {
     return QVariantMap{
         { "brn", glmVecToVariant(box.getCorner()) },
         { "tfl", glmVecToVariant(box.calcTopFarLeft()) },
@@ -69,7 +58,7 @@ QVariant toVariant(const AABox& box) {
     };
 }
 
-QVariant toVariant(const gpu::Element& element) {
+template<> QVariant toVariant(const gpu::Element& element) {
     return QVariantMap{
         { "type", gpu::toString(element.getType()) },
         { "semantic", gpu::toString(element.getSemantic()) },
@@ -80,48 +69,6 @@ QVariant toVariant(const gpu::Element& element) {
      };
 }
 
-QScriptValue jsBindCallback(QScriptValue value) {
-    if (value.isObject() && value.property("callback").isFunction()) {
-        // value is already a bound callback
-        return value;
-    }
-    auto engine = value.engine();
-    auto context = engine ? engine->currentContext() : nullptr;
-    auto length = context ? context->argumentCount() : 0;
-    QScriptValue scope = context ? context->thisObject() : QScriptValue::NullValue;
-    QScriptValue method;
-#ifdef SCRIPTABLE_MESH_DEBUG
-    qCInfo(graphics_scripting) << "jsBindCallback" << engine << length << scope.toQObject() << method.toString();
-#endif
-
-    // find position in the incoming JS Function.arguments array (so we can test for the two-argument case)
-    for (int i = 0; context && i < length; i++) {
-        if (context->argument(i).strictlyEquals(value)) {
-            method = context->argument(i+1);
-        }
-    }
-    if (method.isFunction() || method.isString()) {
-        // interpret as `API.func(..., scope, function callback(){})` or `API.func(..., scope, "methodName")`
-        scope = value;
-    } else {
-        // interpret as `API.func(..., function callback(){})`
-        method = value;
-    }
-#ifdef SCRIPTABLE_MESH_DEBUG
-    qCInfo(graphics_scripting) << "scope:" << scope.toQObject() << "method:" << method.toString();
-#endif
-    return ::makeScopedHandlerObject(scope,  method);
-}
-
-QString toDebugString(QObject* tmp) {
-    QString s;
-    QTextStream out(&s);
-    out << tmp;
-    return s;
-}
-template <typename T> QString toDebugString(std::shared_ptr<T> tmp) {
-    return toDebugString(qobject_cast<QObject*>(tmp.get()));
-}
 
 QScriptValue toTypedArray(QScriptValue global, const QByteArray& bytes, const QString& typedArrayName) {
     auto ArrayBuffer = global.property("ArrayBuffer");
@@ -134,7 +81,7 @@ QScriptValue toTypedArray(QScriptValue global, const QByteArray& bytes, const QS
 }
 
 template <typename T, typename U> QByteArray convertBytes(const QByteArray& bytes) {
-    const QVector<T> input = buffer_helpers::variantToVector<T>(bytes);
+    const std::vector<T> input = buffer_helpers::variantToVector<T>(bytes);
     std::vector<U> output;
     output.reserve(input.size());
     std::transform(input.begin(), input.end(), std::back_inserter(output), [](T x) { return static_cast<U>(x); });
@@ -160,34 +107,24 @@ template <typename T> QByteArray coerceJSTypedArray(QScriptValue value, const QS
     auto buffer = value.property("buffer");
     auto bytes = qscriptvalue_cast<QByteArray>(buffer);
     if (buffer.instanceOf(ArrayBuffer)) {
-        qDebug() << "buffer.isValid" << typedArrayName << property << bytes.size();
         if (value.instanceOf(TypedArray)) {
-            qDebug() << "instanceof TypedArray" << typedArrayName;
             // already in the desired native format
             return bytes;
         } else if (value.instanceOf(Uint8Array)) {
-            qDebug() << "instanceof Uint8Array";
             return convertBytes<glm::uint8, T>(bytes);
         } else if (value.instanceOf(Int8Array)) {
-            qDebug() << "instanceof Int8Array";
             return convertBytes<glm::int8, T>(bytes);
         } else if (value.instanceOf(Uint16Array)) {
-            qDebug() << "instanceof Uint16Array";
             return convertBytes<glm::uint16, T>(bytes);
         } else if (value.instanceOf(Int16Array)) {
-            qDebug() << "instanceof Int16Array";
             return convertBytes<glm::int16, T>(bytes);
         } else if (value.instanceOf(Uint32Array)) {
-            qDebug() << "instanceof Uint32Array";
             return convertBytes<glm::uint32, T>(bytes);
         } else if (value.instanceOf(Int32Array)) {
-            qDebug() << "instanceof Int32Array";
             return convertBytes<glm::int32, T>(bytes);
         } else if (value.instanceOf(Float32Array)) {
-            qDebug() << "instanceof Float32Array";
             return convertBytes<glm::float32, T>(bytes);
         } else {
-            qDebug() << "... TypedArray not recognized";
             context->throwError(QString("unsupported TypedArray (%1) for property '%2'")
                                 .arg(value.property("constructor").data().toString()).arg(property));
             return QByteArray();
@@ -202,4 +139,48 @@ template <typename T> QByteArray coerceJSTypedArray(QScriptValue value, const QS
     return QByteArray();
 }
 
+    template<> QVariant toVariant(const glm::vec2& value) { return buffer_helpers::glmVecToVariant(value); }
+    template<> QVariant toVariant(const glm::vec3& value) { return buffer_helpers::glmVecToVariant(value); }
+    template<> QVariant toVariant(const glm::vec4& value) { return buffer_helpers::glmVecToVariant(value); }
+    template<> QVariant toVariant(const glm::quat& value) { return buffer_helpers::glmVecToVariant(value); }
+ 
+ QString JSVectorAdapter::normalizeAlias(QString alias) {
+        for (const auto& kv : ALIASES.toStdMap()) {
+            if (kv.second.contains(alias)) {
+                return kv.first;
+            }
+        }
+        return QString();
+    }
+ QString JSVectorAdapter::resolveAlias(QString property, QStringList available) {
+        for (const auto& a : ALIASES[property].toStdList()) {
+            if (available.contains(a)) {
+                if (property != a) {
+                    qCDebug(graphics_scripting) << "using aliased property" << property << "->" << a;
+                }
+                return a;
+            }
+        }
+        return QString();
+    }
+    template <typename T>
+    std::vector<T> JSVectorAdapter::getVector(const QString& property, const QString& jsTypeName) {
+        QString sourceProperty = resolveAlias(property, qt.keys());
+        if (!qt.contains(sourceProperty)) {
+            return std::vector<T>();
+        }
+        auto variant = qt.value(sourceProperty);
+        if (variant.type() == (QVariant::Type)QMetaType::QVariantList) {
+            return buffer_helpers::variantToVector<T>(variant);
+        } else {
+            auto value = js.property(sourceProperty);
+            return buffer_helpers::variantToVector<T>(coerceJSTypedArray<T>(value, jsTypeName, sourceProperty));
+        }
+    }
+
+
+    template std::vector<glm::uint32> JSVectorAdapter::getVector<glm::uint32>(const QString& property, const QString& jsTypeName);
+    template std::vector<glm::vec2> JSVectorAdapter::getVector<glm::vec2>(const QString& property, const QString& jsTypeName);
+    template std::vector<glm::vec3> JSVectorAdapter::getVector<glm::vec3>(const QString& property, const QString& jsTypeName);
+    template std::vector<glm::vec4> JSVectorAdapter::getVector<glm::vec4>(const QString& property, const QString& jsTypeName);
 }

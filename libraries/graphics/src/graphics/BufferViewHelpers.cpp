@@ -415,6 +415,8 @@ template<> QVariant getValue<QVariant>(const gpu::BufferView& view, glm::uint32 
     return QVariant();
 }
 
+template QVariant glmVecToVariant<glm::quat>(const glm::quat& v, bool asArray /*= false*/);
+
 // view.edit<T> with conversion between types
 template<> bool setValue<QVariant>(const gpu::BufferView& view, glm::uint32 index, const QVariant& v, const char* hint) {
     if (!boundsCheck(view, index)) {
@@ -464,8 +466,8 @@ template<> bool setValue<glm::vec4>(const gpu::BufferView& view, glm::uint32 ind
 }
 
 // QVariantList => QVector<T>
-template <class T> QVector<T> qVariantListToGlmVector(const QVariantList& list) {
-    QVector<T> output;
+template <typename T, typename VT> VT qVariantListToGlmVector(const QVariantList& list) {
+    VT output;
     output.resize(list.size());
     int i = 0;
     for (const auto& v : list) {
@@ -473,8 +475,8 @@ template <class T> QVector<T> qVariantListToGlmVector(const QVariantList& list) 
     }
     return output;
 }
-template <typename T> QVector<T> qVariantListToScalarVector(const QVariantList& list) {
-    QVector<T> output;
+template <typename T, typename VT> VT qVariantListToScalarVector(const QVariantList& list) {
+    VT output;
     output.resize(list.size());
     int i = 0;
     for (const auto& v : list) {
@@ -483,39 +485,44 @@ template <typename T> QVector<T> qVariantListToScalarVector(const QVariantList& 
     return output;
 }
 
-template <typename T> QVector<T> byteArrayToVector(const QByteArray& bytes) {
-    QVector<T> output( bytes.size() / (int)sizeof(T) );
+template <typename T, typename VT> VT byteArrayToVector(const QByteArray& bytes) {
+    VT output( bytes.size() / (int)sizeof(T) );
     ::memcpy(output.data(), bytes.data(), output.size() * sizeof(T));
     return output;
 }
 // QVariantList or QByteArray => QVector<glm>
-template <typename T> QVector<T> qVariantToGlmVector(const QVariant& value) {
+    template <typename T, typename VT> VT qVariantToGlmVector(const QVariant& value) {
     if (value.type() == (QVariant::Type)QMetaType::QByteArray) {
-        return byteArrayToVector<T>(value.toByteArray());
+        return byteArrayToVector<T,VT>(value.toByteArray());
     } else {
-        return qVariantListToGlmVector<T>(value.toList());
+        return qVariantListToGlmVector<T,VT>(value.toList());
     }
 }
 // QVariantList or QByteArray => QVector<scalar>
-template <typename T> QVector<T> qVariantToScalarVector(const QVariant& value) {
+    template <typename T, typename VT> VT qVariantToScalarVector(const QVariant& value) {
     if (value.type() == (QVariant::Type)QMetaType::QByteArray) {
-        return byteArrayToVector<T>(value.toByteArray());
+        return byteArrayToVector<T,VT>(value.toByteArray());
     } else {
-        return qVariantListToScalarVector<T>(value.toList());
+        return qVariantListToScalarVector<T,VT>(value.toList());
     }
 }
 
-template <class T> QVector<T> variantToVector(const QVariant& value) { qDebug() << "variantToVector[class]"; return qVariantListToGlmVector<T>(value.toList()); }
-template<> QVector<glm::float32> variantToVector<glm::float32>(const QVariant& value) { return qVariantToScalarVector<glm::float32>(value); }
-template<> QVector<glm::uint8> variantToVector<glm::uint8>(const QVariant& value) { return qVariantToScalarVector<glm::uint8>(value); }
-template<> QVector<glm::uint16> variantToVector<glm::uint16>(const QVariant& value) { return qVariantToScalarVector<glm::uint16>(value); }
-template<> QVector<glm::uint32> variantToVector<glm::uint32>(const QVariant& value) { return qVariantToScalarVector<glm::uint32>(value); }
-template<> QVector<glm::int8> variantToVector<glm::int8>(const QVariant& value) { return qVariantToScalarVector<glm::int8>(value); }
-template<> QVector<glm::int16> variantToVector<glm::int16>(const QVariant& value) { return qVariantToScalarVector<glm::int16>(value); }
-template<> QVector<glm::int32> variantToVector<glm::int32>(const QVariant& value) { return qVariantToScalarVector<glm::int32>(value); }
-template<> QVector<glm::vec2> variantToVector<glm::vec2>(const QVariant& value) { return qVariantToGlmVector<glm::vec2>(value); }
-template<> QVector<glm::vec3> variantToVector<glm::vec3>(const QVariant& value) { return qVariantToGlmVector<glm::vec3>(value); }
-template<> QVector<glm::vec4> variantToVector<glm::vec4>(const QVariant& value) { return qVariantToGlmVector<glm::vec4>(value); }
+#define DECLARE_VARIANT_TO_VECTOR(type, converter)                      \
+    template<> QVector<type> variantToVector<type>(const QVariant& value) { return converter<type, QVector<type>>(value); } \
+    template<> std::vector<type> variantToVector<type>(const QVariant& value) { return converter<type, std::vector<type>>(value); }
+
+    DECLARE_VARIANT_TO_VECTOR(glm::uint8, qVariantToScalarVector);
+    DECLARE_VARIANT_TO_VECTOR(glm::uint16, qVariantToScalarVector);
+    DECLARE_VARIANT_TO_VECTOR(glm::uint32, qVariantToScalarVector);
+    DECLARE_VARIANT_TO_VECTOR(glm::int8, qVariantToScalarVector);
+    DECLARE_VARIANT_TO_VECTOR(glm::int16, qVariantToScalarVector);
+    DECLARE_VARIANT_TO_VECTOR(glm::int32, qVariantToScalarVector);
+    DECLARE_VARIANT_TO_VECTOR(glm::float32, qVariantToScalarVector);
+
+    DECLARE_VARIANT_TO_VECTOR(glm::vec2, qVariantToGlmVector);
+    DECLARE_VARIANT_TO_VECTOR(glm::vec3, qVariantToGlmVector);
+    DECLARE_VARIANT_TO_VECTOR(glm::vec4, qVariantToGlmVector);
+#undef DECLARE_VARIANT_TO_VECTOR
 
 template<> gpu::BufferView newFromVector<QVariant>(const QVector<QVariant>& elements, const gpu::Element& elementType) {
     glm::uint32 numElements = elements.size();

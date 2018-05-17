@@ -6,6 +6,7 @@
 //  See the accompanying file LICENSE or http://www.apache.org/licenses/LICENSE-2.0.html
 //
 
+#include "ShapeEntityItem.h"
 
 #include <glm/gtx/transform.hpp>
 
@@ -17,8 +18,6 @@
 #include "EntityItemProperties.h"
 #include "EntityTree.h"
 #include "EntityTreeElement.h"
-#include "ShapeEntityItem.h"
-#include "EntityScriptingInterface.h"
 #include <object-plugins/Forward.h>
 
 namespace entity {
@@ -213,7 +212,6 @@ EntityPropertyFlags ShapeEntityItem::getEntityProperties(EncodeBitstreamParams& 
     requestedProperties += PROP_SHAPE;
     requestedProperties += PROP_COLOR;
     requestedProperties += PROP_ALPHA;
-
     return requestedProperties;
 }
 
@@ -308,10 +306,9 @@ bool ShapeEntityItem::findDetailedRayIntersection(const glm::vec3& origin, const
     glm::vec3 entityFrameDirection = glm::normalize(glm::vec3(worldToEntityMatrix * glm::vec4(direction, 0.0f)));
 
     bool success = false;
-    float localDistance;
 
     if (auto proxy = getEntityProxy()) {
-        plugins::entity::IntersectionResultRef resultRef{ localDistance, face, surfaceNormal, extraInfo };
+        plugins::entity::IntersectionResultRef resultRef{ distance, face, surfaceNormal, extraInfo };
         plugins::entity::MeshRay ray{
             entityFrameOrigin,
             entityFrameDirection,
@@ -322,20 +319,22 @@ bool ShapeEntityItem::findDetailedRayIntersection(const glm::vec3& origin, const
         };
         success = proxy->findRayIntersection(ray, resultRef);
     } else {
+        float localDistance;
         // NOTE: unit sphere has center of 0,0,0 and radius of 0.5
         success = findRaySphereIntersection(entityFrameOrigin, entityFrameDirection, glm::vec3(0.0f), 0.5f, localDistance);;
+
+        if (!success) {
+            return false;
+        }
+
+        // determine where the hit point occured
+        glm::vec3 entityFrameHitAt = entityFrameOrigin + (entityFrameDirection * localDistance);
+        // then translate back to world coordinates
+        glm::vec3 hitAt = glm::vec3(entityToWorldMatrix * glm::vec4(entityFrameHitAt, 1.0f));
+        distance = glm::distance(origin, hitAt);
+        surfaceNormal = glm::normalize(hitAt - getCenterPosition(success));
     }
 
-    if (!success) {
-        return false;
-    }
-
-    // determine where the hit point occured
-    glm::vec3 entityFrameHitAt = entityFrameOrigin + (entityFrameDirection * localDistance);
-    // then translate back to world coordinates
-    glm::vec3 hitAt = glm::vec3(entityToWorldMatrix * glm::vec4(entityFrameHitAt, 1.0f));
-    distance = glm::distance(origin, hitAt);
-    surfaceNormal = glm::normalize(hitAt - getCenterPosition(success));
     if (!success) {
         return false;
     }
