@@ -226,7 +226,7 @@ js::Graphics::MeshPointer GraphicsScriptingInterface::newMesh(scriptable::JSVect
     } else if (!numVertices) {
         error = "expected non-empty [glm::vec3(),...] array for .positions";
     } else {
-        const gpu::uint32 maxVertexIndex = numVertices;
+        const glm::uint32 maxVertexIndex = (glm::uint32)numVertices;
         int i = 0;
         for (const auto& ind : indices) {
             if (ind >= maxVertexIndex) {
