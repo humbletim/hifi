@@ -317,7 +317,6 @@ public:
 
     Q_INVOKABLE MeshProxyList getMeshes() const;
     virtual scriptable::ScriptableModelBase getScriptableModel() override;
-    virtual bool replaceScriptableModelMeshPart(scriptable::ScriptableModelBasePointer model, int meshIndex, int partIndex) override;
 
     void scaleToFit();
     bool getUseDualQuaternionSkinning() const { return _useDualQuaternionSkinning; }
@@ -422,8 +421,7 @@ protected:
     bool _overrideModelTransform { false };
     bool _triangleSetsValid { false };
     void calculateTriangleSets(const FBXGeometry& geometry);
-    QVector<TriangleSet> _modelSpaceMeshTriangleSets; // model space triangles for all sub meshes
-
+    std::vector<std::vector<TriangleSet>> _modelSpaceMeshTriangleSets; // model space triangles for all sub meshes
 
     void createRenderItemSet();
     virtual void createVisibleRenderItemSet();

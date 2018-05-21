@@ -31,6 +31,7 @@
 #include <SharedUtil.h> // usecTimestampNow()
 #include <LogHandler.h>
 #include <Extents.h>
+#include <object-plugins/Forward.h>
 
 #include "EntityScriptingInterface.h"
 #include "EntitiesLogging.h"
@@ -2974,4 +2975,18 @@ std::unordered_map<std::string, graphics::MultiMaterial> EntityItem::getMaterial
         toReturn = _materials;
     }
     return toReturn;
+}
+
+void EntityItem::setEntityProxy(plugins::object::ObjectProxy::Pointer proxy) {
+    if (proxy != _proxy) {
+        _proxy = proxy;
+        if (!_proxy && !_proxy->postMessage) {
+            auto entities = DependencyManager::get<EntityScriptingInterface>();
+            const EntityItemID entityItemID{ getEntityItemID() };
+            // forward "web" events to EntityScriptingInterface
+            _proxy->postMessage = [=](const QVariant& message) {
+                emit entities->webEventReceived(entityItemID, message);
+            };
+        }
+    }
 }

@@ -18,6 +18,7 @@
 #include "EntityTree.h"
 #include "EntityTreeElement.h"
 #include "ShapeEntityItem.h"
+#include <object-plugins/Forward.h>
 
 namespace entity {
 
@@ -88,6 +89,10 @@ void ShapeEntityItem::setShapeInfoCalulator(ShapeEntityItem::ShapeInfoCalculator
 
 ShapeEntityItem::Pointer ShapeEntityItem::baseFactory(const EntityItemID& entityID, const EntityItemProperties& properties) {
     Pointer entity(new ShapeEntityItem(entityID), [](EntityItem* ptr) { ptr->deleteLater(); });
+    if (auto proxy = plugins::object::getObjectProxy(entityID)) {
+        qDebug() << "assigning existing object proxy" << proxy.get();
+        entity->setEntityProxy(proxy);
+    }
     entity->setProperties(properties);
     return entity;
 }
@@ -159,6 +164,10 @@ bool ShapeEntityItem::setProperties(const EntityItemProperties& properties) {
     SET_ENTITY_PROPERTY_FROM_PROPERTIES(alpha, setAlpha);
     SET_ENTITY_PROPERTY_FROM_PROPERTIES(color, setColor);
     SET_ENTITY_PROPERTY_FROM_PROPERTIES(shape, setShape);
+
+    if (auto proxy = getEntityProxy()) {
+        proxy->setProperties(EntityItemPropertiesToVariantMap(properties));
+    }
 
     if (somethingChanged) {
         bool wantDebug = false;
@@ -238,6 +247,28 @@ void ShapeEntityItem::setAlpha(float alpha) {
     _material->setOpacity(alpha);
 }
 
+AABox ShapeEntityItem::getAABox(bool& success) const {
+    auto box = EntityItem::getAABox(success);
+    if (auto proxy = getEntityProxy()) {
+        proxy->recomputeAABox(box);
+    }
+    return box;
+}
+
+glm::vec3 ShapeEntityItem::getRaycastDimensions() const {
+    glm::vec3 dimensions = EntityItem::getRaycastDimensions();
+    if (auto proxy = getEntityProxy()) {
+        proxy->recomputeDimensions(dimensions);
+    }
+    return dimensions;
+}
+
+void ShapeEntityItem::emitScriptEvent(const QVariant& message) {
+    if (auto proxy = getEntityProxy()) {
+        proxy->messageReceived(message);
+    }
+}
+
 void ShapeEntityItem::setUnscaledDimensions(const glm::vec3& value) {
     const float MAX_FLAT_DIMENSION = 0.0001f;
     if ((_shape == entity::Shape::Circle || _shape == entity::Shape::Quad) && value.y > MAX_FLAT_DIMENSION) {
@@ -251,7 +282,7 @@ void ShapeEntityItem::setUnscaledDimensions(const glm::vec3& value) {
 }
 
 bool ShapeEntityItem::supportsDetailedRayIntersection() const {
-    return _shape == entity::Sphere;
+    return _shape == entity::Sphere || (bool)getEntityProxy();
 }
 
 bool ShapeEntityItem::findDetailedRayIntersection(const glm::vec3& origin, const glm::vec3& direction,
@@ -264,22 +295,40 @@ bool ShapeEntityItem::findDetailedRayIntersection(const glm::vec3& origin, const
     glm::vec3 entityFrameOrigin = glm::vec3(worldToEntityMatrix * glm::vec4(origin, 1.0f));
     glm::vec3 entityFrameDirection = glm::normalize(glm::vec3(worldToEntityMatrix * glm::vec4(direction, 0.0f)));
 
-    float localDistance;
-    // NOTE: unit sphere has center of 0,0,0 and radius of 0.5
-    if (findRaySphereIntersection(entityFrameOrigin, entityFrameDirection, glm::vec3(0.0f), 0.5f, localDistance)) {
-        // determine where on the unit sphere the hit point occured
-        glm::vec3 entityFrameHitAt = entityFrameOrigin + (entityFrameDirection * localDistance);
-        // then translate back to work coordinates
-        glm::vec3 hitAt = glm::vec3(entityToWorldMatrix * glm::vec4(entityFrameHitAt, 1.0f));
-        distance = glm::distance(origin, hitAt);
-        bool success;
-        surfaceNormal = glm::normalize(hitAt - getCenterPosition(success));
+    bool success = false;
+
+    if (auto proxy = getEntityProxy()) {
+        plugins::object::IntersectionResultRef resultRef{ distance, face, surfaceNormal, extraInfo };
+        plugins::object::ObjectRay ray{
+            entityFrameOrigin,
+            entityFrameDirection,
+            {
+                { "precisionPicking", precisionPicking },
+                { "allowBackface", false },
+            }
+        };
+        success = proxy->findRayIntersection(ray, resultRef);
+    } else {
+        float localDistance;
+        // NOTE: unit sphere has center of 0,0,0 and radius of 0.5
+        success = findRaySphereIntersection(entityFrameOrigin, entityFrameDirection, glm::vec3(0.0f), 0.5f, localDistance);;
+
         if (!success) {
             return false;
         }
-        return true;
+
+        // determine where the hit point occured
+        glm::vec3 entityFrameHitAt = entityFrameOrigin + (entityFrameDirection * localDistance);
+        // then translate back to world coordinates
+        glm::vec3 hitAt = glm::vec3(entityToWorldMatrix * glm::vec4(entityFrameHitAt, 1.0f));
+        distance = glm::distance(origin, hitAt);
+        surfaceNormal = glm::normalize(hitAt - getCenterPosition(success));
     }
-    return false;
+
+    if (!success) {
+        return false;
+    }
+    return true;
 }
 
 void ShapeEntityItem::debugDump() const {

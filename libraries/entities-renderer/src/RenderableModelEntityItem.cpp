@@ -981,22 +981,6 @@ scriptable::ScriptableModelBase render::entities::ModelEntityRenderer::getScript
     return result;
 }
 
-bool render::entities::ModelEntityRenderer::canReplaceModelMeshPart(int meshIndex, int partIndex) {
-    // TODO: for now this method is just used to indicate that this provider generally supports mesh updates
-    auto model = resultWithReadLock<ModelPointer>([this]{ return _model; });
-    return model && model->isLoaded();
-}
-
-bool render::entities::ModelEntityRenderer::replaceScriptableModelMeshPart(scriptable::ScriptableModelBasePointer newModel, int meshIndex, int partIndex) {
-    auto model = resultWithReadLock<ModelPointer>([this]{ return _model; });
-
-    if (!model || !model->isLoaded()) {
-        return false;
-    }
-
-    return model->replaceScriptableModelMeshPart(newModel, meshIndex, partIndex);
-}
-
 void RenderableModelEntityItem::simulateRelayedJoints() {
     ModelPointer model = getModel();
     if (model && model->isLoaded()) {

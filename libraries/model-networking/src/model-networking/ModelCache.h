@@ -138,6 +138,16 @@ class ModelCache : public ResourceCache, public Dependency {
     Q_OBJECT
     SINGLETON_DEPENDENCY
 
+public slots:
+    /**jsdoc
+     * Returns model resource for particular model
+     * @function ModelCache.getModel
+     * @param url {string} url to load
+     * @return {Resource} model
+     */
+    GeometryResource::Pointer getModel(const QString& url) { return getModel(QUrl(url)); }
+    GeometryResource::Pointer getModel(const QUrl& url);
+
 public:
 
     // Properties are copied over from ResourceCache (see ResourceCache.h for reason).
@@ -213,6 +223,8 @@ private:
     ModelCache();
     virtual ~ModelCache() = default;
 };
+
+Q_DECLARE_METATYPE(GeometryResource::Pointer)
 
 class NetworkMaterial : public graphics::Material {
 public:

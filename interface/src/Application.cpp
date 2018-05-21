@@ -168,6 +168,8 @@
 #include "scripting/HMDScriptingInterface.h"
 #include "scripting/MenuScriptingInterface.h"
 #include "graphics-scripting/GraphicsScriptingInterface.h"
+#include "graphics-scripting/ScriptableGeometryResource.h"
+#include "object-plugins/Forward.h"
 #include "scripting/SettingsScriptingInterface.h"
 #include "scripting/WindowScriptingInterface.h"
 #include "scripting/ControllerScriptingInterface.h"
@@ -862,6 +864,7 @@ bool setupEssentials(int& argc, char** argv, bool runningMarkerExisted) {
     DependencyManager::set<DesktopScriptingInterface>();
     DependencyManager::set<EntityScriptingInterface>(true);
     DependencyManager::set<GraphicsScriptingInterface>();
+    DependencyManager::set<plugins::object::ProxyManager>();
     DependencyManager::registerInheritance<scriptable::ModelProviderFactory, ApplicationMeshProvider>();
     DependencyManager::set<ApplicationMeshProvider>();
     DependencyManager::set<RecordingScriptingInterface>();
@@ -6193,6 +6196,7 @@ void Application::registerScriptEngineWithApplicationServices(ScriptEnginePointe
     // Caches
     scriptEngine->registerGlobalObject("AnimationCache", DependencyManager::get<AnimationCache>().data());
     scriptEngine->registerGlobalObject("TextureCache", DependencyManager::get<TextureCache>().data());
+    ScriptableGeometryResource::registerMetaTypes(scriptEngine.data());
     scriptEngine->registerGlobalObject("ModelCache", DependencyManager::get<ModelCache>().data());
     scriptEngine->registerGlobalObject("SoundCache", DependencyManager::get<SoundCache>().data());
 

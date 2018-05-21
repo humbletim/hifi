@@ -15,6 +15,8 @@
 #include <gpu/Context.h>
 #include <gpu/StandardShaderLib.h>
 
+#include <graphics/Material.h>
+
 #include "StencilMaskPass.h"
 #include "DeferredLightingEffect.h"
 #include "TextureCache.h"

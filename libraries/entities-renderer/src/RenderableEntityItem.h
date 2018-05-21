@@ -18,6 +18,7 @@
 #include "AbstractViewStateInterface.h"
 #include "EntitiesRendererLogging.h"
 #include <graphics-scripting/Forward.h>
+#include <object-plugins/Forward.h>
 
 class EntityTreeRenderer;
 
@@ -59,6 +60,7 @@ public:
     virtual void removeMaterial(graphics::MaterialPointer material, const std::string& parentMaterialName);
 
     virtual scriptable::ScriptableModelBase getScriptableModel() override { return scriptable::ScriptableModelBase(); }
+    virtual plugins::object::ObjectProxy::Pointer getEntityProxy() const { return nullptr; }
 
 protected:
     virtual bool needsRenderUpdateFromEntity() const final { return needsRenderUpdateFromEntity(_entity); }

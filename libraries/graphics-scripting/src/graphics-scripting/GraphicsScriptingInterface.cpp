@@ -8,6 +8,12 @@
 //  See the accompanying file LICENSE or http://www.apache.org/licenses/LICENSE-2.0.html
 //
 
+#include <glm/glm.hpp>
+// FIXME: what's the proper way to convince glm that c++11 stl is available?
+#undef GLM_HAS_CXX11_STL
+#define GLM_HAS_CXX11_STL 1
+#include <glm/gtx/hash.hpp>
+
 #include "GraphicsScriptingInterface.h"
 #include "GraphicsScriptingUtil.h"
 #include "OBJWriter.h"
@@ -15,7 +21,13 @@
 #include "ScriptEngineLogging.h"
 #include "ScriptableMesh.h"
 #include "ScriptableMeshPart.h"
+#if !defined(Q_OS_ANDROID)
+#include <GeometryCache.h>
+#endif
 #include <GeometryUtil.h>
+#include <EntityScriptingInterface.h>
+#include <QHash>
+#include <QMetaType>
 #include <QUuid>
 #include <QtScript/QScriptEngine>
 #include <QtScript/QScriptValue>
@@ -23,7 +35,20 @@
 #include <graphics/BufferViewHelpers.h>
 #include <graphics/GpuHelpers.h>
 #include <shared/QtHelpers.h>
+#include <shared/Scriptable.h>
 #include <SpatiallyNestable.h>
+
+#include <Extents.h>
+#include <AABox.h>
+#include <object-plugins/Forward.h>
+
+#include <unordered_map>
+#include <string>
+#include <vector>
+
+Q_DECLARE_OPERATORS_FOR_FLAGS (js::Graphics::RenderFlags)
+Q_DECLARE_METATYPE(AABox)
+Q_DECLARE_METATYPE(Extents)
 
 GraphicsScriptingInterface::GraphicsScriptingInterface(QObject* parent) : QObject(parent), QScriptable() {
 }
@@ -36,42 +61,53 @@ void GraphicsScriptingInterface::jsThrowError(const QString& error) {
     }
 }
 
+js::Graphics::MeshPointer GraphicsScriptingInterface::getMeshForShape(const QString& shapeString, const glm::vec3& color) {
+#if defined(Q_OS_ANDROID)
+    jsThrowError("getMeshForShape unavailable on Android; use Graphics.getModel(uuid) w/visible Shape Entity or Overlay uuid instead.");
+    return nullptr;
+#else
+    auto geometryCache = DependencyManager::get<GeometryCache>();
+    auto shape = geometryCache->shapeFromString(shapeString);
+    if ((int)shape < 0) {
+        jsThrowError(QString("invalid shapeName: '%1' (%2)").arg(shapeString).arg((int)shape));
+        return nullptr;
+    }
+    auto mesh = geometryCache->meshFromShape(shape, color);
+    return dedupeVertices(js::Graphics::MeshPointer::create(mesh));
+#endif
+}
+
+bool GraphicsScriptingInterface::overrideRenderFlags(QUuid uuid, js::Graphics::RenderFlags flagsToSet, js::Graphics::RenderFlags flagsToClear) {
+    auto provider = getModelProvider(uuid);
+    if (!provider) {
+        return false;
+    }
+    return provider->overrideRenderFlags(flagsToSet, flagsToClear);
+}
+
 bool GraphicsScriptingInterface::canUpdateModel(QUuid uuid, int meshIndex, int partNumber) {
     auto provider = getModelProvider(uuid);
     return provider && provider->canReplaceModelMeshPart(meshIndex, partNumber);
 }
 
-bool GraphicsScriptingInterface::updateModel(QUuid uuid, const scriptable::ScriptableModelPointer& model) {
-    if (!model) {
-        jsThrowError("null model argument");
-    }
-
-    auto base = model->operator scriptable::ScriptableModelBasePointer();
-    if (!base) {
-        jsThrowError("could not get base model pointer");
-        return false;
-    }
-
+bool GraphicsScriptingInterface::updateModel(QUuid uuid, const js::Graphics::ModelPointer& model, int meshIndex, int partIndex) {
     auto provider = getModelProvider(uuid);
     if (!provider) {
         jsThrowError("provider unavailable");
         return false;
     }
 
-    if (!provider->canReplaceModelMeshPart(-1, -1)) {
+    if (!provider->canReplaceModelMeshPart(meshIndex, partIndex)) {
         jsThrowError("provider does not support updating mesh parts");
         return false;
     }
 
-#ifdef SCRIPTABLE_MESH_DEBUG
-    qDebug() << "replaceScriptableModelMeshPart" << model->toString() << -1 << -1;
-#endif
-    return provider->replaceScriptableModelMeshPart(base, -1, -1);
+    return provider->replaceScriptableModelMeshPart(model, meshIndex, partIndex);
 }
 
-scriptable::ModelProviderPointer GraphicsScriptingInterface::getModelProvider(QUuid uuid) {
+js::Graphics::ModelProviderPointer GraphicsScriptingInterface::getModelProvider(QUuid uuid) {
     QString error;
-    if (auto appProvider = DependencyManager::get<scriptable::ModelProviderFactory>()) {
+    if (auto appProvider = DependencyManager::get<js::Graphics::ModelProviderFactory>()) {
         if (auto provider = appProvider->lookupModelProvider(uuid)) {
             return provider;
         } else {
@@ -84,19 +120,16 @@ scriptable::ModelProviderPointer GraphicsScriptingInterface::getModelProvider(QU
     return nullptr;
 }
 
-scriptable::ScriptableModelPointer GraphicsScriptingInterface::newModel(const scriptable::ScriptableMeshes& meshes) {
-    auto modelWrapper = scriptable::make_scriptowned<scriptable::ScriptableModel>();
+js::Graphics::ModelPointer GraphicsScriptingInterface::newModel(const js::Graphics::Meshes& meshes) {
+    auto modelWrapper = js::Graphics::ModelPointer::create();
     modelWrapper->setObjectName("js::model");
-    if (meshes.isEmpty()) {
+    if (meshes.empty()) {
         jsThrowError("expected [meshes] array as first argument");
     } else {
         int i = 0;
         for (const auto& mesh : meshes) {
-#ifdef SCRIPTABLE_MESH_DEBUG
-            qDebug() << "newModel" << i << meshes.size() << mesh;
-#endif
             if (mesh) {
-                modelWrapper->append(*mesh);
+                modelWrapper->append(mesh);
             } else {
                 jsThrowError(QString("invalid mesh at index: %1").arg(i));
                 break;
@@ -107,29 +140,33 @@ scriptable::ScriptableModelPointer GraphicsScriptingInterface::newModel(const sc
     return modelWrapper;
 }
 
-scriptable::ScriptableModelPointer GraphicsScriptingInterface::getModel(QUuid uuid) {
+js::Graphics::ModelPointer GraphicsScriptingInterface::getModel(QUuid uuid) {
     QString error;
     bool success;
     QString providerType = "unknown";
     if (auto nestable = DependencyManager::get<SpatialParentFinder>()->find(uuid, success).lock()) {
         providerType = SpatiallyNestable::nestableTypeToString(nestable->getNestableType());
         if (auto provider = getModelProvider(uuid)) {
-            auto modelObject = provider->getScriptableModel();
-            const bool found = !modelObject.objectID.isNull();
-            if (found && uuid == AVATAR_SELF_ID) {
-                // special case override so that scripts can rely on matching intput/output UUIDs
-                modelObject.objectID = AVATAR_SELF_ID;
-            }
-            if (modelObject.objectID == uuid) {
-                if (modelObject.meshes.size()) {
-                    auto modelWrapper = scriptable::make_scriptowned<scriptable::ScriptableModel>(modelObject);
-                    modelWrapper->setObjectName(providerType+"::"+uuid.toString()+"::model");
-                    return modelWrapper;
+            js::Graphics::ModelPointer modelObject = provider->getGraphicsModel();
+            js::Graphics::Model* sanityCheck = modelObject.data();
+            if (sanityCheck && modelObject) {
+                if (uuid == AVATAR_SELF_ID) {
+                    // special case override so that scripts can rely on matching input/output UUIDs
+                    modelObject->objectID = AVATAR_SELF_ID;
+                }
+                if (modelObject->objectID == uuid) {
+                    if (modelObject->meshes.size()) {
+                        //auto modelWrapper = js::Graphics::ModelPointer::create(modelObject);
+                        modelObject->setObjectName(providerType+"::"+uuid.toString()+"::model");
+                        return modelObject;
+                    } else {
+                        error = "no meshes available: " + modelObject->objectID.toString();
+                    }
                 } else {
-                    error = "no meshes available: " + modelObject.objectID.toString();
+                    error = QString("objectID mismatch: %1 (result contained %2 meshes)").arg(modelObject->objectID.toString()).arg(modelObject->meshes.size());
                 }
             } else {
-                error = QString("objectID mismatch: %1 (result contained %2 meshes)").arg(modelObject.objectID.toString()).arg(modelObject.meshes.size());
+                error = "failed to get model object";
             }
         } else {
             error = "model provider unavailable";
@@ -141,42 +178,45 @@ scriptable::ScriptableModelPointer GraphicsScriptingInterface::getModel(QUuid uu
     return nullptr;
 }
 
-#ifdef SCRIPTABLE_MESH_TODO
-bool GraphicsScriptingInterface::updateMeshPart(scriptable::ScriptableMeshPointer mesh, scriptable::ScriptableMeshPartPointer part) {
-    Q_ASSERT(mesh);
-    Q_ASSERT(part);
-    Q_ASSERT(part->parentMesh);
-    auto tmp = exportMeshPart(mesh, part->partIndex);
-    if (part->parentMesh == mesh) {
-#ifdef SCRIPTABLE_MESH_DEBUG
-        qCInfo(graphics_scripting) << "updateMeshPart -- update via clone" << mesh << part;
-#endif
-        tmp->replaceMeshData(part->cloneMeshPart());
-        return false;
-    } else {
-#ifdef SCRIPTABLE_MESH_DEBUG
-        qCInfo(graphics_scripting) << "updateMeshPart -- update via inplace" << mesh << part;
-#endif
-        tmp->replaceMeshData(part);
-        return true;
-    }
+js::Graphics::MeshPointer GraphicsScriptingInterface::newMesh(QScriptValue ifsMeshData) {
+    return newMesh(scriptable::JSVectorAdapter{ ifsMeshData.toVariant().toMap(), ifsMeshData });
 }
-#endif
+js::Graphics::MeshPointer GraphicsScriptingInterface::newMeshFromVariant(QVariantMap ifsMeshData) {
+    return newMesh(scriptable::JSVectorAdapter{ ifsMeshData, argument(0) });
+}
 
-scriptable::ScriptableMeshPointer GraphicsScriptingInterface::newMesh(const QVariantMap& ifsMeshData) {
+js::Graphics::MeshPointer GraphicsScriptingInterface::newMesh(scriptable::JSVectorAdapter adapter) {
     // TODO: this is bare-bones way for now to improvise a new mesh from the scripting side
     //  in the future we want to support a formal C++ structure data type here instead
-    QString meshName = ifsMeshData.value("name").toString();
-    QString topologyName = ifsMeshData.value("topology").toString();
-    QVector<glm::uint32> indices = buffer_helpers::variantToVector<glm::uint32>(ifsMeshData.value("indices"));
-    QVector<glm::vec3> vertices = buffer_helpers::variantToVector<glm::vec3>(ifsMeshData.value("positions"));
-    QVector<glm::vec3> normals = buffer_helpers::variantToVector<glm::vec3>(ifsMeshData.value("normals"));
-    QVector<glm::vec3> colors = buffer_helpers::variantToVector<glm::vec3>(ifsMeshData.value("colors"));
-    QVector<glm::vec2> texCoords0 = buffer_helpers::variantToVector<glm::vec2>(ifsMeshData.value("texCoords0"));
+
+    /**jsdoc
+     * @typedef {object} Graphics.IFSData
+     * @property {string} [name=""] - mesh name (useful for debugging / debug prints).
+     * @property {string} [topology=""]
+     * @property {number[]} indices - vertex indices to use for the mesh faces.
+     * @property {Vec3[]} vertices - vertex positions (model space)
+     * @property {Vec3[]} [normals=[]] - vertex normals (normalized)
+     * @property {Vec3[]} [colors=[]] - vertex colors (normalized)
+     * @property {Vec2[]} [texCoords0=[]] - vertex texture coordinates (normalized)
+     */
+
+    std::string meshName = adapter.qt.value("name").toString().toStdString();
+    QString topologyName = adapter.qt.value("topology").toString();
+
+    std::vector<glm::uint32> indices = adapter.getVector<glm::uint32>("indices", "Uint32Array");
+    std::vector<glm::vec3> vertices = adapter.getVector<glm::vec3>("positions", "Float32Array");
+    std::vector<glm::vec3> normals = adapter.getVector<glm::vec3>("normals", "Float32Array");
+    std::vector<glm::vec3> colors = adapter.getVector<glm::vec3>("colors", "Float32Array");
+    std::vector<glm::vec2> texCoords0 = adapter.getVector<glm::vec2>("texCoords0", "Float32Array");
+
+    if (engine()->hasUncaughtException()) {
+        qDebug() << "hasUncaughtException" << engine()->uncaughtException().toString();
+        return nullptr;
+    }
 
     const auto numVertices = vertices.size();
     const auto numIndices = indices.size();
-    const auto topology = graphics::TOPOLOGIES.key(topologyName);
+    const auto topology = graphics::TOPOLOGIES.key(topologyName, graphics::Mesh::Topology::TRIANGLES);
 
     // TODO: support additional topologies (POINTS and LINES ought to "just work" --
     //   if MeshPartPayload::drawCall is updated to actually check the Mesh::Part::_topology value
@@ -188,13 +228,14 @@ scriptable::ScriptableMeshPointer GraphicsScriptingInterface::newMesh(const QVar
     if (!topologyName.isEmpty() && !acceptableTopologies.contains(topologyName)) {
         error = QString("expected .topology to be %1").arg(acceptableTopologies.join(" | "));
     } else if (!numIndices) {
-        error = QString("expected non-empty [uint32,...] array for .indices (got type=%1)").arg(ifsMeshData.value("indices").typeName());
+        error = QString("expected non-empty [uint32,...] array for .indices (got type=%1)").arg(adapter.qt.value("indices").typeName());
     } else if (numIndices % 3 != 0) {
-        error = QString("expected 'triangle faces' for .indices (ie: length to be divisible by 3) length=%1").arg(numIndices);
+        error = QString("expected .indices to define %1 faces (ie: .length needs to be divisible by %2) length=%3")
+            .arg("triangles").arg(3).arg(numIndices);
     } else if (!numVertices) {
         error = "expected non-empty [glm::vec3(),...] array for .positions";
     } else {
-        const gpu::uint32 maxVertexIndex = numVertices;
+        const glm::uint32 maxVertexIndex = (glm::uint32)numVertices;
         int i = 0;
         for (const auto& ind : indices) {
             if (ind >= maxVertexIndex) {
@@ -209,25 +250,25 @@ scriptable::ScriptableMeshPointer GraphicsScriptingInterface::newMesh(const QVar
         return nullptr;
     }
 
-    if (ifsMeshData.contains("normals") && normals.size() < numVertices) {
+    if (adapter.qt.contains("normals") && normals.size() < numVertices) {
         qCInfo(graphics_scripting) << "newMesh -- expanding .normals to #" << numVertices;
         normals.resize(numVertices);
     }
-    if (ifsMeshData.contains("colors") && colors.size() < numVertices) {
+    if (adapter.qt.contains("colors") && colors.size() < numVertices) {
         qCInfo(graphics_scripting) << "newMesh -- expanding .colors to #" << numVertices;
         colors.resize(numVertices);
     }
-    if (ifsMeshData.contains("texCoords0") && texCoords0.size() < numVertices) {
+    if (adapter.qt.contains("texCoords0") && texCoords0.size() < numVertices) {
         qCInfo(graphics_scripting) << "newMesh -- expanding .texCoords0 to #" << numVertices;
         texCoords0.resize(numVertices);
     }
-    if (ifsMeshData.contains("texCoords1")) {
+    if (adapter.qt.contains("texCoords1")) {
         qCWarning(graphics_scripting) << "newMesh - texCoords1 not yet supported; ignoring";
     }
 
     graphics::MeshPointer mesh(new graphics::Mesh());
     mesh->modelName = "graphics::newMesh";
-    mesh->displayName = meshName.toStdString();
+    mesh->displayName = meshName;
 
     // TODO: newFromVector does inbound type conversion, but not compression or packing
     //  (later we should autodetect if fitting into gpu::INDEX_UINT16 and reduce / pack normals etc.)
@@ -242,36 +283,44 @@ scriptable::ScriptableMeshPointer GraphicsScriptingInterface::newMesh(const QVar
     if (texCoords0.size()) {
         mesh->addAttribute(gpu::Stream::TEXCOORD0, buffer_helpers::newFromVector(texCoords0, gpu::Format::VEC2F_UV));
     }
-    QVector<graphics::Mesh::Part> parts = {{ 0, indices.size(), 0, topology }};
+    std::vector<graphics::Mesh::Part> parts{{ 0, (int)indices.size(), 0, topology }};
     mesh->setPartBuffer(buffer_helpers::newFromVector(parts, gpu::Element::PART_DRAWCALL));
-    return scriptable::make_scriptowned<scriptable::ScriptableMesh>(mesh, nullptr);
+    return js::Graphics::MeshPointer::create(mesh);
 }
 
-QString GraphicsScriptingInterface::exportModelToOBJ(const scriptable::ScriptableModel& _in) {
-    const auto& in = _in.getConstMeshes();
-    if (in.size()) {
-        QList<scriptable::MeshPointer> meshes;
-        foreach (auto meshProxy, in) {
-            if (meshProxy) {
-                meshes.append(getMeshPointer(meshProxy));
-            }
-        }
-        if (meshes.size()) {
-            return writeOBJToString(meshes);
-        }
+QString GraphicsScriptingInterface::exportModelToOBJ(const js::Graphics::ModelPointer& base, bool dedupeVertices) {
+    if (!base) {
+        jsThrowError("null model");
+        return QString();
     }
-    jsThrowError("null mesh");
+
+    QList<graphics::MeshPointer> meshes;
+    int i = -1;
+    foreach (auto meshProxy, base->meshes) {
+        i++;
+        if (!meshProxy || !meshProxy->getMeshPointer()) {
+            qCWarning(graphics_scripting) << "exportModelToOBJ -- skipping null mesh at index" << i;
+            continue;
+        }
+        auto meshPtr = dedupeVertices ?
+            GraphicsScriptingInterface::dedupeVertices(meshProxy)->getMeshPointer() :
+            meshProxy->getMeshPointer();
+        if (!meshPtr) {
+            qCWarning(graphics_scripting) << "exportModelToOBJ -- skipping null mesh pointer at index" << i;
+            continue;
+        }
+        meshes << meshPtr;
+    }
+    if (meshes.size()) {
+        return writeOBJToString(meshes);
+    }
+    jsThrowError("no meshes");
     return QString();
 }
 
-MeshPointer GraphicsScriptingInterface::getMeshPointer(const scriptable::ScriptableMesh& meshProxy) {
-    return meshProxy.getMeshPointer();
-}
-MeshPointer GraphicsScriptingInterface::getMeshPointer(scriptable::ScriptableMesh& meshProxy) {
-    return getMeshPointer(&meshProxy);
-}
-MeshPointer GraphicsScriptingInterface::getMeshPointer(scriptable::ScriptableMeshPointer meshProxy) {
-    MeshPointer result;
+// js::Graphics::MeshPointer => graphics::MeshPointer
+graphics::MeshPointer GraphicsScriptingInterface::getNativeMesh(js::Graphics::MeshPointer meshProxy) {
+    graphics::MeshPointer result;
     if (!meshProxy) {
         jsThrowError("expected meshProxy as first parameter");
         return result;
@@ -285,69 +334,37 @@ MeshPointer GraphicsScriptingInterface::getMeshPointer(scriptable::ScriptableMes
 }
 
 namespace {
-    QVector<int> metaTypeIds{
-        qRegisterMetaType<glm::uint32>("uint32"),
+    std::vector<int> metaTypeIds{
+        qRegisterMetaType<uint64_t>("uint64_t"),
         qRegisterMetaType<glm::uint32>("glm::uint32"),
-        qRegisterMetaType<QVector<glm::uint32>>(),
-        qRegisterMetaType<QVector<glm::uint32>>("QVector<uint32>"),
-        qRegisterMetaType<scriptable::ScriptableMeshes>(),
-        qRegisterMetaType<scriptable::ScriptableMeshes>("ScriptableMeshes"),
-        qRegisterMetaType<scriptable::ScriptableMeshes>("scriptable::ScriptableMeshes"),
-        qRegisterMetaType<QVector<scriptable::ScriptableMeshPointer>>("QVector<scriptable::ScriptableMeshPointer>"),
-        qRegisterMetaType<scriptable::ScriptableMeshPointer>(),
-        qRegisterMetaType<scriptable::ScriptableModelPointer>(),
-        qRegisterMetaType<scriptable::ScriptableMeshPartPointer>(),
-        qRegisterMetaType<scriptable::ScriptableMaterial>(),
-        qRegisterMetaType<scriptable::ScriptableMaterialLayer>(),
-        qRegisterMetaType<QVector<scriptable::ScriptableMaterialLayer>>(),
-        qRegisterMetaType<scriptable::MultiMaterialMap>(),
+        qRegisterMetaType<std::vector<glm::uint32>>("std::vector<glm::uint32>"),
+        qRegisterMetaType<std::string>("std::string"),
+        qRegisterMetaType<std::vector<std::string>>("std::vector<std::string>"),
+        qRegisterMetaType<std::vector<QUuid>>("std::vector<QUuid>"),
+        qRegisterMetaType<js::Graphics::Meshes>("js::Graphics::Meshes"),
+        qRegisterMetaType<std::vector<js::Graphics::MeshPointer>>("std::vector<js::Graphics::MeshPointer>"),
+        qRegisterMetaType<std::vector<js::Graphics::MeshPartPointer>>("std::vector<js::Graphics::MeshPartPointer>"),
+        qRegisterMetaType<js::Graphics::MeshPointer>("js::Graphics::MeshPointer"),
+        qRegisterMetaType<js::Graphics::ModelPointer>("js::Graphics::ModelPointer"),
+        qRegisterMetaType<js::Graphics::MeshPartPointer>("js::Graphics::MeshPartPointer"),
+        qRegisterMetaType<js::Graphics::Material>("js::Graphics::Material"),
+        qRegisterMetaType<js::Graphics::MaterialLayer>("js::Graphics::MaterialLayer"),
+        qRegisterMetaType<QVector<js::Graphics::MaterialLayer>>("QVector<js::Graphics::MaterialLayter>"),
+        qRegisterMetaType<js::Graphics::MultiMaterialMap>("js::Graphics::MultiMaterialMap"),
         qRegisterMetaType<graphics::Mesh::Topology>(),
     };
 }
 
 namespace scriptable {
-    template <typename T> int registerQPointerMetaType(QScriptEngine* engine) {
-        qScriptRegisterSequenceMetaType<QVector<QPointer<T>>>(engine);
-        return qScriptRegisterMetaType<QPointer<T>>(
-            engine,
-            [](QScriptEngine* engine, const QPointer<T>& object) -> QScriptValue {
-                if (!object) {
-                    return QScriptValue::NullValue;
-                }
-                return engine->newQObject(object, QScriptEngine::QtOwnership, QScriptEngine::ExcludeDeleteLater | QScriptEngine::AutoCreateDynamicProperties);
-            },
-            [](const QScriptValue& value, QPointer<T>& out) {
-                auto obj = value.toQObject();
-#ifdef SCRIPTABLE_MESH_DEBUG
-                qCInfo(graphics_scripting) << "qpointer_qobject_cast" << obj << value.toString();
-#endif
-                if (auto tmp = qobject_cast<T*>(obj)) {
-                    out = QPointer<T>(tmp);
-                    return;
-                }
-#if 0
-                if (auto tmp = static_cast<T*>(obj)) {
-#ifdef SCRIPTABLE_MESH_DEBUG
-                    qCInfo(graphics_scripting) << "qpointer_qobject_cast -- via static_cast" << obj << tmp << value.toString();
-#endif
-                    out = QPointer<T>(tmp);
-                    return;
-                }
-#endif
-                out = nullptr;
-            }
-        );
-    }
-
-    QScriptValue qVectorScriptableMaterialLayerToScriptValue(QScriptEngine* engine, const QVector<scriptable::ScriptableMaterialLayer>& vector) {
+    QScriptValue qVectorScriptableMaterialLayerToScriptValue(QScriptEngine* engine, const QVector<js::Graphics::MaterialLayer>& vector) {
         return qScriptValueFromSequence(engine, vector);
     }
 
-    void qVectorScriptableMaterialLayerFromScriptValue(const QScriptValue& array, QVector<scriptable::ScriptableMaterialLayer>& result) {
+    void qVectorScriptableMaterialLayerFromScriptValue(const QScriptValue& array, QVector<js::Graphics::MaterialLayer>& result) {
         qScriptValueToSequence(array, result);
     }
 
-    QScriptValue scriptableMaterialToScriptValue(QScriptEngine* engine, const scriptable::ScriptableMaterial &material) {
+    QScriptValue scriptableMaterialToScriptValue(QScriptEngine* engine, const js::Graphics::Material &material) {
         QScriptValue obj = engine->newObject();
         obj.setProperty("name", material.name);
         obj.setProperty("model", material.model);
@@ -373,22 +390,22 @@ namespace scriptable {
         return obj;
     }
 
-    void scriptableMaterialFromScriptValue(const QScriptValue &object, scriptable::ScriptableMaterial& material) {
+    void scriptableMaterialFromScriptValue(const QScriptValue &object, js::Graphics::Material& material) {
         // No need to convert from QScriptValue to ScriptableMaterial
     }
 
-    QScriptValue scriptableMaterialLayerToScriptValue(QScriptEngine* engine, const scriptable::ScriptableMaterialLayer &materialLayer) {
+    QScriptValue scriptableMaterialLayerToScriptValue(QScriptEngine* engine, const js::Graphics::MaterialLayer &materialLayer) {
         QScriptValue obj = engine->newObject();
         obj.setProperty("material", scriptableMaterialToScriptValue(engine, materialLayer.material));
         obj.setProperty("priority", materialLayer.priority);
         return obj;
     }
 
-    void scriptableMaterialLayerFromScriptValue(const QScriptValue &object, scriptable::ScriptableMaterialLayer& materialLayer) {
+    void scriptableMaterialLayerFromScriptValue(const QScriptValue &object, js::Graphics::MaterialLayer& materialLayer) {
         // No need to convert from QScriptValue to ScriptableMaterialLayer
     }
 
-    QScriptValue multiMaterialMapToScriptValue(QScriptEngine* engine, const scriptable::MultiMaterialMap& map) {
+    QScriptValue multiMaterialMapToScriptValue(QScriptEngine* engine, const js::Graphics::MultiMaterialMap& map) {
         QScriptValue obj = engine->newObject();
         for (auto key : map.keys()) {
             obj.setProperty(key, qVectorScriptableMaterialLayerToScriptValue(engine, map[key]));
@@ -396,31 +413,34 @@ namespace scriptable {
         return obj;
     }
 
-    void multiMaterialMapFromScriptValue(const QScriptValue& map, scriptable::MultiMaterialMap& result) {
+    void multiMaterialMapFromScriptValue(const QScriptValue& map, js::Graphics::MultiMaterialMap& result) {
         // No need to convert from QScriptValue to MultiMaterialMap
     }
 
-    template <typename T> int registerDebugEnum(QScriptEngine* engine, const DebugEnums<T>& debugEnums) {
-        static const DebugEnums<T>& instance = debugEnums;
-        return qScriptRegisterMetaType<T>(
-            engine,
-            [](QScriptEngine* engine, const T& topology) -> QScriptValue {
-                return instance.value(topology);
-            },
-            [](const QScriptValue& value, T& topology) {
-                topology = instance.key(value.toString());
-            }
-        );
-    }
+}
+
+QScriptValue GraphicsScriptingInterface::getRenderFlagEnum() const {
+    auto meta = engine()->newQMetaObject(&js::Graphics::staticMetaObject);
+    // by default Qt global enums are also available; resetting the prototype rescopes so only js::Graphics values
+    meta.setPrototype(engine()->newObject());
+    return meta;
 }
 
 void GraphicsScriptingInterface::registerMetaTypes(QScriptEngine* engine) {
-    qScriptRegisterSequenceMetaType<QVector<glm::uint32>>(engine);
-    qScriptRegisterSequenceMetaType<QVector<scriptable::ScriptableMaterialLayer>>(engine);
+    qScriptRegisterSequenceMetaType<std::vector<glm::uint32>>(engine);
+    qScriptRegisterSequenceMetaType<std::vector<std::string>>(engine);
+    qScriptRegisterSequenceMetaType<std::vector<QUuid>>(engine);
+    qScriptRegisterSequenceMetaType<js::Graphics::Meshes>(engine);
+    qScriptRegisterSequenceMetaType<QVector<js::Graphics::MaterialLayer>>(engine);
 
-    scriptable::registerQPointerMetaType<scriptable::ScriptableModel>(engine);
-    scriptable::registerQPointerMetaType<scriptable::ScriptableMesh>(engine);
-    scriptable::registerQPointerMetaType<scriptable::ScriptableMeshPart>(engine);
+    scriptable::registerPrototype<js::Graphics::ModelPointer>(engine, new js::Graphics::ModelPrototype(nullptr));
+    scriptable::registerPrototype<js::Graphics::MeshPointer>(engine, new js::Graphics::MeshPrototype(nullptr));
+    scriptable::registerPrototype<js::Graphics::MeshPartPointer>(engine, new js::Graphics::MeshPartPrototype(nullptr));
+    scriptable::registerVariantType<std::string>(engine);
+    scriptable::registerReadOnlyVariantType<AABox>(engine);
+    scriptable::registerReadOnlyVariantType<Extents>(engine);
+
+    scriptable::registerQFlagsEnum<js::Graphics::RenderFlags>(engine);
 
     scriptable::registerDebugEnum<graphics::Mesh::Topology>(engine, graphics::TOPOLOGIES);
     scriptable::registerDebugEnum<gpu::Type>(engine, gpu::TYPES);
@@ -435,4 +455,206 @@ void GraphicsScriptingInterface::registerMetaTypes(QScriptEngine* engine) {
     Q_UNUSED(metaTypeIds);
 }
 
-#include "GraphicsScriptingInterface.moc"
+bool GraphicsScriptingInterface::setRenderPlugin(QUuid uuid, std::string pluginURI, QVariantMap parameters) {
+    using plugins::object::ProxyManager;
+    qDebug() << "setRenderPlugin" << uuid << pluginURI.c_str() << parameters;
+    EntityItemPointer entity;
+    bool success = false;
+    if (auto nestable = DependencyManager::get<SpatialParentFinder>()->find(uuid, success).lock()) {
+        entity = std::dynamic_pointer_cast<EntityItem>(nestable);
+    }
+    if (!pluginURI.empty()) {
+        if (auto proxy = plugins::object::createObjectProxy(uuid, pluginURI, parameters)) {
+            if (entity) {
+                qDebug() << "assigning object proxy to available EntityItem" << entity.get();
+                entity->setEntityProxy(proxy);
+                success = true;
+            } else {
+                // pre-stage message handler (on the assumption entity is about to become available)
+                if (!proxy->postMessage) {
+                    auto entities = DependencyManager::get<EntityScriptingInterface>();
+                    const EntityItemID entityItemID{ uuid };
+                    // forward "web" events to EntityScriptingInterface
+                    proxy->postMessage = [=](const QVariant& message) {
+                        emit entities->webEventReceived(entityItemID, message);
+                    };
+                }
+            }
+        } else {
+            jsThrowError(QString("error creating proxy %1 for %2").arg(pluginURI.c_str()).arg(uuid.toString()));
+            success = false;
+        }
+    } else if (!uuid.isNull()) {
+        qDebug() << "setRenderPlugin -- removeObjectProxy" << uuid;
+        if (entity) {
+            qDebug() << "resetting proxy for EntityItem" << entity.get();
+            entity->setEntityProxy(nullptr);
+        }
+        success = plugins::object::removeObjectProxy(uuid);
+    } else {
+        jsThrowError("invalid arguments (URI or UUID invalid)");
+        success = false;
+    }
+    return success;
+}
+
+std::vector<std::string> GraphicsScriptingInterface::getAvailableRenderPlugins() const {
+    return plugins::object::getAvailablePluginURIs();
+}
+
+std::vector<QUuid> GraphicsScriptingInterface::getRenderPluginObjectIDs(std::string uri) const {
+    return plugins::object::getAssignedObjectIDs(uri);
+}
+
+std::string GraphicsScriptingInterface::getRenderPlugin(QUuid uuid) const {
+    return plugins::object::getObjectPluginURI(uuid);
+}
+
+js::Graphics::MeshPointer GraphicsScriptingInterface::dedupeVertices(const js::Graphics::MeshPointer& input, float epsilon, bool resetNormals) {
+    const auto mesh = input->getMeshPointer();
+    if (!mesh) {
+        qCWarning(graphics_scripting) << "dedupeVertices passed null mesh" << input;
+        return nullptr;
+    }
+    graphics::MeshPointer newMesh(new graphics::Mesh());
+    newMesh->modelName = mesh->modelName + " (deduped)";
+    newMesh->displayName = mesh->displayName;
+
+    const auto& positions = buffer_helpers::bufferToVector<glm::vec3>(mesh->getVertexBuffer());
+    glm::uint32 numPositions = positions.size();
+    const auto epsilon2 = epsilon*epsilon;
+    bool slowDedupe = epsilon != DEDUPE_EPSILON;
+    std::unordered_map<glm::vec3, glm::uint32> hashedVertices;
+    std::vector<glm::vec3> uniqueVerts;
+    std::unordered_map<glm::uint32,glm::uint32> remapIndices;
+
+    for (glm::uint32 i = 0; i < numPositions; i++) {
+        if (i % 16384 == 0) {
+            qDebug() << "long running dedupe... i=" << i << " / " << numPositions;
+        }
+        const auto& position = positions[i];
+        bool unique = true;
+        if (slowDedupe) {
+            const glm::uint32 numUnique = (glm::uint32)uniqueVerts.size();
+            for (glm::uint32 j = 0; j < numUnique; j++) {
+                if (glm::length2(uniqueVerts[j] - position) <= epsilon2) {
+                    remapIndices[i] = j;
+                    unique = false;
+                    break;
+                }
+            }
+        } else {
+            if (hashedVertices.count(position)) {
+                remapIndices[i] = hashedVertices[position];
+                unique = false;
+            }
+        }
+        if (unique) {
+            remapIndices[i] = (glm::uint32)uniqueVerts.size();
+            uniqueVerts.push_back(position);
+        }
+    }
+
+    const auto& indices = buffer_helpers::bufferToVector<glm::uint32>(mesh->getIndexBuffer());
+    glm::uint32 numIndices = (glm::uint32)indices.size();
+    std::vector<glm::uint32> newIndices;
+    newIndices.resize(indices.size());
+    for (glm::uint32 i = 0; i < numIndices; i++) {
+        const auto& index = indices[i];
+        if (remapIndices.find(index) != remapIndices.end()) {
+            newIndices[i] = remapIndices[index];
+        }
+    }
+
+    {
+        // remove degenerate triagles
+        const int maxStartIndex = (int)newIndices.size() - 2;
+        for (int i = 0; i < maxStartIndex;) {
+            auto a = newIndices[i+0];
+            auto b = newIndices[i+1];
+            auto c = newIndices[i+2];
+            if (a == b || b == c || a == c) {
+                auto it = newIndices.begin() + i;
+                newIndices.erase(it, std::next(it, 3));
+                // preserve i for next pass
+            } else {
+                i += 3;
+            }
+        }
+    }
+
+    newMesh->setIndexBuffer(buffer_helpers::newFromVector(newIndices, { gpu::SCALAR, gpu::UINT32, gpu::INDEX }));
+    newMesh->setVertexBuffer(buffer_helpers::newFromVector(uniqueVerts, gpu::Element::VEC3F_XYZ));
+
+    auto attributeViews = buffer_helpers::mesh::getAllBufferViews(mesh);
+    glm::uint32 numUniqueVerts = (glm::uint32)uniqueVerts.size();
+    for (const auto& a : attributeViews) {
+        auto& view = a.second;
+        auto attribute = buffer_helpers::ATTRIBUTES[a.first];
+        if (attribute == gpu::Stream::POSITION) {
+            continue;
+        }
+        if (view._element.getSize() == 0) {
+            continue;
+        }
+        if (attribute == gpu::Stream::NORMAL && resetNormals) {
+            std::vector<glm::vec3> normals;
+            normals.reserve(numUniqueVerts);
+            for (const auto& p : uniqueVerts) {
+                normals.emplace_back(glm::normalize(p));
+            }
+            newMesh->addAttribute(gpu::Stream::NORMAL, buffer_helpers::newFromVector(normals, gpu::Element::VEC3F_XYZ));
+            continue;
+        }
+        if (attribute == gpu::Stream::COLOR || attribute == gpu::Stream::NORMAL) {
+            const auto& input = buffer_helpers::mesh::attributeToVector<glm::vec3>(mesh, static_cast<gpu::Stream::InputSlot>(attribute));
+            std::vector<glm::vec3> output;
+            output.resize(numUniqueVerts);
+            QMap<glm::uint32,bool> seen;
+            glm::uint32 numElements = (glm::uint32)input.size();
+            for (glm::uint32 i = 0; i < numElements; i++) {
+                glm::uint32 fromVertexIndex = i;
+                glm::uint32 toVertexIndex = remapIndices.find(fromVertexIndex) != remapIndices.end() ?
+                    remapIndices[fromVertexIndex] : fromVertexIndex;
+                auto a = input[fromVertexIndex];
+                auto b = seen.contains(toVertexIndex) ? output[toVertexIndex] : a;
+                auto c = glm::mix(a, b, 0.5f);
+                if (attribute == gpu::Stream::NORMAL) {
+                    c = glm::normalize(c);
+                }
+                output[toVertexIndex] = c;
+                seen[toVertexIndex] = true;
+            }
+            newMesh->addAttribute(attribute, buffer_helpers::newFromVector(output, gpu::Element::VEC3F_XYZ));
+            continue;
+        }
+        auto buffer = new gpu::Buffer();
+        buffer->resize(view._element.getSize() * numUniqueVerts);
+        auto newView = gpu::BufferView(buffer, view._element);
+
+        glm::uint32 numElements = (glm::uint32)view.getNumElements();
+        for (glm::uint32 i = 0; i < numElements; i++) {
+            glm::uint32 fromVertexIndex = i;
+            glm::uint32 toVertexIndex = remapIndices.find(fromVertexIndex) != remapIndices.end() ?
+                remapIndices[fromVertexIndex] : fromVertexIndex;
+            buffer_helpers::setValue<QVariant>(newView, toVertexIndex, buffer_helpers::getValue<QVariant>(view, fromVertexIndex, "dedupe"));
+        }
+        newMesh->addAttribute(attribute, newView);
+    }
+
+    std::vector<graphics::Mesh::Part> parts{{ 0, (int)newIndices.size(), 0, graphics::Mesh::Topology::TRIANGLES }};
+    newMesh->setPartBuffer(buffer_helpers::newFromVector(parts, gpu::Element::PART_DRAWCALL));
+    return js::Graphics::MeshPointer::create(newMesh);
+}
+
+js::Graphics::MeshPointer GraphicsScriptingInterface::cloneMesh(const js::Graphics::MeshPointer& input) {
+    auto mesh = input->getMeshPointer();
+    if (!mesh) {
+        qCWarning(graphics_scripting) << "ScriptableMesh::cloneMesh -- !meshPointer";
+        return nullptr;
+    }
+    return js::Graphics::MeshPointer::create(buffer_helpers::mesh::clone(mesh));
+}
+
+// TODO: remove with _backwards-compat.h
+js::Graphics::ModelPointer js::Graphics::ModelProvider::getGraphicsModel() { return (js::Graphics::ModelPointer)getScriptableModel(); }

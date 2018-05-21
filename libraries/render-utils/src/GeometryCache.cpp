@@ -640,6 +640,16 @@ GeometryCache::Shape GeometryCache::getShapeForEntityShape(int entityShape) {
     return MAPPING[entityShape];
 }
 
+GeometryCache::Shape GeometryCache::shapeFromString(const QString& shapeString) {
+    std::string str = shapeString.toStdString();
+    auto index = std::find_if(std::begin(GEOCACHE_SHAPE_STRINGS), std::end(GEOCACHE_SHAPE_STRINGS), [&](const char* val) { return str == val; });
+    if (index != std::end(GEOCACHE_SHAPE_STRINGS)) {
+        return static_cast<GeometryCache::Shape>(std::distance(std::begin(GEOCACHE_SHAPE_STRINGS), index));
+    }
+    // FIXME: maybe GeometryCache::Shape should include an INVALID_VALUE enum to use in cases like this?
+    return static_cast<GeometryCache::Shape>(-1);
+}
+
 QString GeometryCache::stringFromShape(GeometryCache::Shape geoShape)
 {
     if (((int)geoShape < 0) || ((int)geoShape >= (int)GeometryCache::NUM_SHAPES)) {
@@ -2492,11 +2502,9 @@ void GeometryCache::renderWireCubeInstance(RenderArgs* args, gpu::Batch& batch, 
 graphics::MeshPointer GeometryCache::meshFromShape(Shape geometryShape, glm::vec3 color) {
     auto shapeData = getShapeData(geometryShape);
 
-    qDebug() << "GeometryCache::getMeshProxyListFromShape" << shapeData << stringFromShape(geometryShape);
-
     auto positionsBufferView = buffer_helpers::clone(shapeData->_positionView);
     auto normalsBufferView = buffer_helpers::clone(shapeData->_normalView);
-    auto indexBufferView = buffer_helpers::clone(shapeData->_indicesView);
+    auto indexBufferView = buffer_helpers::newFromVector(buffer_helpers::bufferToVector<glm::uint32>(shapeData->_indicesView), gpu::Element::INDEX_INT32);
 
     gpu::BufferView::Size numVertices = positionsBufferView.getNumElements();
     Q_ASSERT(numVertices == normalsBufferView.getNumElements());

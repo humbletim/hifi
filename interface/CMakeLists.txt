@@ -218,7 +218,7 @@ link_hifi_libraries(
   audio audio-client animation script-engine physics
   render-utils entities-renderer avatars-renderer ui qml auto-updater midi
   controllers plugins image trackers
-  ui-plugins display-plugins input-plugins
+  ui-plugins display-plugins input-plugins object-plugins
   workload
   ${PLATFORM_GL_BACKEND}
 )
