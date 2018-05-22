@@ -8,6 +8,8 @@
 * can now use `Graphics.updateModel` and friends to manipulate the in-memory mesh
 
 eg:
+![screnshot](./readme.jpg)
+
 ```javascript
 */
 var SHAPE_PROXY_PLUGIN_URI = 'plugin://entity::Shape::MeshTest';
