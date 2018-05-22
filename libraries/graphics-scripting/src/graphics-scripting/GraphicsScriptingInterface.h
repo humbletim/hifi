@@ -48,7 +48,7 @@ public slots:
      *
      * @function Graphics.getModel
      * @param {UUID} entityID - The objectID of the model whose meshes are to be retrieved.
-     * @return {Graphics.Model} the resulting Model object
+     * @returns {Graphics.Model} the resulting Model object
      */
     js::Graphics::ModelPointer getModel(QUuid uuid);
 
@@ -56,7 +56,7 @@ public slots:
      * Assign a local Render Plugin for the specified UUID.
      *
      * @function Graphics.setRenderPlugin
-     * @param {UUID} objectID - The objectID to assign an object proxy to
+     * @param {Uuid} objectID - The objectID to assign an object proxy to
      * @param {URL} pluginURI - URI (or null to reset current plugin)
      * @return {bool} - true if proxy was successfully assigned
      */
@@ -69,7 +69,7 @@ public slots:
      * Specify advanced rendering flags for the specified UUID (currently only applies to {@link Shape} Plugins).
      *
      * @function Graphics.overrideRenderFlags
-     * @param {UUID} The objectID to be affected.
+     * @param {Uuid} The objectID to be affected.
      * @param {Graphics.RenderFlags} flagsToSet OR'd flags to enable
      * @param {Graphics.RenderFlags} [flagsToClear=0] OR'd flags to disable
      * Example: To enable wireframe display: `Graphics.overrideRenderFlags(uuid, Graphics.RenderFlags.WIREFRAME, 0);`
@@ -88,11 +88,11 @@ public slots:
      * For Entities, changes to certain properties (shapeType, modelURL, dimensions, etc.) will revert to the original model.
      *
      * @function Graphics.updateModel
-     * @param {UUID} id The objectID of the model whose meshes are to be retrieved.
+     * @param {Uuid} id The objectID of the model whose meshes are to be retrieved.
      * @param {Graphics.Model} The alternative Model object to use for rendering and ray picking.
      * @param {number} [meshIndex=-1] submesh index to update
      * @param {number} [partIndex=-1] submesh part number to update
-     * @return {boolean}
+     * @returns {boolean}
      */
     bool updateModel(QUuid uuid, const js::Graphics::ModelPointer& model, int meshIndex = -1, int partIndex = -1);
 
@@ -120,26 +120,6 @@ public slots:
      * @param {Graphics.IFSData} ifsMeshData Index-Faced Set (IFS) arrays used to create the new mesh.
      * @return {Graphics.Mesh} the resulting Mesh object
      */
-    /**jsdoc
-    * @typedef {object} Graphics.IFSData
-    * @property {string} [name] - mesh name (useful for debugging / debug prints).
-    * @property {number[]} indices - vertex indices to use for the mesh faces.
-    * @property {Vec3[]} vertices - vertex positions (model space)
-    * @property {Vec3[]} [normals] - vertex normals (normalized)
-    * @property {Vec3[]} [colors] - vertex colors (normalized)
-    * @property {Vec2[]} [texCoords0] - vertex texture coordinates (normalized)
-    *
-    * Advanced:
-    * <p>Mesh input arrays can also be specified as native JS TypedArrays
-    * (eg: Uint32Array for indices, Float32Array for positions, etc.)<p>
-    * <p>To simplify using output from other JS libraries the following aliases are also supported:
-    *   <li>indices :: indices | indexes | index</li>
-    *   <li>positions ::  positions | position | vertices | vertexPositions</li>
-    *   <li>normals :: normals | normal | vertexNormals</li>
-    *   <li>colors :: colors | color | vertexColors</li>
-    *   <li>texCoords0 :: texCoords0 | texCoord0 | uvs | uv | vertexUVs | texcoord | texCoord | vertexTextureCoords</li>
-    * </p>
-    */
     js::Graphics::MeshPointer newMesh(QScriptValue ifsMeshData);
     js::Graphics::MeshPointer newMeshFromVariant(QVariantMap ifsMeshData);
 
@@ -149,7 +129,7 @@ public slots:
      * @function Graphics.getMeshForShape
      * @param {Shape} The shape name
      * @param [color=Vec3.ONE] {Vec3} Default color to apply across shape vertices
-     * @return {Graphics.Mesh} the resulting Mesh object
+     * @returns {Graphics.Mesh} the resulting Mesh object
      */
     js::Graphics::MeshPointer getMeshForShape(const QString& shapeName, const glm::vec3& color = glm::vec3(1.0f));
 

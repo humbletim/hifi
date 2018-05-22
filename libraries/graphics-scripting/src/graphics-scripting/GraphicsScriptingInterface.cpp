@@ -198,6 +198,17 @@ js::Graphics::MeshPointer GraphicsScriptingInterface::newMesh(scriptable::JSVect
      * @property {Vec3[]} [normals=[]] - vertex normals (normalized)
      * @property {Vec3[]} [colors=[]] - vertex colors (normalized)
      * @property {Vec2[]} [texCoords0=[]] - vertex texture coordinates (normalized)
+     *
+     * Advanced:
+     * <p>IFSData input values can also be specified using native JS TypedArrays
+     * (eg: Uint32Array for indices, flattened Float32Array for positions, etc.)</p>
+     * <p>To simplify using output from other JS libraries, the following aliases are also supported:<ul>
+     *   <li>indices :: indices | indexes | index</li>
+     *   <li>positions ::  positions | position | vertices | vertexPositions</li>
+     *   <li>normals :: normals | normal | vertexNormals</li>
+     *   <li>colors :: colors | color | vertexColors</li>
+     *   <li>texCoords0 :: texCoords0 | texCoord0 | uvs | uv | vertexUVs | texcoord | texCoord | vertexTextureCoords</li>
+     * </ul></p>
      */
 
     std::string meshName = adapter.qt.value("name").toString().toStdString();
