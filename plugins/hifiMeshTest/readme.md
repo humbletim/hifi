@@ -2,9 +2,9 @@
 
 ##### placeholder readme
 
-* build plugins/hifiMeshTest against compatible branch (with object-plugin support)
-* create a Shape Entity
-* set its render plugin to 'plugin://entity::Shape::MeshTest'
+* build `plugins/hifiMeshTest` against compatible branch (with `object-plugin` support)
+* create a `Shape` Entity
+* set its render plugin to `"plugin://entity::Shape::MeshTest"`
 * can now use `Graphics.updateModel` and friends to manipulate the in-memory mesh
 
 eg:
