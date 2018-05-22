@@ -125,28 +125,20 @@ ShapeKey MeshPartPayload::getShapeKey() const {
         drawMaterialKey = _drawMaterials.top().material->getKey();
     }
 
-    bool isWireframe = _isWireframe;
-    bool isTranslucent = drawMaterialKey.isTranslucent();
-    bool hasTangents = drawMaterialKey.isNormalMap();
-    bool hasLightmap = drawMaterialKey.isLightmapMap();
-
-    if (isWireframe) {
-        isTranslucent = hasTangents = hasLightmap = false;
-    }
     ShapeKey::Builder builder;
     builder.withMaterial();
-
-    if (isTranslucent) {
-        builder.withTranslucent();
-    }
-    if (hasTangents) {
-        builder.withTangents();
-    }
-    if (hasLightmap) {
-        builder.withLightmap();
-    }
-    if (isWireframe) {
+    if (_isWireframe) {
         builder.withWireframe();
+    } else {
+        if (drawMaterialKey.isTranslucent()) {
+            builder.withTranslucent();
+        }
+        if (drawMaterialKey.isNormalMap()) {
+            builder.withTangents();
+        }
+        if (drawMaterialKey.isLightmapMap()) {
+            builder.withLightmap();
+        }
     }
     return builder.build();
 }

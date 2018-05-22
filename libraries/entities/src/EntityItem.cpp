@@ -2980,7 +2980,7 @@ std::unordered_map<std::string, graphics::MultiMaterial> EntityItem::getMaterial
 void EntityItem::setEntityProxy(plugins::object::ObjectProxy::Pointer proxy) {
     if (proxy != _proxy) {
         _proxy = proxy;
-        if (!_proxy && !_proxy->postMessage) {
+        if (_proxy && !_proxy->postMessage) {
             auto entities = DependencyManager::get<EntityScriptingInterface>();
             const EntityItemID entityItemID{ getEntityItemID() };
             // forward "web" events to EntityScriptingInterface

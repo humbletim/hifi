@@ -34,9 +34,10 @@ bool ProxyManager::registerProvider(const PluginURI& pluginURI, Provider::Pointe
 
 bool ProxyManager::unregisterProvider(const PluginURI& pluginURI, Provider::Pointer provider) {
     std::lock_guard<std::mutex> locker(_lock);
-    if (_providers.find(pluginURI) != _providers.end()) {
-        if (!provider || _providers[pluginURI] == provider) {
-            _providers.erase(pluginURI);
+    auto it = _providers.find(pluginURI);
+    if (it != _providers.end()) {
+        if (!provider || it->second == provider) {
+            _providers.erase(it);
             return true;
         }
     }
@@ -46,25 +47,27 @@ bool ProxyManager::unregisterProvider(const PluginURI& pluginURI, Provider::Poin
 Provider::Pointer ProxyManager::getProvider(const PluginURI& pluginURI) const{
     std::lock_guard<std::mutex> locker(_lock);
     Provider::Pointer result;
-    if (_providers.find(pluginURI) != _providers.end()) {
-        result = _providers.at(pluginURI);
+    auto it = _providers.find(pluginURI);
+    if (it != _providers.end()) {
+        result = it->second;
     }
     return result;
 }
 
 bool ProxyManager::assignProvider(const QUuid& uuid, Provider::Pointer provider) {
     std::lock_guard<std::mutex> locker(_lock);
-    bool result = _assigned.find(uuid) == _assigned.end();
+    bool existed = _assigned.find(uuid) != _assigned.end();
     _assigned[uuid] = provider;
-    return result;
+    return existed;
 }
 
 bool ProxyManager::unassignProvider(const QUuid& uuid, Provider::Pointer provider) {
     std::lock_guard<std::mutex> locker(_lock);
-    if (_assigned.find(uuid) != _assigned.end()) {
-        if (!provider || _assigned[uuid] == provider) {
-            auto tmp = _assigned[uuid];
-            _assigned.erase(uuid);
+    auto it = _assigned.find(uuid);
+    if (it != _assigned.end()) {
+        if (!provider || it->second == provider) {
+            auto tmp = it->second;
+            _assigned.erase(it);
             qDebug() << "unassignProvider -- destroying object proxy" << uuid;
             return tmp->destroyObjectProxy(uuid);
         }
@@ -74,8 +77,9 @@ bool ProxyManager::unassignProvider(const QUuid& uuid, Provider::Pointer provide
 
 Provider::Pointer ProxyManager::getProvider(const QUuid& uuid) const {
     std::lock_guard<std::mutex> locker(_lock);
-    if (_assigned.find(uuid) != _assigned.end()) {
-        return _assigned.at(uuid);
+    auto it = _assigned.find(uuid);
+    if (it != _assigned.end()) {
+        return it->second;
     }
     return nullptr;
 }

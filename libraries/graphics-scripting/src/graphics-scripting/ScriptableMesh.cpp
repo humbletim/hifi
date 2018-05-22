@@ -16,6 +16,8 @@
 #include <BaseScriptEngine.h>
 #include <QtScript/QScriptValue>
 #include <RegisteredMetaTypes.h>
+#include <queue>
+#include <unordered_set>
 #include <glm/glm.hpp>
 #include <glm/gtx/norm.hpp>
 #include <glm/gtx/transform.hpp>
@@ -23,14 +25,14 @@
 #include <graphics/GpuHelpers.h>
 #include <graphics/Geometry.h>
 
-// #define SCRIPTABLE_MESH_DEBUG 1
-
 QString js::Graphics::MeshPrototype::toString() const {
-    auto self = getNativeObject();
-    return (!self || !isValid()) ? QString("[ScriptableMesh nullptr]") : QString("[ScriptableMesh%1 numParts=%2 numVertices=%3]")
-        .arg(self->objectName().isEmpty() ? "" : " name=" +self->objectName())
-        .arg(getNumParts())
-        .arg(getNumVertices());
+    if (isValid()) {
+        const QString TOSTRING_TEMPLATE{ "[ScriptableMesh%1 numParts=%2 numVertices=%3]" };
+        auto objectName = getNativeObject()->objectName();
+        auto name = objectName.isEmpty() ? "" : " name=" + objectName;
+        return TOSTRING_TEMPLATE.arg(name).arg(getNumParts()).arg(getNumVertices());
+    }
+    return "[ScriptableMesh nullptr]";
 }
 
 std::vector<js::Graphics::MeshPartPointer> js::Graphics::MeshPrototype::getMeshParts() const {
@@ -55,66 +57,91 @@ glm::uint32 js::Graphics::MeshPrototype::getNumVertices() const {
     return 0;
 }
 
+namespace {
+    using IndexPair = std::pair<float, glm::uint32>;
+    struct NearestFirst {
+        bool operator()(const IndexPair& a, const IndexPair& b) {
+            return a.first > b.first;
+        }
+    };
+    void filterIndices(const graphics::MeshPointer& mesh,
+                       const std::vector<glm::uint32>& rawIndices,
+                       std::vector<glm::uint32>& result,
+                       std::function<float(const glm::vec3& p)> distanceFunc) {
+
+        std::priority_queue<IndexPair, std::vector<IndexPair>, NearestFirst> distances;
+        const auto positions = buffer_helpers::mesh::getBufferView(mesh, gpu::Stream::POSITION);
+
+        auto maxIndex = positions.getNumElements() - 1;
+        std::unordered_set<glm::uint32> uniqueIndices;
+        for (auto i : rawIndices) {
+            if (i <= maxIndex) {
+                uniqueIndices.insert(i);
+            }
+        }
+
+        for (auto i : uniqueIndices) {
+            float distance = distanceFunc(positions.get<glm::vec3>(i));
+            if (!glm::isnan(distance)) {
+                distances.push(std::make_pair(distance, i));
+            }
+        }
+
+        glm::uint32 length = (glm::uint32)distances.size();
+        result.resize(length);
+        for (glm::uint32 i = 0; i < length; i++) {
+            result[i] = distances.top().second;
+            distances.pop();
+        }
+    }
+}
 
 std::vector<glm::uint32> js::Graphics::MeshPrototype::findRayVertexIndices(const glm::vec3& start, const glm::vec3& end, float epsilon,
                                                                            const std::vector<glm::uint32>& indices) const {
+    std::vector<glm::uint32> result;
     if (!isValid()) {
-        return std::vector<glm::uint32>();
+        return result;
     }
-    std::map<float, glm::uint32> distances;
     const float epsilon2 = epsilon*epsilon;
     const glm::vec3& ray{  start - end };
     const float scale = glm::length2(ray);
     if (scale == 0.0f) {
         context()->throwError("start and end are same point");
+        return result;
     }
-    auto positions = buffer_helpers::mesh::getBufferView(getMeshPointer(), gpu::Stream::POSITION);
-    auto maxIndex = getNumVertices() - 1;
-    const std::vector<glm::uint32>& tocheck = indices.empty() ? getIndices() : indices;
-    for (const auto& index : tocheck) {
-        if (index < maxIndex) {
-            const glm::vec3& p = positions.get<glm::vec3>(maxIndex);
-            const glm::vec3& cross{ glm::cross(p - start, ray ) };
-            if ((glm::length2(cross) / scale) <= epsilon2) {
-                distances[glm::distance(p, start)] = index;
-            }
+    const auto& rawIndices = indices.empty() ? getIndices() : indices;
+    auto distanceMapper = [&](const glm::vec3& p) {
+        const glm::vec3& cross{ glm::cross(p - start, ray ) };
+        if ((glm::length2(cross) / scale) <= epsilon2) {
+            return glm::distance2(p, start);
         }
-    }
-    std::vector<glm::uint32> result;
-    std::transform(distances.begin(), distances.end(), std::back_inserter(result), [](std::pair<const float, glm::uint32>& val){return val.second;} );
+        return NAN;
+    };
+    filterIndices(getMeshPointer(), rawIndices, result, distanceMapper);
     return result;
 }
 
 std::vector<glm::uint32> js::Graphics::MeshPrototype::findNearbyVertexIndices(const glm::vec3& origin, float epsilon,
                                                                               const std::vector<glm::uint32>& indices) const {
-    if (!isValid()) {
-        return std::vector<glm::uint32>();
-    }
-    std::map<float, glm::uint32> distances;
-    const auto epsilon2 = epsilon*epsilon;
-    auto positions = buffer_helpers::mesh::getBufferView(getMeshPointer(), gpu::Stream::POSITION);
-    auto maxIndex = getNumVertices() - 1;
-    const std::vector<glm::uint32>& tocheck = indices.empty() ? getIndices() : indices;
-    for (const auto& index : tocheck) {
-        if (index < maxIndex) {
-            const glm::vec3& position = positions.get<glm::vec3>(maxIndex);
-            const glm::vec3& delta{ position - origin };
-            if (glm::length2(delta) <= epsilon2) {
-                distances[glm::length(delta)] = index;
-            }
-        }
-    }
     std::vector<glm::uint32> result;
-    std::transform(distances.begin(), distances.end(), std::back_inserter(result), [](std::pair<const float, glm::uint32>& val){return val.second;} );
+    if (!isValid()) {
+        return result;
+    }
+    const auto epsilon2 = epsilon*epsilon;
+    const auto& rawIndices = indices.empty() ? getIndices() : indices;
+    auto distanceMapper = [&](const glm::vec3& position) {
+        const glm::vec3& delta{ position - origin };
+        if (glm::length2(delta) <= epsilon2) {
+            return glm::length2(delta);
+        }
+        return NAN;
+    };
+    filterIndices(getMeshPointer(), rawIndices, result, distanceMapper);
     return result;
 }
 
 std::vector<glm::uint32> js::Graphics::MeshPrototype::getIndices() const {
     if (auto mesh = getMeshPointer()) {
-#ifdef SCRIPTABLE_MESH_DEBUG
-        qCDebug(graphics_scripting, "getIndices mesh %p", mesh.get());
-#endif
-        // FIXME: to prefer std::vector over QVector need to create buffer_helpers::bufferToStdVector (or further templatize)
         return buffer_helpers::bufferToVector<glm::uint32>(mesh->getIndexBuffer()).toStdVector();
     }
     return std::vector<glm::uint32>();

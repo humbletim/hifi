@@ -464,26 +464,26 @@ bool Model::findRayIntersectionAgainstSubMeshes(const glm::vec3& origin, const g
 
         for (auto& meshTriangleSets : _modelSpaceMeshTriangleSets) {
             for (auto &partTriangleSet : meshTriangleSets) {
-            float triangleSetDistance = 0.0f;
-            BoxFace triangleSetFace;
-            Triangle triangleSetTriangle;
-            if (partTriangleSet.findRayIntersection(meshFrameOrigin, meshFrameDirection, triangleSetDistance, triangleSetFace, triangleSetTriangle, pickAgainstTriangles, allowBackface)) {
+                float triangleSetDistance = 0.0f;
+                BoxFace triangleSetFace;
+                Triangle triangleSetTriangle;
+                if (partTriangleSet.findRayIntersection(meshFrameOrigin, meshFrameDirection, triangleSetDistance, triangleSetFace, triangleSetTriangle, pickAgainstTriangles, allowBackface)) {
 
-                glm::vec3 meshIntersectionPoint = meshFrameOrigin + (meshFrameDirection * triangleSetDistance);
-                glm::vec3 worldIntersectionPoint = glm::vec3(meshToWorldMatrix * glm::vec4(meshIntersectionPoint, 1.0f));
-                float worldDistance = glm::distance(origin, worldIntersectionPoint);
+                    glm::vec3 meshIntersectionPoint = meshFrameOrigin + (meshFrameDirection * triangleSetDistance);
+                    glm::vec3 worldIntersectionPoint = glm::vec3(meshToWorldMatrix * glm::vec4(meshIntersectionPoint, 1.0f));
+                    float worldDistance = glm::distance(origin, worldIntersectionPoint);
 
-                if (worldDistance < bestDistance) {
-                    bestDistance = worldDistance;
-                    intersectedSomething = true;
-                    face = triangleSetFace;
-                    bestModelTriangle = triangleSetTriangle;
-                    bestWorldTriangle = triangleSetTriangle * meshToWorldMatrix;
-                    extraInfo["worldIntersectionPoint"] = vec3toVariant(worldIntersectionPoint);
-                    extraInfo["meshIntersectionPoint"] = vec3toVariant(meshIntersectionPoint);
-                    extraInfo["partIndex"] = partIndex;
-                    bestSubMeshIndex = subMeshIndex;
-                }
+                    if (worldDistance < bestDistance) {
+                        bestDistance = worldDistance;
+                        intersectedSomething = true;
+                        face = triangleSetFace;
+                        bestModelTriangle = triangleSetTriangle;
+                        bestWorldTriangle = triangleSetTriangle * meshToWorldMatrix;
+                        extraInfo["worldIntersectionPoint"] = vec3toVariant(worldIntersectionPoint);
+                        extraInfo["meshIntersectionPoint"] = vec3toVariant(meshIntersectionPoint);
+                        extraInfo["partIndex"] = partIndex;
+                        bestSubMeshIndex = subMeshIndex;
+                    }
                 }
                 partIndex++;
             }
@@ -911,54 +911,54 @@ void Model::renderDebugMeshBoxes(gpu::Batch& batch) {
         for (auto &partTriangleSet : meshTriangleSets) {
             auto box = partTriangleSet.getBounds();
 
-        if (_debugMeshBoxesID == GeometryCache::UNKNOWN_ID) {
-            _debugMeshBoxesID = DependencyManager::get<GeometryCache>()->allocateID();
+            if (_debugMeshBoxesID == GeometryCache::UNKNOWN_ID) {
+                _debugMeshBoxesID = DependencyManager::get<GeometryCache>()->allocateID();
+            }
+            QVector<glm::vec3> points;
+
+            glm::vec3 brn = box.getCorner();
+            glm::vec3 bln = brn + glm::vec3(box.getDimensions().x, 0, 0);
+            glm::vec3 brf = brn + glm::vec3(0, 0, box.getDimensions().z);
+            glm::vec3 blf = brn + glm::vec3(box.getDimensions().x, 0, box.getDimensions().z);
+
+            glm::vec3 trn = brn + glm::vec3(0, box.getDimensions().y, 0);
+            glm::vec3 tln = bln + glm::vec3(0, box.getDimensions().y, 0);
+            glm::vec3 trf = brf + glm::vec3(0, box.getDimensions().y, 0);
+            glm::vec3 tlf = blf + glm::vec3(0, box.getDimensions().y, 0);
+
+            points << brn << bln;
+            points << brf << blf;
+            points << brn << brf;
+            points << bln << blf;
+
+            points << trn << tln;
+            points << trf << tlf;
+            points << trn << trf;
+            points << tln << tlf;
+
+            points << brn << trn;
+            points << brf << trf;
+            points << bln << tln;
+            points << blf << tlf;
+
+            glm::vec4 color[] = {
+                { 0.0f, 1.0f, 0.0f, 1.0f }, // green
+                { 1.0f, 0.0f, 0.0f, 1.0f }, // red
+                { 0.0f, 0.0f, 1.0f, 1.0f }, // blue
+                { 1.0f, 0.0f, 1.0f, 1.0f }, // purple
+                { 1.0f, 1.0f, 0.0f, 1.0f }, // yellow
+                { 0.0f, 1.0f, 1.0f, 1.0f }, // cyan
+                { 1.0f, 1.0f, 1.0f, 1.0f }, // white
+                { 0.0f, 0.5f, 0.0f, 1.0f },
+                { 0.0f, 0.0f, 0.5f, 1.0f },
+                { 0.5f, 0.0f, 0.5f, 1.0f },
+                { 0.5f, 0.5f, 0.0f, 1.0f },
+                { 0.0f, 0.5f, 0.5f, 1.0f } };
+
+            DependencyManager::get<GeometryCache>()->updateVertices(_debugMeshBoxesID, points, color[colorNdx]);
+            DependencyManager::get<GeometryCache>()->renderVertices(batch, gpu::LINES, _debugMeshBoxesID);
+            colorNdx++;
         }
-        QVector<glm::vec3> points;
-
-        glm::vec3 brn = box.getCorner();
-        glm::vec3 bln = brn + glm::vec3(box.getDimensions().x, 0, 0);
-        glm::vec3 brf = brn + glm::vec3(0, 0, box.getDimensions().z);
-        glm::vec3 blf = brn + glm::vec3(box.getDimensions().x, 0, box.getDimensions().z);
-
-        glm::vec3 trn = brn + glm::vec3(0, box.getDimensions().y, 0);
-        glm::vec3 tln = bln + glm::vec3(0, box.getDimensions().y, 0);
-        glm::vec3 trf = brf + glm::vec3(0, box.getDimensions().y, 0);
-        glm::vec3 tlf = blf + glm::vec3(0, box.getDimensions().y, 0);
-
-        points << brn << bln;
-        points << brf << blf;
-        points << brn << brf;
-        points << bln << blf;
-
-        points << trn << tln;
-        points << trf << tlf;
-        points << trn << trf;
-        points << tln << tlf;
-
-        points << brn << trn;
-        points << brf << trf;
-        points << bln << tln;
-        points << blf << tlf;
-
-        glm::vec4 color[] = {
-            { 0.0f, 1.0f, 0.0f, 1.0f }, // green
-            { 1.0f, 0.0f, 0.0f, 1.0f }, // red
-            { 0.0f, 0.0f, 1.0f, 1.0f }, // blue
-            { 1.0f, 0.0f, 1.0f, 1.0f }, // purple
-            { 1.0f, 1.0f, 0.0f, 1.0f }, // yellow
-            { 0.0f, 1.0f, 1.0f, 1.0f }, // cyan
-            { 1.0f, 1.0f, 1.0f, 1.0f }, // white
-            { 0.0f, 0.5f, 0.0f, 1.0f },
-            { 0.0f, 0.0f, 0.5f, 1.0f },
-            { 0.5f, 0.0f, 0.5f, 1.0f },
-            { 0.5f, 0.5f, 0.0f, 1.0f },
-            { 0.0f, 0.5f, 0.5f, 1.0f } };
-
-        DependencyManager::get<GeometryCache>()->updateVertices(_debugMeshBoxesID, points, color[colorNdx]);
-        DependencyManager::get<GeometryCache>()->renderVertices(batch, gpu::LINES, _debugMeshBoxesID);
-        colorNdx++;
-    }
     }
     _mutex.unlock();
 }

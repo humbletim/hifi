@@ -78,8 +78,8 @@ public:
     std::function<void(const QVariant& message)> postMessage = [](const QVariant&){};
     virtual void messageReceived(const QVariant& message);
 
-    virtual bool recomputeAABox(AABox& box) const;
-    virtual bool recomputeDimensions(glm::vec3& box) const;
+    virtual void recomputeAABox(AABox& box) const;
+    virtual void recomputeDimensions(glm::vec3& box) const;
     virtual bool findRayIntersection(const MeshRay& meshRay, IntersectionResultRef& result);
 
     virtual void preload() {}

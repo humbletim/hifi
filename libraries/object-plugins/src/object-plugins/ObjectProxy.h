@@ -64,10 +64,10 @@ namespace plugins { namespace object {
         virtual void setMaterial(graphics::MaterialPointer material) {}
 
         std::function<void(const QVariant& message)> postMessage = [](const QVariant&){};
-        virtual void messageReceived(const QVariant& message) { }
+        virtual void messageReceived(const QVariant& message) {}
 
-        virtual bool recomputeAABox(AABox& box) const { return false; }
-        virtual bool recomputeDimensions(glm::vec3& box) const { return false; }
+        virtual void recomputeAABox(AABox& box) const {}
+        virtual void recomputeDimensions(glm::vec3& box) const {}
         virtual bool findRayIntersection(const ObjectRay& meshRay, IntersectionResultRef& result) { return false; }
 
         virtual void preload() {}

@@ -543,11 +543,9 @@ js::Graphics::MeshPointer GraphicsScriptingInterface::dedupeVertices(const js::G
                     break;
                 }
             }
-        } else {
-            if (hashedVertices.count(position)) {
+        } else if (hashedVertices.count(position)) {
                 remapIndices[i] = hashedVertices[position];
                 unique = false;
-            }
         }
         if (unique) {
             remapIndices[i] = (glm::uint32)uniqueVerts.size();
@@ -561,15 +559,15 @@ js::Graphics::MeshPointer GraphicsScriptingInterface::dedupeVertices(const js::G
     newIndices.resize(indices.size());
     for (glm::uint32 i = 0; i < numIndices; i++) {
         const auto& index = indices[i];
-        if (remapIndices.find(index) != remapIndices.end()) {
-            newIndices[i] = remapIndices[index];
+        auto it = remapIndices.find(index);
+        if (it != remapIndices.end()) {
+            newIndices[i] = it->second;
         }
     }
 
     {
-        // remove degenerate triagles
-        const int maxStartIndex = (int)newIndices.size() - 2;
-        for (int i = 0; i < maxStartIndex;) {
+        // remove degenerate triangles
+        for (int i = 0; i < (int)newIndices.size() - 2;) {
             auto a = newIndices[i+0];
             auto b = newIndices[i+1];
             auto c = newIndices[i+2];
@@ -589,11 +587,11 @@ js::Graphics::MeshPointer GraphicsScriptingInterface::dedupeVertices(const js::G
     auto attributeViews = buffer_helpers::mesh::getAllBufferViews(mesh);
     glm::uint32 numUniqueVerts = (glm::uint32)uniqueVerts.size();
     for (const auto& a : attributeViews) {
-        auto& view = a.second;
         auto attribute = buffer_helpers::ATTRIBUTES[a.first];
         if (attribute == gpu::Stream::POSITION) {
             continue;
         }
+        auto& view = a.second;
         if (view._element.getSize() == 0) {
             continue;
         }

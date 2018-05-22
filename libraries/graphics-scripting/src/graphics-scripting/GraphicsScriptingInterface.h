@@ -165,7 +165,7 @@ public slots:
     static js::Graphics::MeshPointer dedupeVertices(const js::Graphics::MeshPointer& input, float epsilon = DEDUPE_EPSILON, bool resetNormals = false);
 
 private:
-    static constexpr float DEDUPE_EPSILON = 1e-6f;
+    static constexpr float DEDUPE_EPSILON = 1.0e-6f;
     js::Graphics::ModelProviderPointer getModelProvider(QUuid uuid);
     void jsThrowError(const QString& error);
     graphics::MeshPointer getNativeMesh(js::Graphics::MeshPointer meshProxy);

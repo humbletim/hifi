@@ -78,10 +78,10 @@ namespace js { namespace Graphics {
         //qobject_cast<js::Graphics::Model*>(model); }
         std::vector<glm::uint32> getIndices() const;
         std::vector<glm::uint32> findRayVertexIndices(
-            const glm::vec3& start, const glm::vec3& end, float epsilon = 1e-6,
+            const glm::vec3& start, const glm::vec3& end, float epsilon = 1.0e-6f,
             const std::vector<glm::uint32>& indices = std::vector<glm::uint32>()) const;
         std::vector<glm::uint32> findNearbyVertexIndices(
-            const glm::vec3& origin, float epsilon = 1e-6,
+            const glm::vec3& origin, float epsilon = 1.0e-6f,
             const std::vector<glm::uint32>& indices = std::vector<glm::uint32>()) const;
 
         glm::uint32 addAttribute(const QString& attributeName, const QVariant& defaultValue = QVariant());

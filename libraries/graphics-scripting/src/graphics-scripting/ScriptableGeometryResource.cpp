@@ -48,7 +48,7 @@ QString ScriptableGeometryResource::toString() const {
         .arg(getURL().toString());
 }
 
-QSharedPointer<GeometryResource> ScriptableGeometryResource::safeNativeObject(bool verify) const {
+GeometryResource::Pointer ScriptableGeometryResource::safeNativeObject(bool verify) const {
     if (GeometryResource::Pointer result = qscriptvalue_cast<GeometryResource::Pointer>(thisObject())) {
         return result;
     }
