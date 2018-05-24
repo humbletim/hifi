@@ -7,14 +7,14 @@
 #include <UUIDHasher.h>
 
 class MeshEntityProxy;
-using plugins::entity::ProxyResolver;
+using plugins::object::Provider;
 
-class MeshEntityPlugin : public ProxyResolver, public std::enable_shared_from_this<MeshEntityPlugin> {
-    using ObjectProxy = plugins::entity::ObjectProxy;
+class MeshEntityPlugin : public Provider, public std::enable_shared_from_this<MeshEntityPlugin> {
+    using ObjectProxy = plugins::object::ObjectProxy;
 public:
     std::unordered_map< QUuid, std::shared_ptr<MeshEntityProxy> > meshes;
-    std::mutex _lock;
-    virtual ObjectProxy::Pointer openObjectProxy(const QUuid&uuid) override;
-    virtual bool closeObjectProxy(const QUuid& uuid) override;
-    virtual ObjectProxy::Pointer getObjectProxy(const QUuid& uuid) override;
+    mutable std::mutex _lock;
+    virtual ObjectProxy::Pointer createObjectProxy(const QUuid&uuid, const QVariantMap& parameters = QVariantMap()) override;
+    virtual ObjectProxy::Pointer getObjectProxy(const QUuid&uuid) const override;
+    virtual bool destroyObjectProxy(const QUuid&uuid) override;
 };

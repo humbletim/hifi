@@ -17,7 +17,7 @@
 Q_LOGGING_CATEGORY(mesh_test, ID)
 
 namespace {
-    const std::string SHAPE_PROXY_PLUGIN_URI{ "plugin://entity::Shape::Proxy" };
+    const std::string SHAPE_PROXY_PLUGIN_URI{ "plugin://entity::Shape::MeshTest" };
     class DummyInputPlugin : public InputPlugin {
     public:
         DummyInputPlugin() : InputPlugin() {}
@@ -28,10 +28,10 @@ namespace {
         void pluginFocusOutEvent() override {}
         void init() override {
             qCDebug(mesh_test) << "DummyInputPlugin::init...";
-            auto proxyManager = DependencyManager::get<plugins::entity::ProxyManager>();
+            auto proxyManager = DependencyManager::get<plugins::object::ProxyManager>();
             if (proxyManager) {
                 qCDebug(mesh_test) << "REGISTERING mesh::ObjectPlugin -> MeshEntityPlugin" << SHAPE_PROXY_PLUGIN_URI.c_str();
-                proxyManager->setPluginResolver(SHAPE_PROXY_PLUGIN_URI, std::make_shared<MeshEntityPlugin>());
+                proxyManager->registerProvider(SHAPE_PROXY_PLUGIN_URI, std::make_shared<MeshEntityPlugin>());
             }
         }
         void deinit() override { qCDebug(mesh_test) << "DummyInputPlugin::deinit"; }

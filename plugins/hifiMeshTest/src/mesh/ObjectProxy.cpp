@@ -39,7 +39,7 @@ bool MeshEntityProxy::setProperties(const QVariantMap& map) {
     return true;
 }
 
-bool MeshEntityProxy::findRayIntersection(const MeshRay& entityRay, IntersectionResultRef& result)  {
+bool MeshEntityProxy::findRayIntersection(const ObjectRay& entityRay, IntersectionResultRef& result)  {
     const QVariantMap& details = entityRay.metadata;
     //qDebug() << objectID << "MeshEntityProxy.findRayIntersection" << QThread::currentThread();
 
@@ -65,7 +65,7 @@ bool MeshEntityProxy::findRayIntersection(const MeshRay& entityRay, Intersection
             result.extraInfo["subMeshName"] = "MeshEntityProxy";
             result.extraInfo["triangleIndex"] = _triangles.indexOf(triangle);
             return true;
-        }        
+        }
     }
     return false;
 }
@@ -143,9 +143,9 @@ MeshEntityProxy::MeshRenderItem::MeshRenderItem(const render::ScenePointer& scen
     identity.setIdentity();
     Transform offset;
     const graphics::Mesh::Part& part = mesh->getPartBuffer().get<graphics::Mesh::Part>(partIndex);
-    qDebug() << "part" << part._startIndex << part._numIndices;
+    qDebug() << "MeshRenderItem -- part" << part._startIndex << part._numIndices;
     payload = std::make_shared<MeshPartPayload>(mesh, partIndex, material);
-    qDebug() << "MeshPartPayload" << payload.get();
+    qDebug() << "MeshRenderItem -- MeshPartPayload" << payload.get();
     if (!payload) {
         qDebug() << "!payload";
         return;
@@ -170,13 +170,11 @@ MeshEntityProxy::MeshRenderItem::~MeshRenderItem() {
     scene.reset();
 }
 
-bool MeshEntityProxy::recomputeAABox(AABox& box) const {
+void MeshEntityProxy::recomputeAABox(AABox& box) const {
     box.embiggen(100.0f);
-    return true;
 }
-bool MeshEntityProxy::recomputeDimensions(glm::vec3& box) const {
+void MeshEntityProxy::recomputeDimensions(glm::vec3& box) const {
     box *= 100.0f;
-    return true;
 }
 
 void MeshEntityProxy::messageReceived(const QVariant& message) {
@@ -194,7 +192,7 @@ void MeshEntityProxy::messageReceived(const QVariant& message) {
 
 namespace {
     graphics::MaterialPointer getDefaultMaterial() {
-        qDebug() << "using placeholder magenta material";
+        qDebug() << "MeshEntityProxy: using placeholder magenta material";
         auto material = std::make_shared<graphics::Material>();
         material->setModel("--entity--");
         material->setMetallic(0.02f);
@@ -224,7 +222,7 @@ bool MeshEntityProxy::update(const render::ScenePointer& scene, render::Transact
         if (!material) {
             material = getDefaultMaterial();
         }
-        qDebug() << "creating renderItem" << QThread::currentThread() << mesh.get();
+        qDebug() << "MeshEntityProxy::update -- creating renderItem" << QThread::currentThread() << mesh.get();
         qDebug() << mesh->getNumParts() << mesh->getNumIndices() << mesh->getNumVertices();
         renderItem = std::make_shared<MeshRenderItem>(scene, mesh, 0, material);
         setRenderItem(renderItem);
@@ -237,13 +235,13 @@ bool MeshEntityProxy::update(const render::ScenePointer& scene, render::Transact
         glm::vec3 color = vec3FromVariant(properties["color"]);
         glm::vec3 albedo = material->getAlbedo();
         if (glm::all(glm::epsilonEqual(color, albedo, glm::epsilon<float>()))) {
-            qDebug() << "updating color" << color;
+            qDebug() << "MeshEntityProxy -- updating color" << color;
             material->setAlbedo(color);
         }
     }
 
     if (renderItem->itemID == render::Item::INVALID_ITEM_ID) {
-        qDebug() << "renderItem->itemID == Item::INVALID_ITEM_ID";
+        qDebug() << "MeshEntityProxy renderItem->itemID == Item::INVALID_ITEM_ID";
     }
     {
         QVector<float> renderTransform = properties["renderTransform"].value<QVector<float>>();
@@ -268,7 +266,7 @@ bool MeshEntityProxy::update(const render::ScenePointer& scene, render::Transact
         auto partIndex = renderItem->partIndex;
         transaction.updateItem<MeshPartPayload>(itemID, [=](MeshPartPayload& data) {
             if (data._isWireframe != isWireframe) {
-                qDebug() << "data.setIsWireframe" << isWireframe << "was: " << data._isWireframe;
+                qDebug() << "MeshEntityProxy -- data.setIsWireframe" << isWireframe << "was: " << data._isWireframe;
                 postMessage(QVariantMap{
                     { "type", "changed" },
                     { "property", "wireframe" },
@@ -312,7 +310,7 @@ bool MeshEntityProxy::canReplaceModelMeshPart(int meshIndex, int partIndex) {
     return (bool)_mesh;
 }
 
-bool MeshEntityProxy::overrideModelRenderFlags(js::Graphics::RenderFlags flagsToSet, js::Graphics::RenderFlags flagsToClear) {
+bool MeshEntityProxy::overrideRenderFlags(js::Graphics::RenderFlags flagsToSet, js::Graphics::RenderFlags flagsToClear) {
     auto before = flags;
     flags = (before | flagsToSet) & ~(flagsToClear);
     if (!flagsToClear.testFlag(js::Graphics::RenderFlag::DIRTY)) {
@@ -321,12 +319,13 @@ bool MeshEntityProxy::overrideModelRenderFlags(js::Graphics::RenderFlags flagsTo
     return true;
 }
 
-js::Graphics::ModelPointer MeshEntityProxy::getScriptableModel() {
+js::Graphics::ModelPointer MeshEntityProxy::getGraphicsModel() {
     QReadLocker locker(&lock);
     js::Graphics::ModelPointer result;
     if (_mesh) {
         result = js::Graphics::ModelPointer::create();
         result->objectID = objectID;
+        result->setObjectName(QString::fromStdString("MeshEntityProxy::" + _mesh->modelName));
         result->append(_mesh);
     }
    return result;
@@ -344,10 +343,11 @@ int MeshEntityProxy::MyTriangleSet::indexOf(const Triangle tri) {
     return -1;
 }
 
-bool MeshEntityProxy::initialize() {
+bool MeshEntityProxy::initialize(const QVariantMap& parameters) {
     auto geometryCache = DependencyManager::get<GeometryCache>();
     if (auto mesh = geometryCache->meshFromShape(GeometryCache::Shape::Icosahedron, glm::vec3(1.0f, 0.0f, 1.0f))) {
         setMesh(mesh);
+        setProperties(parameters);
         {
             QWriteLocker locker(&lock);
             flags |= js::Graphics::RenderFlag::DIRTY;

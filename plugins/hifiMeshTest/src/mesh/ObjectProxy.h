@@ -13,10 +13,10 @@
 class MeshEntityPlugin;
 using MeshEntityPluginPointer = std::shared_ptr<MeshEntityPlugin>;
 
-using plugins::entity::ObjectProxy;
-using plugins::entity::MeshObjectProxy;
-using plugins::entity::MeshRay;
-using plugins::entity::IntersectionResultRef;
+using plugins::object::ObjectProxy;
+using plugins::object::MeshObjectProxy;
+using plugins::object::ObjectRay;
+using plugins::object::IntersectionResultRef;
 
 class MeshEntityProxy : public MeshObjectProxy,
     public std::enable_shared_from_this<MeshObjectProxy> {
@@ -38,7 +38,7 @@ public:
     T _pvt;                                                             \
     T get##Name() { QReadLocker locker(&lock); return _pvt; } \
     void set##Name(T v) { QWriteLocker locker(&lock);  _pvt = v;}
-    
+
     getset(MeshRenderItem::Pointer, RenderItem, _renderItem);
     getset(graphics::MaterialPointer, EntityMaterial, _material);
     getset(graphics::MeshPointer, Mesh, _mesh);
@@ -50,24 +50,25 @@ public:
 
     virtual bool setProperties(const QVariantMap& properties) override;
     virtual QVariantMap getProperties() override { QReadLocker locker(&lock); return properties; }
-        
+
     virtual void setMaterial(graphics::MaterialPointer material) override { setEntityMaterial(material); }
     virtual bool update(const render::ScenePointer& scene, render::Transaction& transaction, float deltaTime) override;
 
-    virtual bool recomputeAABox(AABox& box) const override;
-    virtual bool recomputeDimensions(glm::vec3& box) const override;
-    virtual bool findRayIntersection(const MeshRay& meshRay, IntersectionResultRef& result) override;
+    virtual void recomputeAABox(AABox& box) const override;
+    virtual void recomputeDimensions(glm::vec3& box) const override;
+    virtual bool findRayIntersection(const ObjectRay& meshRay, IntersectionResultRef& result) override;
 
     virtual void messageReceived(const QVariant& message) override;
     virtual void preload() override;
     virtual void unload() override;
 
-    virtual js::Graphics::ModelPointer getScriptableModel() override;
+    virtual js::Graphics::ModelPointer getGraphicsModel() override;
+    virtual scriptable::ScriptableModelBase getScriptableModel() override { return scriptable::ScriptableModelBase(getGraphicsModel()); }
     virtual bool canReplaceModelMeshPart(int meshIndex, int partIndex) override;
     virtual bool replaceScriptableModelMeshPart(const js::Graphics::ModelPointer& model, int meshIndex, int partIndex) override;
-    virtual bool overrideModelRenderFlags(js::Graphics::RenderFlags flagsToSet, js::Graphics::RenderFlags flagsToClear) override;
+    virtual bool overrideRenderFlags(js::Graphics::RenderFlags flagsToSet, js::Graphics::RenderFlags flagsToClear) override;
 
-    bool initialize();
+    bool initialize(const QVariantMap& parameters = QVariantMap());
 protected:
     class MyTriangleSet : public TriangleSet {
     public:
