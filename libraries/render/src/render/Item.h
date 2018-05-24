@@ -25,7 +25,6 @@
 
 #include "Args.h"
 
-#include <graphics/Material.h>
 #include "ShapePipeline.h"
 
 namespace render {

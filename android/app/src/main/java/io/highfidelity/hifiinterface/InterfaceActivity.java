@@ -15,6 +15,9 @@ import android.content.Intent;
 import android.content.res.AssetManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Vibrator;
+import android.view.HapticFeedbackConstants;
 import android.view.WindowManager;
 import android.util.Log;
 import org.qtproject.qt5.android.bindings.QtActivity;
@@ -31,14 +34,16 @@ import android.view.View;
 
 public class InterfaceActivity extends QtActivity {
 
+    public static final String DOMAIN_URL = "url";
+    private static final String TAG = "Interface";
+    private Vibrator mVibrator;
+
     //public static native void handleHifiURL(String hifiURLString);
     private native long nativeOnCreate(InterfaceActivity instance, AssetManager assetManager);
-    //private native void nativeOnPause();
-    //private native void nativeOnResume();
-    //private native void nativeOnStop();
-    //private native void nativeOnStart();
-    //private native void saveRealScreenSize(int width, int height);
-    //private native void setAppVersion(String version);
+    private native void nativeOnDestroy();
+    private native void nativeGotoUrl(String url);
+    private native void nativeEnterBackground();
+    private native void nativeEnterForeground();
     private native long nativeOnExitVr();
 
     private AssetManager assetManager;
@@ -57,11 +62,14 @@ public class InterfaceActivity extends QtActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        super.isLoading = true;
+        Intent intent = getIntent();
+        if (intent.hasExtra(DOMAIN_URL) && !intent.getStringExtra(DOMAIN_URL).isEmpty()) {
+            intent.putExtra("applicationArguments", "--url " + intent.getStringExtra(DOMAIN_URL));
+        }
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        
-        // Get the intent that started this activity in case we have a hifi:// URL to parse
-        Intent intent = getIntent();
+
         if (intent.getAction() == Intent.ACTION_VIEW) {
             Uri data = intent.getData();
 
@@ -82,7 +90,6 @@ public class InterfaceActivity extends QtActivity {
 
         Point size = new Point();
         getWindowManager().getDefaultDisplay().getRealSize(size);
-//        saveRealScreenSize(size.x, size.y);
 
         try {
             PackageInfo pInfo = this.getPackageManager().getPackageInfo(getPackageName(), 0);
@@ -95,42 +102,45 @@ public class InterfaceActivity extends QtActivity {
         final View rootView = getWindow().getDecorView().findViewById(android.R.id.content);
 
         // This is a workaround to hide the menu bar when the virtual keyboard is shown from Qt
-        rootView.getViewTreeObserver().addOnGlobalLayoutListener(new android.view.ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                int heightDiff = rootView.getRootView().getHeight() - rootView.getHeight();
-                if (getActionBar().isShowing()) {
-                    getActionBar().hide();
-                }
+        rootView.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+            if (getActionBar() != null && getActionBar().isShowing()) {
+                getActionBar().hide();
             }
         });
+        startActivity(new Intent(this, SplashActivity.class));
+        mVibrator = (Vibrator) this.getSystemService(VIBRATOR_SERVICE);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        //nativeOnPause();
+        nativeEnterBackground();
         //gvrApi.pauseTracking();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-//        nativeOnStart();
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
     }
 
     @Override
     protected void onStop() {
-        Log.d("[Background]","Calling nativeOnStop from InterfaceActivity");
-//        nativeOnStop();
         super.onStop();
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        //nativeOnResume();
+        nativeEnterForeground();
         //gvrApi.resumeTracking();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        nativeOnDestroy();
     }
 
     @Override
@@ -175,4 +185,44 @@ public class InterfaceActivity extends QtActivity {
         }
     }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        if (intent.hasExtra(DOMAIN_URL)) {
+            nativeGotoUrl(intent.getStringExtra(DOMAIN_URL));
+        }
+    }
+
+    public void openAndroidActivity(String activityName, boolean backToScene) {
+        switch (activityName) {
+            case "Home":
+            case "Privacy Policy":
+            case "Login": {
+                Intent intent = new Intent(this, MainActivity.class);
+                intent.putExtra(MainActivity.EXTRA_FRAGMENT, activityName);
+                intent.putExtra(MainActivity.EXTRA_BACK_TO_SCENE, backToScene);
+                startActivity(intent);
+                break;
+            }
+            default: {
+                Log.w(TAG, "Could not open activity by name " + activityName);
+                break;
+            }
+        }
+    }
+
+    public void onAppLoadedComplete() {
+        super.isLoading = false;
+    }
+
+    public void performHapticFeedback(int duration) {
+        if (duration > 0) {
+            mVibrator.vibrate(duration);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        openAndroidActivity("Home", false);
+    }
 }

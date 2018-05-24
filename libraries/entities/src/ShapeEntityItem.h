@@ -81,6 +81,8 @@ public:
     void setColor(const rgbColor& value);
 
     void setUnscaledDimensions(const glm::vec3& value) override;
+    virtual glm::vec3 getRaycastDimensions() const override;
+    virtual AABox getAABox(bool& success) const override;
 
     xColor getXColor() const;
     void setColor(const xColor& value);
@@ -102,6 +104,8 @@ public:
     virtual ShapeType getShapeType() const override;
 
     std::shared_ptr<graphics::Material> getMaterial() { return _material; }
+
+    virtual void emitScriptEvent(const QVariant& message) override;
 
 protected:
 

@@ -24,6 +24,8 @@
 
 #include "RenderPipelines.h"
 
+#include <graphics-scripting/GraphicsScriptingUtil.h>
+
 //#define SHAPE_ENTITY_USE_FADE_EFFECT
 #ifdef SHAPE_ENTITY_USE_FADE_EFFECT
 #include <FadeEffect.h>
@@ -81,6 +83,12 @@ bool ShapeEntityRenderer::needsRenderUpdateFromTypedEntity(const TypedEntityPoin
         return true;
     }
 
+    if (auto proxy = getEntityProxy()) {
+        if (proxy->flags & js::Graphics::RenderFlag::DIRTY) {
+            return true;
+        }
+    }
+
     return false;
 }
 
@@ -102,11 +110,26 @@ void ShapeEntityRenderer::doRenderUpdateSynchronousTyped(const ScenePointer& sce
         _orientation = entity->getWorldOrientation();
         _renderTransform = getModelTransform();
 
-        if (_shape == entity::Sphere) {
+        auto proxy = getEntityProxy();
+
+        if (_shape == entity::Sphere && !proxy) {
             _renderTransform.postScale(SPHERE_ENTITY_SCALE);
         }
 
         _renderTransform.postScale(_dimensions);
+
+        if (proxy) {
+            proxy->setProperties({ { "renderTransform", scriptable::toVariant(_renderTransform.getMatrix()) }});
+            if (_pendingMeshPartReplacement) {
+                auto replace = _pendingMeshPartReplacement;
+                _pendingMeshPartReplacement = { nullptr, -1, -1 };
+                if (auto meshProxy = std::dynamic_pointer_cast<plugins::object::MeshObjectProxy>(proxy)) {
+                    meshProxy->replaceScriptableModelMeshPart(replace.model, replace.meshIndex, replace.partIndex);
+                }
+            }
+            const float deltaTime = NAN; // TODO
+            _needsRenderUpdate = proxy->update(scene, transaction, deltaTime);
+        }
     });
 }
 
@@ -115,6 +138,22 @@ void ShapeEntityRenderer::doRenderUpdateAsynchronousTyped(const TypedEntityPoint
         if (_procedural.isEnabled() && _procedural.isFading()) {
             float isFading = Interpolate::calculateFadeRatio(_procedural.getFadeStartTime()) < 1.0f;
             _procedural.setIsFading(isFading);
+        }
+        if (entity->getEntityProxy() != _proxy) {
+            auto old = _proxy;
+            _proxy = entity->getEntityProxy();
+            qDebug() << "ShapeEntityRenderer::setEntityProxy" << "_proxy = " << _proxy.get() << "(was:" << old.get() << ")";
+            if (old) {
+                old->unload();
+                old.reset();
+            }
+            if (_proxy) {
+                _proxy->preload();
+                _proxy->setProperties({{ "visible", _visible }});
+                _proxy->setMaterial(entity->getMaterial());
+            }
+            entity->markDirtyFlags(Simulation::DIRTY_SHAPE);
+            _needsRenderUpdate = true;
         }
     });
 }
@@ -217,6 +256,16 @@ void ShapeEntityRenderer::doRender(RenderArgs* args) {
     PerformanceTimer perfTimer("RenderableShapeEntityItem::render");
     Q_ASSERT(args->_batch);
 
+    if (auto proxy = getEntityProxy()) {
+        withReadLock([&]{
+            if (auto material = _materials["0"].top().material) {
+                proxy->setMaterial(material);
+            }
+        });
+        proxy->debugRender(args);
+        return;
+    }
+
     gpu::Batch& batch = *args->_batch;
 
     std::shared_ptr<graphics::Material> mat;
@@ -271,9 +320,17 @@ void ShapeEntityRenderer::doRender(RenderArgs* args) {
 
 scriptable::ScriptableModelBase ShapeEntityRenderer::getScriptableModel()  {
     scriptable::ScriptableModelBase result;
+    if (auto meshProxy = std::dynamic_pointer_cast<plugins::object::MeshObjectProxy>(getEntityProxy())) {
+        if (auto model = meshProxy->getGraphicsModel()) {
+            std::lock_guard<std::mutex> lock(_materialsLock);
+            model->appendMaterials(_materials);
+            result.model = model;
+            return result;
+        }
+    }
     auto geometryCache = DependencyManager::get<GeometryCache>();
     auto geometryShape = geometryCache->getShapeForEntityShape(_shape);
-    glm::vec3 vertexColor;
+    glm::vec3 vertexColor{ 1.0f };
     {
         std::lock_guard<std::mutex> lock(_materialsLock);
         result.appendMaterials(_materials);
@@ -286,4 +343,54 @@ scriptable::ScriptableModelBase ShapeEntityRenderer::getScriptableModel()  {
         result.append(mesh);
     }
     return result;
+}
+
+bool ShapeEntityRenderer::canReplaceModelMeshPart(int meshIndex, int partIndex) {
+    if (auto meshProxy = std::dynamic_pointer_cast<plugins::object::MeshObjectProxy>(getEntityProxy())) {
+        return meshProxy->canReplaceModelMeshPart(meshIndex, partIndex);
+    }
+    return false;
+}
+
+bool ShapeEntityRenderer::replaceScriptableModelMeshPart(const js::Graphics::ModelPointer& model, int meshIndex, int partIndex) {
+    if (auto meshProxy = std::dynamic_pointer_cast<plugins::object::MeshObjectProxy>(getEntityProxy())) {
+        if (canReplaceModelMeshPart(meshIndex, partIndex)) {
+            withWriteLock([=]{ _pendingMeshPartReplacement = { model, meshIndex, partIndex }; });
+            _needsRenderUpdate = true;
+            return true;
+        }
+    }
+    return false;
+}
+
+bool ShapeEntityRenderer::overrideRenderFlags(js::Graphics::RenderFlags flagsToSet, js::Graphics::RenderFlags flagsToClear) {
+    if (auto meshProxy = std::dynamic_pointer_cast<plugins::object::MeshObjectProxy>(getEntityProxy())) {
+        if (meshProxy->overrideRenderFlags(flagsToSet, flagsToClear)) {
+            _needsRenderUpdate = true;
+            return true;
+        }
+    }
+    return false;
+}
+
+void ShapeEntityRenderer::onRemoveFromSceneTyped(const TypedEntityPointer& entity) {
+    withWriteLock([this]{
+        if (_proxy) {
+            qDebug() << "...unloading ObjectProxy" << _proxy.get();
+            _proxy->unload();
+            _proxy.reset();
+        }
+    });
+    Parent::onRemoveFromSceneTyped(entity);
+}
+
+void ShapeEntityRenderer::onAddToSceneTyped(const TypedEntityPointer& entity) {
+    withWriteLock([this]{
+        if (_proxy) {
+            qDebug() << "...preloading ObjectProxy" << _proxy.get();
+            _proxy->preload();
+            _proxy->setProperties({{ "visible", _visible }});
+        }
+    });
+    Parent::onAddToSceneTyped(entity);
 }

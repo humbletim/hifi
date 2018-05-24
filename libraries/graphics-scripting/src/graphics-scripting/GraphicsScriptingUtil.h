@@ -2,13 +2,18 @@
 
 #include <QtScript/QScriptEngine>
 #include <QtScript/QScriptValue>
+#include <QtScript/QScriptable>
 #include <QtCore/QPointer>
 #include <QtCore/QObject>
 #include <QtCore/QLoggingCategory>
+#include <QtCore/QVariant>
 #include <QDebug>
 #include <memory>
 #include <functional>
 #include <glm/glm.hpp>
+#include <graphics/BufferViewHelpers.h>
+
+#include <shared/Scriptable.h>
 
 class Extents;
 class AABox;
@@ -18,31 +23,46 @@ namespace gpu {
 Q_DECLARE_LOGGING_CATEGORY(graphics_scripting)
 
 namespace scriptable {
-    QVariant toVariant(const Extents& box);
-    QVariant toVariant(const AABox& box);
-    QVariant toVariant(const gpu::Element& element);
-    QVariant toVariant(const glm::mat4& mat4);
+    // TODO: consolidate these with other toVariant helpers
+    template<> QVariant toVariant(const Extents& box);
+    template<> QVariant toVariant(const AABox& box);
+    template<> QVariant toVariant(const gpu::Element& element);
+    template<> QVariant toVariant(const glm::mat4& mat4);
+    template<> QVariant toVariant(const glm::vec2& value);
+    template<> QVariant toVariant(const glm::vec3& value);
+    template<> QVariant toVariant(const glm::vec4& value);
+    template<> QVariant toVariant(const glm::quat& value);
 
-    // helper that automatically resolves Qt-signal-like scoped callbacks
-    // ... C++ side: `void MyClass::asyncMethod(..., QScriptValue callback)` 
-    // ... JS side:
-    //     * `API.asyncMethod(..., function(){})`
-    //     * `API.asyncMethod(..., scope, function(){})`
-    //     * `API.asyncMethod(..., scope, "methodName")`
-    QScriptValue jsBindCallback(QScriptValue callback);
+    // JS TypedArrays are a more efficient way to specify mesh data, but harder to construct by hand on the JS side
+    // this adapter provides support for incoming mesh properties in both conventions
+    // eg: { positions: [Vec3, Vec3, Vec3] } or { positions: Float32Array }
+    QScriptValue toTypedArray(QScriptValue global, const QByteArray& bytes, const QString& typedArrayName);
+    template <typename T, typename U> QByteArray convertBytes(const QByteArray& bytes);
+    template <typename T> QByteArray coerceJSTypedArray(QScriptValue value, const QString& typedArrayName, const QString& property);
 
-    // cast engine->thisObject() => C++ class instance
-    template <typename T> T this_qobject_cast(QScriptEngine* engine);
+    struct JSVectorAdapter {
+        const QVariantMap& qt;
+        const QScriptValue& js;
+        JSVectorAdapter(const QVariantMap& qt, const QScriptValue& js) : qt(qt), js(js) {}
+        static const QMap<QString, QStringList> ALIASES;
+        static QString normalizeAlias(QString alias);
+        static QString resolveAlias(QString property, QStringList available);
+        template <typename T>
+        std::vector<T> getVector(const QString& property, const QString& jsTypeName);
+    };
 
-    QString toDebugString(QObject* tmp);
-    template <typename T> QString toDebugString(std::shared_ptr<T> tmp);
-
-    // Helper for creating C++ > ScriptOwned JS instances
-    // (NOTE: this also helps track in the code where we need to update later if switching to
-    //  std::shared_ptr's -- something currently non-trivial given mixed JS/C++ object ownership)
-    template <typename T, class... Rest> inline QPointer<T> make_scriptowned(Rest... rest) {
-        auto instance = QPointer<T>(new T(rest...));
-        Q_ASSERT(instance && instance->parent());
-        return instance;
+    // register a DebugEnums type (QMap-based non-flag enums where JS uses the string representation)
+    template <typename T> int registerDebugEnum(QScriptEngine* engine, const DebugEnums<T>& debugEnums) {
+        static const DebugEnums<T>& instance = debugEnums;
+        return qScriptRegisterMetaType<T>(
+            engine,
+            [](QScriptEngine* engine, const T& topology) -> QScriptValue {
+                return instance.value(topology);
+            },
+            [](const QScriptValue& value, T& topology) {
+                topology = instance.key(value.toString());
+            }
+        );
     }
+
 }

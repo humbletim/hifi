@@ -127,21 +127,25 @@ ShapeKey MeshPartPayload::getShapeKey() const {
 
     ShapeKey::Builder builder;
     builder.withMaterial();
-
-    if (drawMaterialKey.isTranslucent()) {
-        builder.withTranslucent();
-    }
-    if (drawMaterialKey.isNormalMap()) {
-        builder.withTangents();
-    }
-    if (drawMaterialKey.isLightmapMap()) {
-        builder.withLightmap();
+    if (_isWireframe) {
+        builder.withWireframe();
+    } else {
+        if (drawMaterialKey.isTranslucent()) {
+            builder.withTranslucent();
+        }
+        if (drawMaterialKey.isNormalMap()) {
+            builder.withTangents();
+        }
+        if (drawMaterialKey.isLightmapMap()) {
+            builder.withLightmap();
+        }
     }
     return builder.build();
 }
 
 void MeshPartPayload::drawCall(gpu::Batch& batch) const {
     batch.drawIndexed(gpu::TRIANGLES, _drawPart._numIndices, _drawPart._startIndex);
+    // TODO: drawIndex(graphics::Mesh::topologyToPrimitive(_drawPart._topology), ...)
 }
 
 void MeshPartPayload::bindMesh(gpu::Batch& batch) {

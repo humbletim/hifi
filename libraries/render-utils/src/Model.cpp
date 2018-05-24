@@ -448,6 +448,7 @@ bool Model::findRayIntersectionAgainstSubMeshes(const glm::vec3& origin, const g
         int bestSubMeshIndex = 0;
 
         int subMeshIndex = 0;
+        int partIndex = 0;
         const FBXGeometry& geometry = getFBXGeometry();
 
         if (!_triangleSetsValid) {
@@ -461,26 +462,30 @@ bool Model::findRayIntersectionAgainstSubMeshes(const glm::vec3& origin, const g
         glm::vec3 meshFrameOrigin = glm::vec3(worldToMeshMatrix * glm::vec4(origin, 1.0f));
         glm::vec3 meshFrameDirection = glm::vec3(worldToMeshMatrix * glm::vec4(direction, 0.0f));
 
-        for (auto& triangleSet : _modelSpaceMeshTriangleSets) {
-            float triangleSetDistance = 0.0f;
-            BoxFace triangleSetFace;
-            Triangle triangleSetTriangle;
-            if (triangleSet.findRayIntersection(meshFrameOrigin, meshFrameDirection, triangleSetDistance, triangleSetFace, triangleSetTriangle, pickAgainstTriangles, allowBackface)) {
+        for (auto& meshTriangleSets : _modelSpaceMeshTriangleSets) {
+            for (auto &partTriangleSet : meshTriangleSets) {
+                float triangleSetDistance = 0.0f;
+                BoxFace triangleSetFace;
+                Triangle triangleSetTriangle;
+                if (partTriangleSet.findRayIntersection(meshFrameOrigin, meshFrameDirection, triangleSetDistance, triangleSetFace, triangleSetTriangle, pickAgainstTriangles, allowBackface)) {
 
-                glm::vec3 meshIntersectionPoint = meshFrameOrigin + (meshFrameDirection * triangleSetDistance);
-                glm::vec3 worldIntersectionPoint = glm::vec3(meshToWorldMatrix * glm::vec4(meshIntersectionPoint, 1.0f));
-                float worldDistance = glm::distance(origin, worldIntersectionPoint);
+                    glm::vec3 meshIntersectionPoint = meshFrameOrigin + (meshFrameDirection * triangleSetDistance);
+                    glm::vec3 worldIntersectionPoint = glm::vec3(meshToWorldMatrix * glm::vec4(meshIntersectionPoint, 1.0f));
+                    float worldDistance = glm::distance(origin, worldIntersectionPoint);
 
-                if (worldDistance < bestDistance) {
-                    bestDistance = worldDistance;
-                    intersectedSomething = true;
-                    face = triangleSetFace;
-                    bestModelTriangle = triangleSetTriangle;
-                    bestWorldTriangle = triangleSetTriangle * meshToWorldMatrix;
-                    extraInfo["worldIntersectionPoint"] = vec3toVariant(worldIntersectionPoint);
-                    extraInfo["meshIntersectionPoint"] = vec3toVariant(meshIntersectionPoint);
-                    bestSubMeshIndex = subMeshIndex;
+                    if (worldDistance < bestDistance) {
+                        bestDistance = worldDistance;
+                        intersectedSomething = true;
+                        face = triangleSetFace;
+                        bestModelTriangle = triangleSetTriangle;
+                        bestWorldTriangle = triangleSetTriangle * meshToWorldMatrix;
+                        extraInfo["worldIntersectionPoint"] = vec3toVariant(worldIntersectionPoint);
+                        extraInfo["meshIntersectionPoint"] = vec3toVariant(meshIntersectionPoint);
+                        extraInfo["partIndex"] = partIndex;
+                        bestSubMeshIndex = subMeshIndex;
+                    }
                 }
+                partIndex++;
             }
             subMeshIndex++;
         }
@@ -545,12 +550,14 @@ bool Model::convexHullContains(glm::vec3 point) {
         glm::mat4 worldToMeshMatrix = glm::inverse(meshToWorldMatrix);
         glm::vec3 meshFramePoint = glm::vec3(worldToMeshMatrix * glm::vec4(point, 1.0f));
 
-        for (const auto& triangleSet : _modelSpaceMeshTriangleSets) {
-            const AABox& box = triangleSet.getBounds();
-            if (box.contains(meshFramePoint)) {
-                if (triangleSet.convexHullContains(meshFramePoint)) {
-                    // It's inside this mesh, return true.
-                    return true;
+        for (auto& meshTriangleSets : _modelSpaceMeshTriangleSets) {
+            for (auto &partTriangleSet : meshTriangleSets) {
+                const AABox& box = partTriangleSet.getBounds();
+                if (box.contains(meshFramePoint)) {
+                    if (partTriangleSet.convexHullContains(meshFramePoint)) {
+                        // It's inside this mesh, return true.
+                        return true;
+                    }
                 }
             }
         }
@@ -598,81 +605,6 @@ MeshProxyList Model::getMeshes() const {
     return result;
 }
 
-bool Model::replaceScriptableModelMeshPart(scriptable::ScriptableModelBasePointer newModel, int meshIndex, int partIndex) {
-    QMutexLocker lock(&_mutex);
-
-    if (!isLoaded()) {
-        qDebug() << "!isLoaded" << this;
-        return false;
-    }
-
-    if (!newModel || !newModel->meshes.size()) {
-        qDebug() << "!newModel.meshes.size()" << this;
-        return false;
-    }
-
-    const auto& meshes = newModel->meshes;
-    render::Transaction transaction;
-    const render::ScenePointer& scene = AbstractViewStateInterface::instance()->getMain3DScene();
-
-    meshIndex = max(meshIndex, 0);
-    partIndex = max(partIndex, 0);
-
-    if (meshIndex >= (int)meshes.size()) {
-        qDebug() << meshIndex << "meshIndex >= newModel.meshes.size()" << meshes.size();
-        return false;
-    }
-
-    auto mesh = meshes[meshIndex].getMeshPointer();
-
-    if (partIndex >= (int)mesh->getNumParts()) {
-        qDebug() << partIndex << "partIndex >= mesh->getNumParts()" << mesh->getNumParts();
-        return false;
-    }
-    {
-        // update visual geometry
-        render::Transaction transaction;
-        for (int i = 0; i < (int) _modelMeshRenderItemIDs.size(); i++) {
-            auto itemID = _modelMeshRenderItemIDs[i];
-            auto shape = _modelMeshRenderItemShapes[i];
-            // TODO: check to see if .partIndex matches too
-            if (shape.meshIndex == meshIndex) {
-                transaction.updateItem<ModelMeshPartPayload>(itemID, [=](ModelMeshPartPayload& data) {
-                    data.updateMeshPart(mesh, partIndex);
-                });
-            }
-        }
-        scene->enqueueTransaction(transaction);
-    }
-    // update triangles for ray picking
-    {
-        FBXGeometry geometry;
-        for (const auto& newMesh : meshes) {
-            FBXMesh mesh;
-            mesh._mesh = newMesh.getMeshPointer();
-            mesh.vertices = buffer_helpers::mesh::attributeToVector<glm::vec3>(mesh._mesh, gpu::Stream::POSITION);
-            int numParts = (int)newMesh.getMeshPointer()->getNumParts();
-            for (int partID = 0; partID < numParts; partID++) {
-                FBXMeshPart part;
-                part.triangleIndices = buffer_helpers::bufferToVector<int>(mesh._mesh->getIndexBuffer(), "part.triangleIndices");
-                mesh.parts << part;
-            }
-            {
-                foreach (const glm::vec3& vertex, mesh.vertices) {
-                    glm::vec3 transformedVertex = glm::vec3(mesh.modelTransform * glm::vec4(vertex, 1.0f));
-                    geometry.meshExtents.minimum = glm::min(geometry.meshExtents.minimum, transformedVertex);
-                    geometry.meshExtents.maximum = glm::max(geometry.meshExtents.maximum, transformedVertex);
-                    mesh.meshExtents.minimum = glm::min(mesh.meshExtents.minimum, transformedVertex);
-                    mesh.meshExtents.maximum = glm::max(mesh.meshExtents.maximum, transformedVertex);
-                }
-            }
-            geometry.meshes << mesh;
-        }
-        calculateTriangleSets(geometry);
-    }
-    return true;
-}
-
 scriptable::ScriptableModelBase Model::getScriptableModel() {
     QMutexLocker lock(&_mutex);
     scriptable::ScriptableModelBase result;
@@ -692,7 +624,8 @@ scriptable::ScriptableModelBase Model::getScriptableModel() {
 
             int numParts = (int)mesh->getNumParts();
             for (int partIndex = 0; partIndex < numParts; partIndex++) {
-                result.appendMaterial(graphics::MaterialLayer(getGeometry()->getShapeMaterial(shapeID), 0), shapeID, _modelMeshMaterialNames[shapeID]);
+                auto name = shapeID < (int)_modelMeshMaterialNames.size() ? _modelMeshMaterialNames[shapeID] : "<invalid>";
+                result.appendMaterial(graphics::MaterialLayer(getGeometry()->getShapeMaterial(shapeID), 0), shapeID, name);
                 shapeID++;
             }
         }
@@ -713,8 +646,14 @@ void Model::calculateTriangleSets(const FBXGeometry& geometry) {
     for (int i = 0; i < numberOfMeshes; i++) {
         const FBXMesh& mesh = geometry.meshes.at(i);
 
-        for (int j = 0; j < mesh.parts.size(); j++) {
+        const int numberOfParts = mesh.parts.size();
+        auto& meshTriangleSets = _modelSpaceMeshTriangleSets[i];
+        meshTriangleSets.resize(numberOfParts);
+
+        for (int j = 0; j < numberOfParts; j++) {
             const FBXMeshPart& part = mesh.parts.at(j);
+
+            auto& partTriangleSet = meshTriangleSets[j];
 
             const int INDICES_PER_TRIANGLE = 3;
             const int INDICES_PER_QUAD = 4;
@@ -724,7 +663,7 @@ void Model::calculateTriangleSets(const FBXGeometry& geometry) {
             int numberOfQuads = part.quadIndices.size() / INDICES_PER_QUAD;
             int numberOfTris = part.triangleIndices.size() / INDICES_PER_TRIANGLE;
             int totalTriangles = (numberOfQuads * TRIANGLES_PER_QUAD) + numberOfTris;
-            _modelSpaceMeshTriangleSets[i].reserve(totalTriangles);
+            partTriangleSet.reserve(totalTriangles);
 
             auto meshTransform = geometry.offset * mesh.modelTransform;
 
@@ -746,8 +685,8 @@ void Model::calculateTriangleSets(const FBXGeometry& geometry) {
 
                     Triangle tri1 = { v0, v1, v3 };
                     Triangle tri2 = { v1, v2, v3 };
-                    _modelSpaceMeshTriangleSets[i].insert(tri1);
-                    _modelSpaceMeshTriangleSets[i].insert(tri2);
+                    partTriangleSet.insert(tri1);
+                    partTriangleSet.insert(tri2);
                 }
             }
 
@@ -766,7 +705,7 @@ void Model::calculateTriangleSets(const FBXGeometry& geometry) {
                     glm::vec3 v2 = glm::vec3(meshTransform * glm::vec4(mesh.vertices[i2], 1.0f));
 
                     Triangle tri = { v0, v1, v2 };
-                    _modelSpaceMeshTriangleSets[i].insert(tri);
+                    partTriangleSet.insert(tri);
                 }
             }
         }
@@ -968,56 +907,58 @@ void Model::renderDebugMeshBoxes(gpu::Batch& batch) {
 
     DependencyManager::get<GeometryCache>()->bindSimpleProgram(batch, false, false, false, true, true);
 
-    for (const auto& triangleSet : _modelSpaceMeshTriangleSets) {
-        auto box = triangleSet.getBounds();
+    for (auto& meshTriangleSets : _modelSpaceMeshTriangleSets) {
+        for (auto &partTriangleSet : meshTriangleSets) {
+            auto box = partTriangleSet.getBounds();
 
-        if (_debugMeshBoxesID == GeometryCache::UNKNOWN_ID) {
-            _debugMeshBoxesID = DependencyManager::get<GeometryCache>()->allocateID();
+            if (_debugMeshBoxesID == GeometryCache::UNKNOWN_ID) {
+                _debugMeshBoxesID = DependencyManager::get<GeometryCache>()->allocateID();
+            }
+            QVector<glm::vec3> points;
+
+            glm::vec3 brn = box.getCorner();
+            glm::vec3 bln = brn + glm::vec3(box.getDimensions().x, 0, 0);
+            glm::vec3 brf = brn + glm::vec3(0, 0, box.getDimensions().z);
+            glm::vec3 blf = brn + glm::vec3(box.getDimensions().x, 0, box.getDimensions().z);
+
+            glm::vec3 trn = brn + glm::vec3(0, box.getDimensions().y, 0);
+            glm::vec3 tln = bln + glm::vec3(0, box.getDimensions().y, 0);
+            glm::vec3 trf = brf + glm::vec3(0, box.getDimensions().y, 0);
+            glm::vec3 tlf = blf + glm::vec3(0, box.getDimensions().y, 0);
+
+            points << brn << bln;
+            points << brf << blf;
+            points << brn << brf;
+            points << bln << blf;
+
+            points << trn << tln;
+            points << trf << tlf;
+            points << trn << trf;
+            points << tln << tlf;
+
+            points << brn << trn;
+            points << brf << trf;
+            points << bln << tln;
+            points << blf << tlf;
+
+            glm::vec4 color[] = {
+                { 0.0f, 1.0f, 0.0f, 1.0f }, // green
+                { 1.0f, 0.0f, 0.0f, 1.0f }, // red
+                { 0.0f, 0.0f, 1.0f, 1.0f }, // blue
+                { 1.0f, 0.0f, 1.0f, 1.0f }, // purple
+                { 1.0f, 1.0f, 0.0f, 1.0f }, // yellow
+                { 0.0f, 1.0f, 1.0f, 1.0f }, // cyan
+                { 1.0f, 1.0f, 1.0f, 1.0f }, // white
+                { 0.0f, 0.5f, 0.0f, 1.0f },
+                { 0.0f, 0.0f, 0.5f, 1.0f },
+                { 0.5f, 0.0f, 0.5f, 1.0f },
+                { 0.5f, 0.5f, 0.0f, 1.0f },
+                { 0.0f, 0.5f, 0.5f, 1.0f } };
+
+            DependencyManager::get<GeometryCache>()->updateVertices(_debugMeshBoxesID, points, color[colorNdx]);
+            DependencyManager::get<GeometryCache>()->renderVertices(batch, gpu::LINES, _debugMeshBoxesID);
+            colorNdx++;
         }
-        QVector<glm::vec3> points;
-
-        glm::vec3 brn = box.getCorner();
-        glm::vec3 bln = brn + glm::vec3(box.getDimensions().x, 0, 0);
-        glm::vec3 brf = brn + glm::vec3(0, 0, box.getDimensions().z);
-        glm::vec3 blf = brn + glm::vec3(box.getDimensions().x, 0, box.getDimensions().z);
-
-        glm::vec3 trn = brn + glm::vec3(0, box.getDimensions().y, 0);
-        glm::vec3 tln = bln + glm::vec3(0, box.getDimensions().y, 0);
-        glm::vec3 trf = brf + glm::vec3(0, box.getDimensions().y, 0);
-        glm::vec3 tlf = blf + glm::vec3(0, box.getDimensions().y, 0);
-
-        points << brn << bln;
-        points << brf << blf;
-        points << brn << brf;
-        points << bln << blf;
-
-        points << trn << tln;
-        points << trf << tlf;
-        points << trn << trf;
-        points << tln << tlf;
-
-        points << brn << trn;
-        points << brf << trf;
-        points << bln << tln;
-        points << blf << tlf;
-
-        glm::vec4 color[] = {
-            { 0.0f, 1.0f, 0.0f, 1.0f }, // green
-            { 1.0f, 0.0f, 0.0f, 1.0f }, // red
-            { 0.0f, 0.0f, 1.0f, 1.0f }, // blue
-            { 1.0f, 0.0f, 1.0f, 1.0f }, // purple
-            { 1.0f, 1.0f, 0.0f, 1.0f }, // yellow
-            { 0.0f, 1.0f, 1.0f, 1.0f }, // cyan
-            { 1.0f, 1.0f, 1.0f, 1.0f }, // white
-            { 0.0f, 0.5f, 0.0f, 1.0f },
-            { 0.0f, 0.0f, 0.5f, 1.0f },
-            { 0.5f, 0.0f, 0.5f, 1.0f },
-            { 0.5f, 0.5f, 0.0f, 1.0f },
-            { 0.0f, 0.5f, 0.5f, 1.0f } };
-
-        DependencyManager::get<GeometryCache>()->updateVertices(_debugMeshBoxesID, points, color[colorNdx]);
-        DependencyManager::get<GeometryCache>()->renderVertices(batch, gpu::LINES, _debugMeshBoxesID);
-        colorNdx++;
     }
     _mutex.unlock();
 }

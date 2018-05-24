@@ -9,10 +9,11 @@
 //  See the accompanying file LICENSE or http://www.apache.org/licenses/LICENSE-2.0.html
 //
 
+#include "ModelOverlay.h"
+
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/transform.hpp>
 
-#include "ModelOverlay.h"
 #include <Rig.h>
 
 #include "Application.h"
@@ -687,16 +688,6 @@ void ModelOverlay::processMaterials() {
             material.pop();
         }
     }
-}
-
-bool ModelOverlay::canReplaceModelMeshPart(int meshIndex, int partIndex) {
-    // TODO: bounds checking; for now just used to indicate provider generally supports mesh updates
-    return _model && _model->isLoaded();
-}
-
-bool ModelOverlay::replaceScriptableModelMeshPart(scriptable::ScriptableModelBasePointer newModel, int meshIndex, int partIndex) {
-    return canReplaceModelMeshPart(meshIndex, partIndex) &&
-        _model->replaceScriptableModelMeshPart(newModel, meshIndex, partIndex);
 }
 
 scriptable::ScriptableModelBase ModelOverlay::getScriptableModel() {

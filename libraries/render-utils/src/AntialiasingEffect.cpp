@@ -9,6 +9,7 @@
 //  See the accompanying file LICENSE or http://www.apache.org/licenses/LICENSE-2.0.html
 //
 
+#include "AntialiasingEffect.h"
 
 #include <glm/gtc/random.hpp>
 
@@ -17,7 +18,6 @@
 #include <gpu/Context.h>
 #include <gpu/StandardShaderLib.h>
 
-#include "AntialiasingEffect.h"
 #include "StencilMaskPass.h"
 #include "TextureCache.h"
 #include "DependencyManager.h"
@@ -197,7 +197,7 @@ Antialiasing::~Antialiasing() {
     _antialiasingTextures[1].reset();
 }
 
-const gpu::PipelinePointer& Antialiasing::getAntialiasingPipeline() {
+const gpu::PipelinePointer& Antialiasing::getAntialiasingPipeline(const render::RenderContextPointer& renderContext) {
    
     if (!_antialiasingPipeline) {
         
@@ -206,17 +206,6 @@ const gpu::PipelinePointer& Antialiasing::getAntialiasingPipeline() {
         gpu::ShaderPointer program = gpu::Shader::createProgram(vs, ps);
         
         gpu::Shader::BindingSet slotBindings;
-        slotBindings.insert(gpu::Shader::Binding(std::string("taaParamsBuffer"), AntialiasingPass_ParamsSlot));
-
-        slotBindings.insert(gpu::Shader::Binding(std::string("deferredFrameTransformBuffer"), AntialiasingPass_FrameTransformSlot));
-        
-        slotBindings.insert(gpu::Shader::Binding(std::string("historyMap"), AntialiasingPass_HistoryMapSlot));
-        slotBindings.insert(gpu::Shader::Binding(std::string("sourceMap"), AntialiasingPass_SourceMapSlot));
-        slotBindings.insert(gpu::Shader::Binding(std::string("velocityMap"), AntialiasingPass_VelocityMapSlot));
-        slotBindings.insert(gpu::Shader::Binding(std::string("depthMap"), AntialiasingPass_DepthMapSlot));
-        
-        
-        gpu::Shader::makeProgram(*program, slotBindings);
         
         gpu::StatePointer state = gpu::StatePointer(new gpu::State());
         
@@ -224,6 +213,21 @@ const gpu::PipelinePointer& Antialiasing::getAntialiasingPipeline() {
 
         // Good to go add the brand new pipeline
         _antialiasingPipeline = gpu::Pipeline::create(program, state);
+
+        gpu::doInBatch("SurfaceGeometryPass::CurvaturePipeline", renderContext->args->_context, [program](gpu::Batch& batch) {
+            batch.runLambda([program]() {
+                gpu::Shader::BindingSet slotBindings;
+                slotBindings.insert(gpu::Shader::Binding(std::string("taaParamsBuffer"), AntialiasingPass_ParamsSlot));
+
+                slotBindings.insert(gpu::Shader::Binding(std::string("deferredFrameTransformBuffer"), AntialiasingPass_FrameTransformSlot));
+
+                slotBindings.insert(gpu::Shader::Binding(std::string("historyMap"), AntialiasingPass_HistoryMapSlot));
+                slotBindings.insert(gpu::Shader::Binding(std::string("sourceMap"), AntialiasingPass_SourceMapSlot));
+                slotBindings.insert(gpu::Shader::Binding(std::string("velocityMap"), AntialiasingPass_VelocityMapSlot));
+                slotBindings.insert(gpu::Shader::Binding(std::string("depthMap"), AntialiasingPass_DepthMapSlot));
+                gpu::Shader::makeProgram(*program, slotBindings);
+            });
+        });
     }
     
     return _antialiasingPipeline;
@@ -346,7 +350,7 @@ void Antialiasing::run(const render::RenderContextPointer& renderContext, const 
         batch.setViewportTransform(args->_viewport);
 
         // TAA step
-        getAntialiasingPipeline();
+        getAntialiasingPipeline(renderContext);
         batch.setResourceFramebufferSwapChainTexture(AntialiasingPass_HistoryMapSlot, _antialiasingBuffers, 0);
         batch.setResourceTexture(AntialiasingPass_SourceMapSlot, sourceBuffer->getRenderBuffer(0));
         batch.setResourceTexture(AntialiasingPass_VelocityMapSlot, velocityBuffer->getVelocityTexture());
@@ -357,7 +361,7 @@ void Antialiasing::run(const render::RenderContextPointer& renderContext, const 
         batch.setUniformBuffer(AntialiasingPass_FrameTransformSlot, deferredFrameTransform->getFrameTransformBuffer());
         
         batch.setFramebufferSwapChain(_antialiasingBuffers, 1);
-        batch.setPipeline(getAntialiasingPipeline());       
+        batch.setPipeline(getAntialiasingPipeline(renderContext));
         batch.draw(gpu::TRIANGLE_STRIP, 4);
 
         // Blend step
@@ -482,16 +486,14 @@ JitterSample::SampleSequence::SampleSequence(){
 }
 
 void JitterSample::configure(const Config& config) {
-    _freeze = config.freeze;
-    if (config.stop || _freeze) {
+    _freeze = config.stop || config.freeze;
+    if (config.freeze) {
         auto pausedIndex = config.getIndex();
         if (_sampleSequence.currentIndex != pausedIndex) {
             _sampleSequence.currentIndex = pausedIndex;
         }
-    } else {
-        if (_sampleSequence.currentIndex < 0) {
-            _sampleSequence.currentIndex = config.getIndex();
-        }
+    } else if (config.stop) {
+        _sampleSequence.currentIndex = -1;
     }
     _scale = config.scale;
 }
@@ -505,7 +507,12 @@ void JitterSample::run(const render::RenderContextPointer& renderContext, Output
             current = -1;
         }
     }
-    jitter = _sampleSequence.offsets[(current < 0 ? SEQUENCE_LENGTH : current)];
+
+    jitter.x = 0.0f;
+    jitter.y = 0.0f;
+    if (current >= 0) {
+        jitter = _sampleSequence.offsets[current];
+    }
 }
 
 

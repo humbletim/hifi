@@ -138,6 +138,16 @@ class ModelCache : public ResourceCache, public Dependency {
     Q_OBJECT
     SINGLETON_DEPENDENCY
 
+public slots:
+    /**jsdoc
+     * Returns model resource for particular model
+     * @function ModelCache.getModel
+     * @param url {string} url to load
+     * @return {Resource} model
+     */
+    GeometryResource::Pointer getModel(const QString& url) { return getModel(QUrl(url)); }
+    GeometryResource::Pointer getModel(const QUrl& url);
+
 public:
 
     // Properties are copied over from ResourceCache (see ResourceCache.h for reason).
@@ -145,6 +155,9 @@ public:
     /**jsdoc
      * API to manage model cache resources.
      * @namespace ModelCache
+     *
+     * @hifi-interface
+     * @hifi-client-entity
      *
      * @property {number} numTotal - Total number of total resources. <em>Read-only.</em>
      * @property {number} numCached - Total number of cached resource. <em>Read-only.</em>
@@ -158,7 +171,7 @@ public:
     /**jsdoc
      * Get the list of all resource URLs.
      * @function ModelCache.getResourceList
-     * @return {string[]}
+     * @returns {string[]}
      */
 
     /**jsdoc
@@ -172,10 +185,11 @@ public:
      */
 
     /**jsdoc
+     * Prefetches a resource.
      * @function ModelCache.prefetch
-     * @param {string} url
-     * @param {object} extra
-     * @returns {object}
+     * @param {string} url - URL of the resource to prefetch.
+     * @param {object} [extra=null]
+     * @returns {Resource}
      */
 
     /**jsdoc
@@ -184,14 +198,7 @@ public:
      * @param {string} url - URL of the resource to load.
      * @param {string} [fallback=""] - Fallback URL if load of the desired URL fails.
      * @param {} [extra=null]
-     * @return {Resource}
-     */
-
-    /**jsdoc
-     * Prefetches a resource.
-     * @function ModelCache.prefetch
-     * @param {string} url - URL of the resource to prefetch.
-     * @return {Resource}
+     * @returns {Resource}
      */
 
 
@@ -213,6 +220,8 @@ private:
     ModelCache();
     virtual ~ModelCache() = default;
 };
+
+Q_DECLARE_METATYPE(GeometryResource::Pointer)
 
 class NetworkMaterial : public graphics::Material {
 public:

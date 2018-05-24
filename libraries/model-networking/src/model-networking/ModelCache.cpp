@@ -27,7 +27,11 @@
 #include <Trace.h>
 #include <StatTracker.h>
 
+#include <shared/QtHelpers.h>
+
 Q_LOGGING_CATEGORY(trace_resource_parse_geometry, "trace.resource.parse.geometry")
+
+int modelPointerMetaTypeId = qRegisterMetaType<GeometryResource::Pointer>();
 
 class GeometryReader;
 
@@ -82,6 +86,14 @@ void GeometryMappingResource::downloadFinished(const QByteArray& data) {
             _textureBaseUrl = resolveTextureBaseUrl(url, _url.resolved(texdir));
         } else {
             _textureBaseUrl = url.resolved(QUrl("."));
+        }
+
+        auto scripts = FSTReader::getScripts(_url, _mapping);
+        if (scripts.size() > 0) {
+            _mapping.remove(SCRIPT_FIELD);
+            for (auto &scriptPath : scripts) {
+                _mapping.insertMulti(SCRIPT_FIELD, scriptPath);
+            }
         }
 
         auto animGraphVariant = _mapping.value("animGraphUrl");
@@ -212,6 +224,14 @@ void GeometryReader::run() {
                 throw QString("unsupported format");
             }
 
+            // Add scripts to fbxgeometry
+            if (!_mapping.value(SCRIPT_FIELD).isNull()) {
+                QVariantList scripts = _mapping.values(SCRIPT_FIELD);
+                for (auto &script : scripts) {
+                    fbxGeometry->scripts.push_back(script.toString());
+                }
+            }
+
             // Ensure the resource has not been deleted
             auto resource = _resource.toStrongRef();
             if (!resource) {
@@ -221,7 +241,7 @@ void GeometryReader::run() {
                     Q_ARG(FBXGeometry::Pointer, fbxGeometry));
             }
         } else {
-            throw QString("url is invalid");
+            throw QString("url is invalid %1").arg(_url.toString());
         }
     } catch (const QString& error) {
 
@@ -296,6 +316,16 @@ ModelCache::ModelCache() {
     const qint64 GEOMETRY_DEFAULT_UNUSED_MAX_SIZE = DEFAULT_UNUSED_MAX_SIZE;
     setUnusedResourceCacheSize(GEOMETRY_DEFAULT_UNUSED_MAX_SIZE);
     setObjectName("ModelCache");
+}
+
+
+GeometryResource::Pointer ModelCache::getModel(const QUrl& url) {
+    if (QThread::currentThread() != thread()) {
+        GeometryResource::Pointer result;
+        BLOCKING_INVOKE_METHOD(this, "getModel", Q_RETURN_ARG(GeometryResource::Pointer, result), Q_ARG(const QUrl&, url));
+        return result;
+    }
+    return getResource(url).staticCast<GeometryResource>();
 }
 
 QSharedPointer<Resource> ModelCache::createResource(const QUrl& url, const QSharedPointer<Resource>& fallback,
@@ -521,10 +551,11 @@ QUrl NetworkMaterial::getTextureUrl(const QUrl& baseUrl, const FBXTexture& textu
         // Inlined file: cache under the fbx file to avoid namespace clashes
         // NOTE: We cannot resolve the path because filename may be an absolute path
         assert(texture.filename.size() > 0);
+        auto baseUrlStripped = baseUrl.toDisplayString(QUrl::RemoveFragment | QUrl::RemoveQuery | QUrl::RemoveUserInfo);
         if (texture.filename.at(0) == '/') {
-            return baseUrl.toString() + texture.filename;
+            return baseUrlStripped + texture.filename;
         } else {
-            return baseUrl.toString() + '/' + texture.filename;
+            return baseUrlStripped + '/' + texture.filename;
         }
     }
 }
