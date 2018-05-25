@@ -34,7 +34,14 @@ namespace {
                 proxyManager->registerProvider(SHAPE_PROXY_PLUGIN_URI, std::make_shared<MeshEntityPlugin>());
             }
         }
-        void deinit() override { qCDebug(mesh_test) << "DummyInputPlugin::deinit"; }
+        void deinit() override {
+            qCDebug(mesh_test) << "DummyInputPlugin::deinit";
+            auto proxyManager = DependencyManager::get<plugins::object::ProxyManager>();
+            if (proxyManager) {
+                qCDebug(mesh_test) << "DE_REGISTERING mesh::ObjectPlugin -> MeshEntityPlugin" << SHAPE_PROXY_PLUGIN_URI.c_str();
+                proxyManager->unregisterProvider(SHAPE_PROXY_PLUGIN_URI);
+            }
+        }
     };
 }
 
@@ -48,12 +55,18 @@ public:
     MeshTestProvider() : QObject(), manager(new DummyInputPlugin()) {
     }
     virtual InputPluginList getInputPlugins() override {
+        if (!manager) {
+            return InputPluginList();
+        }
         // note: need to return std::vector<QSharedPointer<InputPlugin>>, but DependencyManager uses std::shared_ptr.
         // we are a singleton anyhow so this creates an indestructable QSharedPointer instance instead
         InputPluginPointer softPointer{ manager.get(), [=](InputPlugin*) { /* no-op */ }};
         return { softPointer };
     }
-    virtual void destroyInputPlugins() override { manager.reset(); }
+    virtual void destroyInputPlugins() override {
+        qCDebug(mesh_test) << "destroyInputPlugins" << manager.get();
+        manager.reset();
+    }
 };
     
 
