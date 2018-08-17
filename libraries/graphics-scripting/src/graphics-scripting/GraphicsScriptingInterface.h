@@ -17,9 +17,15 @@
 #include <QtScript/QScriptEngine>
 #include <QtScript/QScriptable>
 
+#include "Forward.h"
 #include "ScriptableMesh.h"
+#include "ScriptableModel.h"
 #include <DependencyManager.h>
+#include <shared/Scriptable.h>
 
+namespace scriptable {
+    struct JSVectorAdapter;
+}
 
 /**jsdoc
  * The experimental Graphics API <em>(experimental)</em> lets you query and manage certain graphics-related structures (like underlying meshes and textures) from scripting.
@@ -35,6 +41,7 @@ class GraphicsScriptingInterface : public QObject, public QScriptable, public De
 public:
     static void registerMetaTypes(QScriptEngine* engine);
     GraphicsScriptingInterface(QObject* parent = nullptr);
+    scriptable::ScriptableMeshPointer newMesh(scriptable::JSVectorAdapter adapter);
 
 public slots:
     /**jsdoc
@@ -77,33 +84,24 @@ public slots:
      * @param {Graphics.IFSData} ifsMeshData Index-Faced Set (IFS) arrays used to create the new mesh.
      * @returns {Graphics.Mesh} the resulting Mesh / Mesh Part object
      */
-    scriptable::ScriptableMeshPointer newMesh(const QVariantMap& ifsMeshData);
-
-#ifdef SCRIPTABLE_MESH_TODO
-    scriptable::ScriptableMeshPartPointer exportMeshPart(scriptable::ScriptableMeshPointer mesh, int partNumber = -1) {
-        return scriptable::make_scriptowned<scriptable::ScriptableMeshPart>(mesh, part);
-    }
-    bool updateMeshPart(scriptable::ScriptableMeshPointer mesh, scriptable::ScriptableMeshPartPointer part);
-#endif
+    scriptable::ScriptableMeshPointer newMesh(QScriptValue ifsMeshData);
+    scriptable::ScriptableMeshPointer newMeshFromVariant(QVariantMap ifsMeshData);
 
     /**jsdoc
      * @function Graphics.exportModelToOBJ
      * @param {Graphics.Model} model
      * @returns {string}
      */
-    QString exportModelToOBJ(const scriptable::ScriptableModel& in);
+    static QString exportModelToOBJ(const scriptable::ScriptableModelPointer& in);
+
+    static QString pluralizeAttributeName(const QString& attributeName) { return scriptable::JSVectorAdapter::pluralizeAttributeName(attributeName); }
+    static QString singularizeAttributeName(const QString& attributeName) { return scriptable::JSVectorAdapter::singularizeAttributeName(attributeName); }
 
 private:
     scriptable::ModelProviderPointer getModelProvider(QUuid uuid);
-    void jsThrowError(const QString& error);
-    scriptable::MeshPointer getMeshPointer(scriptable::ScriptableMeshPointer meshProxy);
-    scriptable::MeshPointer getMeshPointer(scriptable::ScriptableMesh& meshProxy);
-    scriptable::MeshPointer getMeshPointer(const scriptable::ScriptableMesh& meshProxy);
-
+    void jsThrowError(const QString& error) { scriptable::jsThrowError(engine(), error); }
 };
 
-Q_DECLARE_METATYPE(glm::uint32)
-Q_DECLARE_METATYPE(QVector<glm::uint32>)
 Q_DECLARE_METATYPE(NestableType)
 
 #endif // hifi_GraphicsScriptingInterface_h

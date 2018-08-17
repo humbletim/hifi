@@ -12,103 +12,174 @@
 #include <graphics/BufferViewHelpers.h>
 #include <AABox.h>
 #include <Extents.h>
-
-using buffer_helpers::glmVecToVariant;
+#include <glm/gtc/type_ptr.hpp>
 
 Q_LOGGING_CATEGORY(graphics_scripting, "hifi.scripting.graphics")
 
-namespace scriptable {
+HIFI_REGISTER_METATYPE(std::string)
+template<> std::string QVariant::value<std::string>() const {
+    return toString().toStdString();
+}
+template<> QVariant QVariant::fromValue(const std::string& value) {
+    return QString::fromStdString(value);
+}
 
-QVariant toVariant(const glm::mat4& mat4) {
-    QVector<float> floats;
-    floats.resize(16);
-    memcpy(floats.data(), &mat4, sizeof(glm::mat4));
+HIFI_REGISTER_METATYPE(std::vector<std::string>)
+template<> std::vector<std::string> QVariant::value<std::vector<std::string>>() const {
+    // QVariantList (this) -> std::vector
+    const auto& list = toList();
+    std::vector<std::string> result;
+    result.resize(list.size());
+    for (const auto& s : list) {
+        result.push_back(s.toString().toStdString());
+    }
+    return result;
+}
+template<> QVariant QVariant::fromValue(const std::vector<std::string>& value) {
+    // std::vector (value) -> QVariantList
+    QVariantList result;
+    result.reserve((int)value.size());
+    for (const auto& s : value) {
+        result << QString::fromStdString(s);
+    }
+    return result;
+}
+
+HIFI_REGISTER_METATYPE(glm::mat4)
+template<> QVariant QVariant::fromValue(const glm::mat4& value) {
+    const auto ptr = glm::value_ptr(value);
     QVariant v;
-    v.setValue<QVector<float>>(floats);
+    v.setValue(QVector<float>::fromStdVector(std::vector<float>{ptr, ptr + 16}));
     return v;
-};
+}
+template<> glm::mat4 QVariant::value<glm::mat4>() const {
+    QVector<float> floats = value<QVector<float>>();
+    return floats.size() == 16 ? glm::make_mat4(floats.data()) : glm::mat4(NAN);
+}
 
-QVariant toVariant(const Extents& box) {
+template <typename T> QVariant glmVecToVariant(const T& value) { return QVariant::fromValue<T>(value); }
+
+HIFI_REGISTER_READONLY_METATYPE(Extents)
+template<> QVariant QVariant::fromValue(const Extents& value) {
     return QVariantMap{
-        { "center", glmVecToVariant(box.minimum + (box.size() / 2.0f)) },
-        { "minimum", glmVecToVariant(box.minimum) },
-        { "maximum", glmVecToVariant(box.maximum) },
-        { "dimensions", glmVecToVariant(box.size()) },
+        { "center", glmVecToVariant(value.minimum + (value.size() / 2.0f)) },
+        { "minimum", glmVecToVariant(value.minimum) },
+        { "maximum", glmVecToVariant(value.maximum) },
+        { "dimensions", glmVecToVariant(value.size()) },
     };
 }
 
-QVariant toVariant(const AABox& box) {
+HIFI_REGISTER_READONLY_METATYPE(AABox)
+template<> QVariant QVariant::fromValue(const AABox& value) {
     return QVariantMap{
-        { "brn", glmVecToVariant(box.getCorner()) },
-        { "tfl", glmVecToVariant(box.calcTopFarLeft()) },
-        { "center", glmVecToVariant(box.calcCenter()) },
-        { "minimum", glmVecToVariant(box.getMinimumPoint()) },
-        { "maximum", glmVecToVariant(box.getMaximumPoint()) },
-        { "dimensions", glmVecToVariant(box.getDimensions()) },
+        { "brn", glmVecToVariant(value.getCorner()) },
+        { "tfl", glmVecToVariant(value.calcTopFarLeft()) },
+        { "center", glmVecToVariant(value.calcCenter()) },
+        { "minimum", glmVecToVariant(value.getMinimumPoint()) },
+        { "maximum", glmVecToVariant(value.getMaximumPoint()) },
+        { "dimensions", glmVecToVariant(value.getDimensions()) },
     };
 }
 
-QVariant toVariant(const gpu::Element& element) {
+HIFI_REGISTER_READONLY_METATYPE(gpu::Element)
+template<> QVariant QVariant::fromValue(const gpu::Element& value) {
     return QVariantMap{
-        { "type", gpu::toString(element.getType()) },
-        { "semantic", gpu::toString(element.getSemantic()) },
-        { "dimension", gpu::toString(element.getDimension()) },
-        { "scalarCount", element.getScalarCount() },
-        { "byteSize", element.getSize() },
-        { "BYTES_PER_ELEMENT", element.getSize() / element.getScalarCount() },
+        { "type", gpu::toString(value.getType()) },
+        { "semantic", gpu::toString(value.getSemantic()) },
+        { "dimension", gpu::toString(value.getDimension()) },
+        { "scalarCount", value.getScalarCount() },
+        { "byteSize", value.getSize() },
+        { "BYTES_PER_value", value.getSize() / value.getScalarCount() },
      };
 }
 
-QScriptValue jsBindCallback(QScriptValue value) {
-    if (value.isObject() && value.property("callback").isFunction()) {
-        // value is already a bound callback
-        return value;
+HIFI_REGISTER_METATYPE(scriptable::MappedQObject)
+template<> QVariant QVariant::fromValue(const scriptable::MappedQObject& value) {
+    auto object = value.first;
+    auto metaObject = value.second;
+    QVariantMap result;
+    if (!object || !metaObject) {
+        return result;
     }
-    auto engine = value.engine();
-    auto context = engine ? engine->currentContext() : nullptr;
-    auto length = context ? context->argumentCount() : 0;
-    QScriptValue scope = context ? context->thisObject() : QScriptValue::NullValue;
-    QScriptValue method;
-#ifdef SCRIPTABLE_MESH_DEBUG
-    qCInfo(graphics_scripting) << "jsBindCallback" << engine << length << scope.toQObject() << method.toString();
-#endif
-
-    // find position in the incoming JS Function.arguments array (so we can test for the two-argument case)
-    for (int i = 0; context && i < length; i++) {
-        if (context->argument(i).strictlyEquals(value)) {
-            method = context->argument(i+1);
+    result["__class__"] = metaObject->className();
+    for (int i=0; i < metaObject->propertyCount(); i++) {
+        auto prop = metaObject->property(i);
+        if (prop.isReadable()) {
+            auto name = prop.name();
+            result[name] = object->property(name);
         }
     }
-    if (method.isFunction() || method.isString()) {
-        // interpret as `API.func(..., scope, function callback(){})` or `API.func(..., scope, "methodName")`
-        scope = value;
-    } else {
-        // interpret as `API.func(..., function callback(){})`
-        method = value;
+    return result;
+}
+template<> QVariant QVariant::fromValue(const glm::vec2& value) { return buffer_helpers::glmVecToVariant(value); }
+template<> QVariant QVariant::fromValue(const glm::vec3& value) { return buffer_helpers::glmVecToVariant(value); }
+template<> QVariant QVariant::fromValue(const glm::vec4& value) { return buffer_helpers::glmVecToVariant(value); }
+template<> QVariant QVariant::fromValue(const glm::quat& value) { return buffer_helpers::glmVecToVariant(value); }
+
+namespace scriptable {
+
+const std::map<QString, QStringList> JSVectorAdapter::ALIASES{
+    { "indices", { "indices", "index", "indexes", }},
+    { "positions", { "positions", "position", "vertices", } },
+    { "normals", { "normals", "normal", }},
+    { "colors", { "colors", "color", }},
+    { "texCoords0", { "texcoords0", "texcoord0", "texturecoords", "texcoords", "texcoord", "uvs", "uv" } },
+};
+
+// returns the normalized, pluralized camelCase name
+QString JSVectorAdapter::pluralizeAttributeName(const QString& alias) {
+    auto normalized = alias.toLower().replace("vertex", "");
+    for (const auto& kv : ALIASES) {
+        if (kv.first == alias || kv.second.contains(alias)) {
+            return kv.first;
+        }
     }
-#ifdef SCRIPTABLE_MESH_DEBUG
-    qCInfo(graphics_scripting) << "scope:" << scope.toQObject() << "method:" << method.toString();
-#endif
-    return ::makeScopedHandlerObject(scope,  method);
+    return QString();
+}
+
+// returns the normalized, singularized internal attribute name
+QString JSVectorAdapter::singularizeAttributeName(const QString& attributeName) {
+    auto plural = pluralizeAttributeName(attributeName).toLower();
+    if (plural == "indices") {
+        return "index";
+    }
+    return plural.replace(QRegExp("s([0-9])$"), "\\1").replace(QRegExp("s$"), "");
+};
+
+namespace {
+    QString findPropertyByAlias(const QString& alias, const QStringList& propertyNames) {
+        auto normalized = JSVectorAdapter::pluralizeAttributeName(alias);
+        if (!normalized.isEmpty()) {
+            for (const auto& n : propertyNames) {
+                if (JSVectorAdapter::pluralizeAttributeName(n) == normalized) {
+                    return n;
+                }
+            }
+        }
+        return QString();
+    }
 }
 
 template <typename T>
-T this_qobject_cast(QScriptEngine* engine) {
-    auto context = engine ? engine->currentContext() : nullptr;
-    return qscriptvalue_cast<T>(context ? context->thisObject() : QScriptValue::NullValue);
+std::vector<T> JSVectorAdapter::getVector(const QString& property, const QString& jsTypeName) {
+    QString sourceProperty = findPropertyByAlias(property, qt.keys());
+    if (!qt.contains(sourceProperty)) {
+        // qCDebug(graphics_scripting) << "JSVectorAdapter::getVector -- normalized property not found" << sourceProperty << "(" << property << ")" << JSVectorAdapter::pluralizeAttributeName(property) << jsTypeName << qt.keys();
+        return std::vector<T>();
+    }
+    auto variant = qt.value(sourceProperty);
+    if (variant.type() == (QVariant::Type)QMetaType::QVariantList) {
+        return buffer_helpers::variantToVector<T>(variant);
+    } else {
+        qDebug() << "JSVectorAdapter::getVector -- discovered " << sourceProperty << " (" << property << ") Object (assuming value is a TypedArray)" << jsTypeName;
+        qDebug() << "TODO: TypedArray support moved to separate PR";
+        return std::vector<T>();
+    }
 }
-QString toDebugString(QObject* tmp) {
-    QString s;
-    QTextStream out(&s);
-    out << tmp;
-    return s;
-    // return QString("%0 (0x%1%2)")
-    //     .arg(tmp ? tmp->metaObject()->className() : "QObject")
-    //     .arg(qulonglong(tmp), 16, 16, QChar('0'))
-    //     .arg(tmp && tmp->objectName().size() ? " name=" + tmp->objectName() : "");
-}
-template <typename T> QString toDebugString(std::shared_ptr<T> tmp) {
-    return toDebugString(qobject_cast<QObject*>(tmp.get()));
-}
+
+template std::vector<glm::uint32> JSVectorAdapter::getVector<glm::uint32>(const QString& property, const QString& jsTypeName);
+template std::vector<glm::vec2> JSVectorAdapter::getVector<glm::vec2>(const QString& property, const QString& jsTypeName);
+template std::vector<glm::vec3> JSVectorAdapter::getVector<glm::vec3>(const QString& property, const QString& jsTypeName);
+template std::vector<glm::vec4> JSVectorAdapter::getVector<glm::vec4>(const QString& property, const QString& jsTypeName);
 
 }

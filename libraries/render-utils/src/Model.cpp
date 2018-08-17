@@ -673,7 +673,7 @@ bool Model::replaceScriptableModelMeshPart(scriptable::ScriptableModelBasePointe
         return false;
     }
 
-    auto mesh = meshes[meshIndex].getMeshPointer();
+    auto mesh = meshes[meshIndex];
 
     if (partIndex >= (int)mesh->getNumParts()) {
         qDebug() << partIndex << "partIndex >= mesh->getNumParts()" << mesh->getNumParts();
@@ -699,9 +699,9 @@ bool Model::replaceScriptableModelMeshPart(scriptable::ScriptableModelBasePointe
         FBXGeometry geometry;
         for (const auto& newMesh : meshes) {
             FBXMesh mesh;
-            mesh._mesh = newMesh.getMeshPointer();
+            mesh._mesh = newMesh;
             mesh.vertices = buffer_helpers::mesh::attributeToVector<glm::vec3>(mesh._mesh, gpu::Stream::POSITION);
-            int numParts = (int)newMesh.getMeshPointer()->getNumParts();
+            int numParts = (int)newMesh->getNumParts();
             for (int partID = 0; partID < numParts; partID++) {
                 FBXMeshPart part;
                 part.triangleIndices = buffer_helpers::bufferToVector<int>(mesh._mesh->getIndexBuffer(), "part.triangleIndices");

@@ -45,9 +45,9 @@ bool writeOBJToTextStream(QTextStream& out, QList<MeshPointer> meshes) {
     // each mesh's vertices are numbered from zero.  We're combining all their vertices into one list here,
     // so keep track of the start index for each mesh.
     QList<int> meshVertexStartOffset;
-    QList<int> meshNormalStartOffset;
+    QList<int> meshAttributeStartOffset;
     int currentVertexStartOffset = 0;
-    int currentNormalStartOffset = 0;
+    int currentAttributeStartOffset = 0;
     int subMeshIndex = 0;
     out << "# OBJWriter::writeOBJToTextStream\n";
 
@@ -81,19 +81,35 @@ bool writeOBJToTextStream(QTextStream& out, QList<MeshPointer> meshes) {
     out << "\n";
 
     // write out normals
-    bool haveNormals = true;
+    bool haveNormals = false;
     subMeshIndex = 0;
     foreach (const MeshPointer& mesh, meshes) {
         out << "# normals::subMeshIndex " << subMeshIndex++ << "\n";
-        meshNormalStartOffset.append(currentNormalStartOffset);
+        meshAttributeStartOffset.append(currentAttributeStartOffset);
         auto normals = buffer_helpers::mesh::attributeToVector<glm::vec3>(mesh, gpu::Stream::NORMAL);
         for (const auto& normal : normals) {
+            haveNormals = true;
             out << "vn ";
             out << formatFloat(normal[0]) << " ";
             out << formatFloat(normal[1]) << " ";
             out << formatFloat(normal[2]) << "\n";
         }
-        currentNormalStartOffset += normals.size();
+        currentAttributeStartOffset += normals.size();
+    }
+    out << "\n";
+
+    // write out UVs
+    bool haveUVs = false;
+    subMeshIndex = 0;
+    foreach (const MeshPointer& mesh, meshes) {
+        out << "# texcoords0::subMeshIndex " << subMeshIndex++ << "\n";
+        auto uvs = buffer_helpers::mesh::attributeToVector<glm::vec2>(mesh, gpu::Stream::TEXCOORD0);
+        for (const auto& uv : uvs) {
+            haveUVs = true;
+            out << "vt ";
+            out << formatFloat(uv[0]) << " ";
+            out << formatFloat(uv[1]) << "\n";
+        }
     }
     out << "\n";
 
@@ -103,7 +119,7 @@ bool writeOBJToTextStream(QTextStream& out, QList<MeshPointer> meshes) {
     foreach (const MeshPointer& mesh, meshes) {
         out << "# faces::subMeshIndex " << subMeshIndex++ << "\n";
         currentVertexStartOffset = meshVertexStartOffset.takeFirst();
-        currentNormalStartOffset = meshNormalStartOffset.takeFirst();
+        currentAttributeStartOffset = meshAttributeStartOffset.takeFirst();
 
         const gpu::BufferView& partBuffer = mesh->getPartBuffer();
         const gpu::BufferView& indexBuffer = mesh->getIndexBuffer();
@@ -118,15 +134,22 @@ bool writeOBJToTextStream(QTextStream& out, QList<MeshPointer> meshes) {
 
             auto indices = buffer_helpers::bufferToVector<gpu::uint32>(mesh->getIndexBuffer(), "mesh.indices");
             auto face = [&](uint32_t i0, uint32_t i1, uint32_t i2) {
+                const uint32_t v0 = currentAttributeStartOffset + indices[i0] + 1;
+                const uint32_t v1 = currentAttributeStartOffset + indices[i1] + 1;
+                const uint32_t v2 = currentAttributeStartOffset + indices[i2] + 1;
                 out << "f ";
-                if (haveNormals) {
-                    out << currentVertexStartOffset + indices[i0] + 1 << "//" << currentVertexStartOffset + indices[i0] + 1 << " ";
-                    out << currentVertexStartOffset + indices[i1] + 1 << "//" << currentVertexStartOffset + indices[i1] + 1 << " ";
-                    out << currentVertexStartOffset + indices[i2] + 1 << "//" << currentVertexStartOffset + indices[i2] + 1 << "\n";
+                if (haveNormals && haveUVs) {
+                    out << v0 << "/" << v0 << "/" << v0 << " ";
+                    out << v1 << "/" << v1 << "/" << v1 << " ";
+                    out << v2 << "/" << v2 << "/" << v2 << "\n";
+                } else if (haveNormals) {
+                    out << v0 << "//" << v0 << " ";
+                    out << v1 << "//" << v1 << " ";
+                    out << v2 << "//" << v2 << "\n";
                 } else {
-                    out << currentVertexStartOffset + indices[i0] + 1 << " ";
-                    out << currentVertexStartOffset + indices[i1] + 1 << " ";
-                    out << currentVertexStartOffset + indices[i2] + 1 << "\n";
+                    out << v0 << " ";
+                    out << v1 << " ";
+                    out << v2 << "\n";
                 }
             };
 
@@ -150,6 +173,8 @@ bool writeOBJToTextStream(QTextStream& out, QList<MeshPointer> meshes) {
                 for (uint32_t idx = part._startIndex; idx+2 < len; idx += 3) {
                     face(idx+0, idx+1, idx+2);
                 }
+            } else {
+                qDebug(modelformat) << "OBJWriter -- unhandled topology" << part._topology;
             }
             out << "\n";
         }

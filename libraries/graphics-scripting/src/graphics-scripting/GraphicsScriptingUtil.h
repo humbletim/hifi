@@ -2,47 +2,83 @@
 
 #include <QtScript/QScriptEngine>
 #include <QtScript/QScriptValue>
+#include <QtScript/QScriptable>
 #include <QtCore/QPointer>
 #include <QtCore/QObject>
 #include <QtCore/QLoggingCategory>
+#include <QtCore/QVariant>
 #include <QDebug>
 #include <memory>
 #include <functional>
 #include <glm/glm.hpp>
+#include <graphics/BufferViewHelpers.h>
+#include <shared/Scriptable.h>
+#include <RegisteredMetaTypes.h>
+
+#include "Forward.h"
+Q_DECLARE_LOGGING_CATEGORY(graphics_scripting)
 
 class Extents;
 class AABox;
 namespace gpu {
     class Element;
 }
-Q_DECLARE_LOGGING_CATEGORY(graphics_scripting)
+HIFI_DECLARE_CUSTOM_METATYPE(Extents)
+HIFI_DECLARE_CUSTOM_METATYPE(AABox) 
+HIFI_DECLARE_CUSTOM_METATYPE(gpu::Element)
+HIFI_DECLARE_CUSTOM_METATYPE(std::string)
+HIFI_DECLARE_CUSTOM_METATYPE(std::vector<std::string>)
 
 namespace scriptable {
-    QVariant toVariant(const Extents& box);
-    QVariant toVariant(const AABox& box);
-    QVariant toVariant(const gpu::Element& element);
-    QVariant toVariant(const glm::mat4& mat4);
+    using MappedQObject = std::pair<const QObject*, const QMetaObject*>;
+}
+HIFI_DECLARE_CUSTOM_METATYPE(scriptable::MappedQObject)
 
-    // helper that automatically resolves Qt-signal-like scoped callbacks
-    // ... C++ side: `void MyClass::asyncMethod(..., QScriptValue callback)` 
-    // ... JS side:
-    //     * `API.asyncMethod(..., function(){})`
-    //     * `API.asyncMethod(..., scope, function(){})`
-    //     * `API.asyncMethod(..., scope, "methodName")`
-    QScriptValue jsBindCallback(QScriptValue callback);
+// TODO: update code in RegisteredMetaTypes.h to use Qt standardized QVariant::fromValue<T> and QVariant::value<T> methods
+_HIFI_DECLARE_CUSTOM_VARIANT(glm::mat4)
+_HIFI_DECLARE_CUSTOM_VARIANT(glm::vec2)
+_HIFI_DECLARE_CUSTOM_VARIANT(glm::vec3)
+_HIFI_DECLARE_CUSTOM_VARIANT(glm::vec4)
+_HIFI_DECLARE_CUSTOM_VARIANT(glm::quat)
 
-    // cast engine->thisObject() => C++ class instance
-    template <typename T> T this_qobject_cast(QScriptEngine* engine);
+namespace scriptable {
+    inline bool jsThrowError(QScriptEngine* engine, const QString& error, const QLoggingCategory &cat() = &graphics_scripting) {
+        if (auto context = engine ? engine->currentContext() : nullptr) {
+            context->throwError(error);
+            return true;
+        } else {
+            qCWarning(cat) << "scriptable::jsThrowError (invalid JS context -- logging exception instead):" << error;
+            return false;
+        }
+    }
+    template <typename T> T jsAssert(QScriptEngine* engine, T truthy, const QString& message) {
+        return truthy ? truthy : (jsThrowError(engine, message), T());
+    }
 
-    QString toDebugString(QObject* tmp);
-    template <typename T> QString toDebugString(std::shared_ptr<T> tmp);
+    struct JSVectorAdapter {
+        const QVariantMap& qt;
+        const QScriptValue& js;
+        JSVectorAdapter(const QVariantMap& qt, const QScriptValue& js) : qt(qt), js(js) {}
+        static const std::map<QString, QStringList> ALIASES;
+        static QString pluralizeAttributeName(const QString& alias);
+        static QString singularizeAttributeName(const QString& alias);
+        template <typename T>
+        std::vector<T> getVector(const QString& property, const QString& jsTypeName);
+    };
 
-    // Helper for creating C++ > ScriptOwned JS instances
-    // (NOTE: this also helps track in the code where we need to update later if switching to
-    //  std::shared_ptr's -- something currently non-trivial given mixed JS/C++ object ownership)
-    template <typename T, class... Rest> inline QPointer<T> make_scriptowned(Rest... rest) {
-        auto instance = QPointer<T>(new T(rest...));
-        Q_ASSERT(instance && instance->parent());
-        return instance;
+    // register a DebugEnums type (QMap-based non-flag enums where JS uses the string representation)
+    template <typename T> int registerDebugEnum(QScriptEngine* engine, const DebugEnums<T>& debugEnums) {
+        static const DebugEnums<T>& instance = debugEnums;
+        return qScriptRegisterMetaType<T>(
+            engine,
+            [](QScriptEngine* engine, const T& topology) -> QScriptValue {
+                return instance.value(topology);
+            },
+            [](const QScriptValue& value, T& topology) {
+                topology = instance.key(value.toString());
+            }
+        );
     }
 }
+
+inline QDebug operator<<(QDebug dbg, graphics::MeshPointer mesh) { return dbg << mesh.get(); }

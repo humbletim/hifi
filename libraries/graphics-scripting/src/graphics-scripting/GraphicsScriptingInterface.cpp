@@ -15,7 +15,6 @@
 #include "ScriptEngineLogging.h"
 #include "ScriptableMesh.h"
 #include "ScriptableMeshPart.h"
-#include <GeometryUtil.h>
 #include <QUuid>
 #include <QtScript/QScriptEngine>
 #include <QtScript/QScriptValue>
@@ -23,17 +22,10 @@
 #include <graphics/BufferViewHelpers.h>
 #include <graphics/GpuHelpers.h>
 #include <shared/QtHelpers.h>
+#include <shared/Scriptable.h>
 #include <SpatiallyNestable.h>
 
 GraphicsScriptingInterface::GraphicsScriptingInterface(QObject* parent) : QObject(parent), QScriptable() {
-}
-
-void GraphicsScriptingInterface::jsThrowError(const QString& error) {
-    if (context()) {
-        context()->throwError(error);
-    } else {
-        qCWarning(graphics_scripting) << "GraphicsScriptingInterface::jsThrowError (without valid JS context):" << error;
-    }
 }
 
 bool GraphicsScriptingInterface::canUpdateModel(QUuid uuid, int meshIndex, int partNumber) {
@@ -41,17 +33,7 @@ bool GraphicsScriptingInterface::canUpdateModel(QUuid uuid, int meshIndex, int p
     return provider && provider->canReplaceModelMeshPart(meshIndex, partNumber);
 }
 
-bool GraphicsScriptingInterface::updateModel(QUuid uuid, const scriptable::ScriptableModelPointer& model) {
-    if (!model) {
-        jsThrowError("null model argument");
-    }
-
-    auto base = model->operator scriptable::ScriptableModelBasePointer();
-    if (!base) {
-        jsThrowError("could not get base model pointer");
-        return false;
-    }
-
+bool GraphicsScriptingInterface::updateModel(QUuid uuid, const scriptable::ScriptableModelPointer& base) {
     auto provider = getModelProvider(uuid);
     if (!provider) {
         jsThrowError("provider unavailable");
@@ -63,9 +45,6 @@ bool GraphicsScriptingInterface::updateModel(QUuid uuid, const scriptable::Scrip
         return false;
     }
 
-#ifdef SCRIPTABLE_MESH_DEBUG
-    qDebug() << "replaceScriptableModelMeshPart" << model->toString() << -1 << -1;
-#endif
     return provider->replaceScriptableModelMeshPart(base, -1, -1);
 }
 
@@ -85,18 +64,15 @@ scriptable::ModelProviderPointer GraphicsScriptingInterface::getModelProvider(QU
 }
 
 scriptable::ScriptableModelPointer GraphicsScriptingInterface::newModel(const scriptable::ScriptableMeshes& meshes) {
-    auto modelWrapper = scriptable::make_scriptowned<scriptable::ScriptableModel>();
+    auto modelWrapper = scriptable::ScriptableModelPointer::create();
     modelWrapper->setObjectName("js::model");
-    if (meshes.isEmpty()) {
+    if (meshes.empty()) {
         jsThrowError("expected [meshes] array as first argument");
     } else {
         int i = 0;
         for (const auto& mesh : meshes) {
-#ifdef SCRIPTABLE_MESH_DEBUG
-            qDebug() << "newModel" << i << meshes.size() << mesh;
-#endif
             if (mesh) {
-                modelWrapper->append(*mesh);
+                modelWrapper->append(mesh);
             } else {
                 jsThrowError(QString("invalid mesh at index: %1").arg(i));
                 break;
@@ -114,22 +90,24 @@ scriptable::ScriptableModelPointer GraphicsScriptingInterface::getModel(QUuid uu
     if (auto nestable = DependencyManager::get<SpatialParentFinder>()->find(uuid, success).lock()) {
         providerType = SpatiallyNestable::nestableTypeToString(nestable->getNestableType());
         if (auto provider = getModelProvider(uuid)) {
-            auto modelObject = provider->getScriptableModel();
-            const bool found = !modelObject.objectID.isNull();
-            if (found && uuid == AVATAR_SELF_ID) {
-                // special case override so that scripts can rely on matching intput/output UUIDs
-                modelObject.objectID = AVATAR_SELF_ID;
-            }
-            if (modelObject.objectID == uuid) {
-                if (modelObject.meshes.size()) {
-                    auto modelWrapper = scriptable::make_scriptowned<scriptable::ScriptableModel>(modelObject);
-                    modelWrapper->setObjectName(providerType+"::"+uuid.toString()+"::model");
-                    return modelWrapper;
+            scriptable::ScriptableModelPointer modelObject{ new scriptable::ScriptableModelBase(provider->getScriptableModel()) };
+            if (modelObject) {
+                if (uuid == AVATAR_SELF_ID) {
+                    // special case override so that scripts can rely on matching input/output UUIDs
+                    modelObject->objectID = AVATAR_SELF_ID;
+                }
+                if (modelObject->objectID == uuid) {
+                    if (modelObject->meshes.size()) {
+                        modelObject->setObjectName(providerType+"::"+uuid.toString()+"::model");
+                        return modelObject;
+                    } else {
+                        error = "no meshes available: " + modelObject->objectID.toString();
+                    }
                 } else {
-                    error = "no meshes available: " + modelObject.objectID.toString();
+                    error = QString("objectID mismatch: %1 (result contained %2 meshes)").arg(modelObject->objectID.toString()).arg(modelObject->meshes.size());
                 }
             } else {
-                error = QString("objectID mismatch: %1 (result contained %2 meshes)").arg(modelObject.objectID.toString()).arg(modelObject.meshes.size());
+                error = "failed to get model object";
             }
         } else {
             error = "model provider unavailable";
@@ -141,29 +119,14 @@ scriptable::ScriptableModelPointer GraphicsScriptingInterface::getModel(QUuid uu
     return nullptr;
 }
 
-#ifdef SCRIPTABLE_MESH_TODO
-bool GraphicsScriptingInterface::updateMeshPart(scriptable::ScriptableMeshPointer mesh, scriptable::ScriptableMeshPartPointer part) {
-    Q_ASSERT(mesh);
-    Q_ASSERT(part);
-    Q_ASSERT(part->parentMesh);
-    auto tmp = exportMeshPart(mesh, part->partIndex);
-    if (part->parentMesh == mesh) {
-#ifdef SCRIPTABLE_MESH_DEBUG
-        qCInfo(graphics_scripting) << "updateMeshPart -- update via clone" << mesh << part;
-#endif
-        tmp->replaceMeshData(part->cloneMeshPart());
-        return false;
-    } else {
-#ifdef SCRIPTABLE_MESH_DEBUG
-        qCInfo(graphics_scripting) << "updateMeshPart -- update via inplace" << mesh << part;
-#endif
-        tmp->replaceMeshData(part);
-        return true;
-    }
+scriptable::ScriptableMeshPointer GraphicsScriptingInterface::newMesh(QScriptValue ifsMeshData) {
+    return newMesh(scriptable::JSVectorAdapter{ ifsMeshData.toVariant().toMap(), ifsMeshData });
 }
-#endif
+scriptable::ScriptableMeshPointer GraphicsScriptingInterface::newMeshFromVariant(QVariantMap ifsMeshData) {
+    return newMesh(scriptable::JSVectorAdapter{ ifsMeshData, argument(0) });
+}
 
-scriptable::ScriptableMeshPointer GraphicsScriptingInterface::newMesh(const QVariantMap& ifsMeshData) {
+scriptable::ScriptableMeshPointer GraphicsScriptingInterface::newMesh(scriptable::JSVectorAdapter adapter) {
     // TODO: this is bare-bones way for now to improvise a new mesh from the scripting side
     //  in the future we want to support a formal C++ structure data type here instead
 
@@ -177,17 +140,22 @@ scriptable::ScriptableMeshPointer GraphicsScriptingInterface::newMesh(const QVar
      * @property {Vec3[]} [colors=[]] - vertex colors (normalized)
      * @property {Vec2[]} [texCoords0=[]] - vertex texture coordinates (normalized)
      */
+    const auto& ifsMeshData = adapter.qt;
     QString meshName = ifsMeshData.value("name").toString();
     QString topologyName = ifsMeshData.value("topology").toString();
-    QVector<glm::uint32> indices = buffer_helpers::variantToVector<glm::uint32>(ifsMeshData.value("indices"));
-    QVector<glm::vec3> vertices = buffer_helpers::variantToVector<glm::vec3>(ifsMeshData.value("positions"));
-    QVector<glm::vec3> normals = buffer_helpers::variantToVector<glm::vec3>(ifsMeshData.value("normals"));
-    QVector<glm::vec3> colors = buffer_helpers::variantToVector<glm::vec3>(ifsMeshData.value("colors"));
-    QVector<glm::vec2> texCoords0 = buffer_helpers::variantToVector<glm::vec2>(ifsMeshData.value("texCoords0"));
+    std::vector<glm::uint32> indices = adapter.getVector<glm::uint32>("indices", "Uint32Array");
+    std::vector<glm::vec3> vertices = adapter.getVector<glm::vec3>("positions", "Float32Array");
+    std::vector<glm::vec3> normals = adapter.getVector<glm::vec3>("normals", "Float32Array");
+    std::vector<glm::vec3> colors = adapter.getVector<glm::vec3>("colors", "Float32Array");
+    std::vector<glm::vec2> texCoords0 = adapter.getVector<glm::vec2>("texCoords0", "Float32Array");
+
+    if (engine()->hasUncaughtException()) {
+        return nullptr;
+    }
 
     const auto numVertices = vertices.size();
     const auto numIndices = indices.size();
-    const auto topology = graphics::TOPOLOGIES.key(topologyName);
+    const auto topology = graphics::TOPOLOGIES.key(topologyName, graphics::Mesh::Topology::TRIANGLES);
 
     // TODO: support additional topologies (POINTS and LINES ought to "just work" --
     //   if MeshPartPayload::drawCall is updated to actually check the Mesh::Part::_topology value
@@ -205,7 +173,7 @@ scriptable::ScriptableMeshPointer GraphicsScriptingInterface::newMesh(const QVar
     } else if (!numVertices) {
         error = "expected non-empty [glm::vec3(),...] array for .positions";
     } else {
-        const gpu::uint32 maxVertexIndex = numVertices;
+        const gpu::uint32 maxVertexIndex = (gpu::uint32)numVertices;
         int i = 0;
         for (const auto& ind : indices) {
             if (ind >= maxVertexIndex) {
@@ -253,61 +221,40 @@ scriptable::ScriptableMeshPointer GraphicsScriptingInterface::newMesh(const QVar
     if (texCoords0.size()) {
         mesh->addAttribute(gpu::Stream::TEXCOORD0, buffer_helpers::newFromVector(texCoords0, gpu::Format::VEC2F_UV));
     }
-    QVector<graphics::Mesh::Part> parts = {{ 0, indices.size(), 0, topology }};
+    std::vector<graphics::Mesh::Part> parts{{ 0, (int)indices.size(), 0, topology }};
     mesh->setPartBuffer(buffer_helpers::newFromVector(parts, gpu::Element::PART_DRAWCALL));
-    return scriptable::make_scriptowned<scriptable::ScriptableMesh>(mesh, nullptr);
-}
-
-QString GraphicsScriptingInterface::exportModelToOBJ(const scriptable::ScriptableModel& _in) {
-    const auto& in = _in.getConstMeshes();
-    if (in.size()) {
-        QList<scriptable::MeshPointer> meshes;
-        foreach (auto meshProxy, in) {
-            if (meshProxy) {
-                meshes.append(getMeshPointer(meshProxy));
-            }
-        }
-        if (meshes.size()) {
-            return writeOBJToString(meshes);
-        }
-    }
-    jsThrowError("null mesh");
-    return QString();
-}
-
-MeshPointer GraphicsScriptingInterface::getMeshPointer(const scriptable::ScriptableMesh& meshProxy) {
-    return meshProxy.getMeshPointer();
-}
-MeshPointer GraphicsScriptingInterface::getMeshPointer(scriptable::ScriptableMesh& meshProxy) {
-    return getMeshPointer(&meshProxy);
-}
-MeshPointer GraphicsScriptingInterface::getMeshPointer(scriptable::ScriptableMeshPointer meshProxy) {
-    MeshPointer result;
-    if (!meshProxy) {
-        jsThrowError("expected meshProxy as first parameter");
-        return result;
-    }
-    auto mesh = meshProxy->getMeshPointer();
-    if (!mesh) {
-        jsThrowError("expected valid meshProxy as first parameter");
-        return result;
-    }
     return mesh;
 }
 
+QString GraphicsScriptingInterface::exportModelToOBJ(const scriptable::ScriptableModelPointer& base) {
+    QList<graphics::MeshPointer> meshes;
+    if (base) {
+        int i = -1;
+        foreach (auto mesh, base->meshes) {
+            i++;
+            if (mesh) {
+                meshes << mesh;
+            } else {
+                qCWarning(graphics_scripting) << "exportModelToOBJ -- skipping null mesh at index" << i;
+            }
+        }
+    }
+    if (meshes.size()) {
+        return writeOBJToString(meshes);
+    }
+    qCWarning(graphics_scripting) << "exportModelToOBJ -- no meshes";
+    return QString();
+}
+
 namespace {
-    QVector<int> metaTypeIds{
-        qRegisterMetaType<glm::uint32>("uint32"),
+    std::vector<int> metaTypeIds{
+        qRegisterMetaType<uint64_t>("uint64_t"),
         qRegisterMetaType<glm::uint32>("glm::uint32"),
-        qRegisterMetaType<QVector<glm::uint32>>(),
-        qRegisterMetaType<QVector<glm::uint32>>("QVector<uint32>"),
-        qRegisterMetaType<scriptable::ScriptableMeshes>(),
-        qRegisterMetaType<scriptable::ScriptableMeshes>("ScriptableMeshes"),
+        qRegisterMetaType<glm::float32>("glm::float32"),
+        qRegisterMetaType<std::vector<glm::uint32>>("std::vector<glm::uint32>"),
+        qRegisterMetaType<std::vector<glm::float32>>("std::vector<glm::float32>"),
+        qRegisterMetaType<std::vector<glm::float32>>("std::vector<glm::float>"),
         qRegisterMetaType<scriptable::ScriptableMeshes>("scriptable::ScriptableMeshes"),
-        qRegisterMetaType<QVector<scriptable::ScriptableMeshPointer>>("QVector<scriptable::ScriptableMeshPointer>"),
-        qRegisterMetaType<scriptable::ScriptableMeshPointer>(),
-        qRegisterMetaType<scriptable::ScriptableModelPointer>(),
-        qRegisterMetaType<scriptable::ScriptableMeshPartPointer>(),
         qRegisterMetaType<scriptable::ScriptableMaterial>(),
         qRegisterMetaType<scriptable::ScriptableMaterialLayer>(),
         qRegisterMetaType<QVector<scriptable::ScriptableMaterialLayer>>(),
@@ -317,39 +264,6 @@ namespace {
 }
 
 namespace scriptable {
-    template <typename T> int registerQPointerMetaType(QScriptEngine* engine) {
-        qScriptRegisterSequenceMetaType<QVector<QPointer<T>>>(engine);
-        return qScriptRegisterMetaType<QPointer<T>>(
-            engine,
-            [](QScriptEngine* engine, const QPointer<T>& object) -> QScriptValue {
-                if (!object) {
-                    return QScriptValue::NullValue;
-                }
-                return engine->newQObject(object, QScriptEngine::QtOwnership, QScriptEngine::ExcludeDeleteLater | QScriptEngine::AutoCreateDynamicProperties);
-            },
-            [](const QScriptValue& value, QPointer<T>& out) {
-                auto obj = value.toQObject();
-#ifdef SCRIPTABLE_MESH_DEBUG
-                qCInfo(graphics_scripting) << "qpointer_qobject_cast" << obj << value.toString();
-#endif
-                if (auto tmp = qobject_cast<T*>(obj)) {
-                    out = QPointer<T>(tmp);
-                    return;
-                }
-#if 0
-                if (auto tmp = static_cast<T*>(obj)) {
-#ifdef SCRIPTABLE_MESH_DEBUG
-                    qCInfo(graphics_scripting) << "qpointer_qobject_cast -- via static_cast" << obj << tmp << value.toString();
-#endif
-                    out = QPointer<T>(tmp);
-                    return;
-                }
-#endif
-                out = nullptr;
-            }
-        );
-    }
-
     QScriptValue qVectorScriptableMaterialLayerToScriptValue(QScriptEngine* engine, const QVector<scriptable::ScriptableMaterialLayer>& vector) {
         return qScriptValueFromSequence(engine, vector);
     }
@@ -410,28 +324,24 @@ namespace scriptable {
     void multiMaterialMapFromScriptValue(const QScriptValue& map, scriptable::MultiMaterialMap& result) {
         // No need to convert from QScriptValue to MultiMaterialMap
     }
-
-    template <typename T> int registerDebugEnum(QScriptEngine* engine, const DebugEnums<T>& debugEnums) {
-        static const DebugEnums<T>& instance = debugEnums;
-        return qScriptRegisterMetaType<T>(
-            engine,
-            [](QScriptEngine* engine, const T& topology) -> QScriptValue {
-                return instance.value(topology);
-            },
-            [](const QScriptValue& value, T& topology) {
-                topology = instance.key(value.toString());
-            }
-        );
-    }
 }
 
 void GraphicsScriptingInterface::registerMetaTypes(QScriptEngine* engine) {
     qScriptRegisterSequenceMetaType<QVector<glm::uint32>>(engine);
+    qScriptRegisterSequenceMetaType<std::vector<glm::uint32>>(engine);
+    qScriptRegisterSequenceMetaType<std::vector<std::string>>(engine);
     qScriptRegisterSequenceMetaType<QVector<scriptable::ScriptableMaterialLayer>>(engine);
 
-    scriptable::registerQPointerMetaType<scriptable::ScriptableModel>(engine);
-    scriptable::registerQPointerMetaType<scriptable::ScriptableMesh>(engine);
-    scriptable::registerQPointerMetaType<scriptable::ScriptableMeshPart>(engine);
+    scriptable::registerPrototype<scriptable::ScriptableModelPointer>(engine, new scriptable::ScriptableModel(nullptr))
+        .setProperty("toJSON", engine->evaluate("(function() { return this.toVariant(); })"));
+    scriptable::registerPrototype<scriptable::ScriptableMeshPointer>(engine, new scriptable::ScriptableMesh(nullptr))
+        .setProperty("toJSON", engine->evaluate("(function() { return this.toVariant(); })"));
+    scriptable::registerPrototype<scriptable::ScriptableMeshPartPointer>(engine, new scriptable::ScriptableMeshPart(nullptr))
+        .setProperty("toJSON", engine->evaluate("(function() { return this.toVariant(); })"));
+
+    scriptable::registerVariantType<std::string>(engine);
+    scriptable::registerReadOnlyVariantType<AABox>(engine);
+    scriptable::registerReadOnlyVariantType<Extents>(engine);
 
     scriptable::registerDebugEnum<graphics::Mesh::Topology>(engine, graphics::TOPOLOGIES);
     scriptable::registerDebugEnum<gpu::Type>(engine, gpu::TYPES);
@@ -444,6 +354,5 @@ void GraphicsScriptingInterface::registerMetaTypes(QScriptEngine* engine) {
     qScriptRegisterMetaType(engine, scriptable::multiMaterialMapToScriptValue, scriptable::multiMaterialMapFromScriptValue);
 
     Q_UNUSED(metaTypeIds);
-}
 
-#include "GraphicsScriptingInterface.moc"
+ }

@@ -4,7 +4,7 @@
 #include <QtCore/QVector>
 #include <QtCore/QVariant>
 #include <QtCore/QUuid>
-#include <QPointer>
+#include <QSharedPointer>
 #include <memory>
 #include <unordered_map>
 
@@ -16,6 +16,7 @@
 
 namespace graphics {
     class Mesh;
+    using MeshPointer = std::shared_ptr<Mesh>;
 }
 class Model;
 using ModelPointer = std::shared_ptr<Model>;
@@ -25,16 +26,15 @@ namespace gpu {
 class QScriptEngine;
 
 namespace scriptable {
-    using Mesh = graphics::Mesh;
-    using MeshPointer = std::shared_ptr<scriptable::Mesh>;
-    using WeakMeshPointer = std::weak_ptr<scriptable::Mesh>;
-
     class ScriptableModelBase;
-    using ScriptableModelBasePointer = QPointer<ScriptableModelBase>;
+    using ScriptableModelBasePointer = QSharedPointer<ScriptableModelBase>;
+    using ScriptableModelPointer = ScriptableModelBasePointer;
 
     class ModelProvider;
     using ModelProviderPointer = std::shared_ptr<scriptable::ModelProvider>;
-    using WeakModelProviderPointer = std::weak_ptr<scriptable::ModelProvider>;
+
+    using ScriptableMeshPointer = graphics::MeshPointer;
+    using ScriptableMeshes = QVector<scriptable::ScriptableMeshPointer>;
 
     /**jsdoc
      * @typedef {object} Graphics.Material
@@ -107,40 +107,23 @@ namespace scriptable {
     };
     typedef QHash<QString, QVector<scriptable::ScriptableMaterialLayer>> MultiMaterialMap;
 
-    class ScriptableMeshBase : public QObject {
-        Q_OBJECT
-    public:
-        WeakModelProviderPointer provider;
-        ScriptableModelBasePointer model;
-        WeakMeshPointer weakMesh;
-        MeshPointer strongMesh;
-        ScriptableMeshBase(WeakModelProviderPointer provider, ScriptableModelBasePointer model, WeakMeshPointer weakMesh, QObject* parent);
-        ScriptableMeshBase(WeakMeshPointer weakMesh = WeakMeshPointer(), QObject* parent = nullptr);
-        ScriptableMeshBase(const ScriptableMeshBase& other, QObject* parent = nullptr) : QObject(parent) { *this = other; }
-        ScriptableMeshBase& operator=(const ScriptableMeshBase& view);
-        virtual ~ScriptableMeshBase();
-        Q_INVOKABLE const scriptable::MeshPointer getMeshPointer() const { return weakMesh.lock(); }
-        Q_INVOKABLE const scriptable::ModelProviderPointer getModelProviderPointer() const { return provider.lock(); }
-        Q_INVOKABLE const scriptable::ScriptableModelBasePointer getModelBasePointer() const { return model; }
-    };
-    
     // abstract container for holding one or more references to mesh pointers
     class ScriptableModelBase : public QObject {
         Q_OBJECT
     public:
-        WeakModelProviderPointer provider;
+        ModelProviderPointer provider;
         QUuid objectID; // spatially nestable ID
-        QVector<scriptable::ScriptableMeshBase> meshes;
+        ScriptableMeshes meshes;
         MultiMaterialMap materialLayers;
         QVector<QString> materialNames;
 
         ScriptableModelBase(QObject* parent = nullptr) : QObject(parent) {}
-        ScriptableModelBase(const ScriptableModelBase& other) : QObject(other.parent()) { *this = other; }
+        ScriptableModelBase(const ScriptableModelBase& other) :
+            QObject(other.parent()) { *this = other; }
         ScriptableModelBase& operator=(const ScriptableModelBase& other);
         virtual ~ScriptableModelBase();
 
-        void append(const ScriptableMeshBase& mesh);
-        void append(scriptable::WeakMeshPointer mesh);
+        void append(graphics::MeshPointer mesh);
         void appendMaterial(const graphics::MaterialLayer& materialLayer, int shapeID, std::string materialName);
         void appendMaterials(const std::unordered_map<std::string, graphics::MultiMaterial>& materialsToAppend);
         void appendMaterialNames(const std::vector<std::string>& names);
@@ -168,10 +151,14 @@ namespace scriptable {
         void modelRemovedFromScene(const QUuid& objectID, NestableType nestableType, const ModelPointer& sender);
     };
 
-    class ScriptableModel;
-    using ScriptableModelPointer = QPointer<ScriptableModel>;
-    class ScriptableMesh;
-    using ScriptableMeshPointer = QPointer<ScriptableMesh>;
-    class ScriptableMeshPart;
-    using ScriptableMeshPartPointer = QPointer<ScriptableMeshPart>;
+    class MeshPart : public QObject {
+        Q_OBJECT
+    public:
+        MeshPart(graphics::MeshPointer mesh, int partIndex) :
+            QObject(nullptr), parentMesh(mesh), partIndex(partIndex) {}
+        graphics::MeshPointer parentMesh;
+        int partIndex{ -1 };
+    };
+    using MeshPartPointer = QSharedPointer<MeshPart>;
+    using ScriptableMeshPartPointer = MeshPartPointer;
 }

@@ -8,7 +8,10 @@
 //  See the accompanying file LICENSE or http://www.apache.org/licenses/LICENSE-2.0.html
 //
 
+#include "GraphicsScriptingUtil.h"
+#include "GraphicsScriptingInterface.h"
 #include "ScriptableModel.h"
+#include "ScriptableMesh.h"
 
 #include <QtScript/QScriptEngine>
 
@@ -131,26 +134,11 @@ scriptable::ScriptableModelBase& scriptable::ScriptableModelBase::operator=(cons
 }
 
 scriptable::ScriptableModelBase::~ScriptableModelBase() {
-#ifdef SCRIPTABLE_MESH_DEBUG
-    qCDebug(graphics_scripting) << "~ScriptableModelBase" << this;
-#endif
-    // makes cleanup order more deterministic to help with debugging
-    for (auto& m : meshes) {
-        m.strongMesh.reset();
-    }
-    meshes.clear();
     materialLayers.clear();
     materialNames.clear();
 }
 
-void scriptable::ScriptableModelBase::append(scriptable::WeakMeshPointer mesh) {
-    meshes << ScriptableMeshBase{ provider, this, mesh, this /*parent*/ };
-}
-
-void scriptable::ScriptableModelBase::append(const ScriptableMeshBase& mesh) {
-    if (mesh.provider.lock().get() != provider.lock().get()) {
-        qCDebug(graphics_scripting) << "warning: appending mesh from different provider..." << mesh.provider.lock().get() << " != " << provider.lock().get();
-    }
+void scriptable::ScriptableModelBase::append(graphics::MeshPointer mesh) {
     meshes << mesh;
 }
 
@@ -176,69 +164,64 @@ void scriptable::ScriptableModelBase::appendMaterialNames(const std::vector<std:
 }
 
 QString scriptable::ScriptableModel::toString() const {
-    return QString("[ScriptableModel%1%2 numMeshes=%3]")
-        .arg(objectID.isNull() ? "" : " objectID="+objectID.toString())
-        .arg(objectName().isEmpty() ? "" : " name=" +objectName())
-        .arg(meshes.size());
+    auto self = getNativeObject();
+    if (!self) {
+        return "[Model nullptr]";
+    }
+    auto numMeshes = self->meshes.size();
+    auto name = self->objectName();
+    auto objectID = self->objectID;
+    return QString("[Model numMeshes=%1%2%3]")
+        .arg(numMeshes)
+        .arg(name.isEmpty() ? "" : " name=" + name)
+        .arg(objectID.isNull() ? "" : " objectID=" + objectID.toString());
+}
+
+QVariant scriptable::ScriptableModel::toVariant() const {
+    return QVariant::fromValue<scriptable::MappedQObject>({ this, &staticMetaObject });
 }
 
 scriptable::ScriptableModelPointer scriptable::ScriptableModel::cloneModel(const QVariantMap& options) {
-    scriptable::ScriptableModelPointer clone = scriptable::ScriptableModelPointer(new scriptable::ScriptableModel(*this));
-    clone->meshes.clear();
-    for (const auto &mesh : getConstMeshes()) {
-        auto cloned = mesh->cloneMesh();
-        if (auto tmp = qobject_cast<scriptable::ScriptableMeshBase*>(cloned)) {
-            clone->meshes << *tmp;
-            tmp->deleteLater(); // schedule our copy for cleanup
-        } else {
-            qCDebug(graphics_scripting) << "error cloning mesh" << cloned;
+    scriptable::ScriptableModelPointer clone;
+    if (auto self = getNativeObject()) {
+        clone = scriptable::ScriptableModelPointer::create(new scriptable::ScriptableModelBase(*self));
+        clone->meshes.clear();
+        // create a deep copy of each mesh
+        for (const auto &mesh : getConstMeshes()) {
+            clone->meshes.push_back(buffer_helpers::mesh::clone(mesh));
         }
     }
     return clone;
 }
 
-
 const scriptable::ScriptableMeshes scriptable::ScriptableModel::getConstMeshes() const {
-    scriptable::ScriptableMeshes out;
-    for (const auto& mesh : meshes) {
-        const scriptable::ScriptableMesh* m = qobject_cast<const scriptable::ScriptableMesh*>(&mesh);
-        if (!m) {
-            m = scriptable::make_scriptowned<scriptable::ScriptableMesh>(mesh);
-        } else {
-            qCDebug(graphics_scripting) << "reusing scriptable mesh" << m;
-        }
-        const scriptable::ScriptableMeshPointer mp = scriptable::ScriptableMeshPointer(const_cast<scriptable::ScriptableMesh*>(m));
-        out << mp;
+    if (auto self = getNativeObject()) {
+        return self->meshes;
     }
-    return out;
+    return scriptable::ScriptableMeshes();
 }
 
 scriptable::ScriptableMeshes scriptable::ScriptableModel::getMeshes() {
-    scriptable::ScriptableMeshes out;
-    for (auto& mesh : meshes) {
-        scriptable::ScriptableMesh* m = qobject_cast<scriptable::ScriptableMesh*>(&mesh);
-        if (!m) {
-            m = scriptable::make_scriptowned<scriptable::ScriptableMesh>(mesh);
-        } else {
-            qCDebug(graphics_scripting) << "reusing scriptable mesh" << m;
-        }
-        scriptable::ScriptableMeshPointer mp = scriptable::ScriptableMeshPointer(m);
-        out << mp;
+    if (auto self = getNativeObject()) {
+        return self->meshes;
+    } else {
+        qCDebug(graphics_scripting) << "getMeshes -- invalid native object" << getNativeObject();
     }
-    return out;
+    return scriptable::ScriptableMeshes();
 }
 
-#if 0
-glm::uint32 scriptable::ScriptableModel::forEachVertexAttribute(QScriptValue callback) {
-    glm::uint32 result = 0;
-    scriptable::ScriptableMeshes in = getMeshes();
-    if (in.size()) {
-        foreach (scriptable::ScriptableMeshPointer meshProxy, in) {
-            result += meshProxy->mapAttributeValues(callback);
+Extents scriptable::ScriptableModel::getModelExtents() const {
+    Extents extents;
+    if (auto self = getNativeObject()) {
+        for (auto& mesh : self->meshes) {
+            extents.add(mesh->evalPartsBound(0, (int)mesh->getNumParts()));;
         }
+    } else {
+        qCDebug(graphics_scripting) << "getModelExtents -- invalid native object" << getNativeObject();
     }
-    return result;
+    return extents;
 }
-#endif
 
-#include "ScriptableModel.moc"
+QString scriptable::ScriptableModel::toOBJ()  {
+    return GraphicsScriptingInterface::exportModelToOBJ(getNativeObject());
+}
