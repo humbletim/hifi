@@ -31,16 +31,15 @@ namespace buffer_helpers {
     glm::uint32 forEachVariant(const gpu::BufferView& view, std::function<bool(glm::uint32 index, const QVariant& value)> func, const char* hint = "");
     template <typename T> glm::uint32 forEach(const gpu::BufferView& view, std::function<bool(glm::uint32 index, const T& value)> func);
 
-    template <typename T> gpu::BufferView newFromVector(const QVector<T>& elements, const gpu::Element& elementType);
     template <typename T> gpu::BufferView newFromVector(const std::vector<T>& elements, const gpu::Element& elementType);
-    template <typename T> gpu::BufferView newFromVariantList(const QVariantList& list, const gpu::Element& elementType);
 
-    template <typename T, typename VT = std::vector<T>> VT variantToVector(const QVariant& list);
-    template <typename T> QVector<T> bufferToVector(const gpu::BufferView& view, const char *hint = "");
+    template <typename T> std::vector<T> variantToVector(const QVariant& list);
+    template <typename T> std::vector<T> bufferToVector(const gpu::BufferView& view, const char *hint = "");
 
     // note: these do value conversions from the underlying buffer type into the template type
     template <typename T> T getValue(const gpu::BufferView& view, glm::uint32 index, const char* hint = "");
     template <typename T> bool setValue(const gpu::BufferView& view, glm::uint32 index, const T& value, const char* hint = "");
+    template <typename T, typename F> std::vector<T> coerceVector(const std::vector<F>& input);
 
     gpu::BufferView clone(const gpu::BufferView& input);
     gpu::BufferView resized(const gpu::BufferView& input, glm::uint32 numElements);
@@ -54,8 +53,9 @@ namespace buffer_helpers {
         graphics::MeshPointer clone(const graphics::MeshPointer& mesh);
         gpu::BufferView getBufferView(const graphics::MeshPointer& mesh, quint8 slot);
         std::map<QString, gpu::BufferView> getAllBufferViews(const graphics::MeshPointer& mesh);
-        template <typename T> QVector<T> attributeToVector(const graphics::MeshPointer& mesh, gpu::Stream::InputSlot slot) {
+        template <typename T> std::vector<T> attributeToVector(const graphics::MeshPointer& mesh, gpu::Stream::InputSlot slot) {
             return bufferToVector<T>(getBufferView(mesh, slot), qUtf8Printable(gpu::toString(slot)));
         }
+        void transformVec3Buffer(const graphics::MeshPointer& mesh, gpu::Stream::InputSlot attribute, const glm::mat4& transform, bool normalize = false);
     }
 }

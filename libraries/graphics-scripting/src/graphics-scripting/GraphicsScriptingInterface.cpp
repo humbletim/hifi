@@ -90,7 +90,7 @@ scriptable::ScriptableModelPointer GraphicsScriptingInterface::getModel(QUuid uu
     if (auto nestable = DependencyManager::get<SpatialParentFinder>()->find(uuid, success).lock()) {
         providerType = SpatiallyNestable::nestableTypeToString(nestable->getNestableType());
         if (auto provider = getModelProvider(uuid)) {
-            scriptable::ScriptableModelPointer modelObject{ new scriptable::ScriptableModelBase(provider->getScriptableModel()) };
+            auto modelObject = scriptable::ScriptableModelPointer::create(provider->getScriptableModel());
             if (modelObject) {
                 if (uuid == AVATAR_SELF_ID) {
                     // special case override so that scripts can rely on matching input/output UUIDs
@@ -332,12 +332,12 @@ void GraphicsScriptingInterface::registerMetaTypes(QScriptEngine* engine) {
     qScriptRegisterSequenceMetaType<std::vector<std::string>>(engine);
     qScriptRegisterSequenceMetaType<QVector<scriptable::ScriptableMaterialLayer>>(engine);
 
-    scriptable::registerPrototype<scriptable::ScriptableModelPointer>(engine, new scriptable::ScriptableModel(nullptr))
-        .setProperty("toJSON", engine->evaluate("(function() { return this.toVariant(); })"));
-    scriptable::registerPrototype<scriptable::ScriptableMeshPointer>(engine, new scriptable::ScriptableMesh(nullptr))
-        .setProperty("toJSON", engine->evaluate("(function() { return this.toVariant(); })"));
-    scriptable::registerPrototype<scriptable::ScriptableMeshPartPointer>(engine, new scriptable::ScriptableMeshPart(nullptr))
-        .setProperty("toJSON", engine->evaluate("(function() { return this.toVariant(); })"));
+    auto toJSON = engine->evaluate("1, function() { return this.toVariant(); }");
+    for (auto p : {
+            scriptable::registerPrototype<scriptable::ScriptableModelPointer>(engine, new scriptable::ScriptableModel(nullptr)),
+            scriptable::registerPrototype<scriptable::ScriptableMeshPointer>(engine, new scriptable::ScriptableMesh(nullptr)),
+            scriptable::registerPrototype<scriptable::ScriptableMeshPartPointer>(engine, new scriptable::ScriptableMeshPart(nullptr)),
+        }) p.setProperty("toJSON", toJSON, QScriptValue::SkipInEnumeration);
 
     scriptable::registerVariantType<std::string>(engine);
     scriptable::registerReadOnlyVariantType<AABox>(engine);

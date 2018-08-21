@@ -20,7 +20,6 @@
 
 #include "Forward.h"
 #include "GraphicsScriptingUtil.h"
-#include "MeshUtils.h"
 #include <graphics/BufferViewHelpers.h>
 #include <graphics/Geometry.h>
 #include <Extents.h>
@@ -48,7 +47,7 @@ namespace scriptable {
         Q_PROPERTY(std::vector<std::string> attributeNames READ getAttributeNames)
         Q_PROPERTY(QVector<scriptable::ScriptableMeshPartPointer> parts READ getMeshParts)
         Q_PROPERTY(bool valid READ isValid)
-        Q_PROPERTY(AABox extents READ getMeshExtents)
+        Q_PROPERTY(Extents extents READ getMeshExtents)
         Q_PROPERTY(QVariantMap bufferFormats READ getBufferFormats)
         Q_PROPERTY(QString name READ getDisplayName)
         Q_PROPERTY(QString modelName READ getModelName)
@@ -66,7 +65,7 @@ namespace scriptable {
         glm::uint32 getNumIndices() const;
         std::vector<std::string> getAttributeNames() const;
         QVector<scriptable::ScriptableMeshPartPointer> getMeshParts() const;
-        AABox getMeshExtents() const;
+        Extents getMeshExtents() const;
 
         operator bool() const { return isValid();  }
         int getSlotNumber(const QString& attributeName) const;
@@ -79,7 +78,7 @@ namespace scriptable {
         glm::uint32 fillAttribute(const QString& attributeName, const QVariant& value);
         bool removeAttribute(const QString& attributeName);
         scriptable::ScriptableMeshPointer cloneMesh() const;
-        scriptable::ScriptableMeshPointer dedupeVertices(float epsilon = graphics::utils::DEDUPE_EPSILON, bool resetNormals = false);
+        scriptable::ScriptableMeshPointer dedupeVertices(float epsilon = 1.0e-6f, bool resetNormals = false);
         QVariantList queryVertexAttributes(QVariant selector) const;
         QVariantMap getVertexAttributes(glm::uint32 vertexIndex) const;
         bool setVertexAttributes(glm::uint32 vertexIndex, const QVariantMap& attributeValues);
@@ -90,9 +89,6 @@ namespace scriptable {
         scriptable::ScriptableMeshPointer recenter(const glm::vec3& = glm::vec3(NAN));
         scriptable::ScriptableMeshPointer translate(const glm::vec3& translation);
         scriptable::ScriptableMeshPointer scale(const glm::vec3& scale, const glm::vec3& origin = glm::vec3(NAN));
-        scriptable::ScriptableMeshPointer scale(const glm::float32 uniformScale, const glm::vec3& origin = glm::vec3(NAN)) {
-                return scale(glm::vec3(uniformScale), origin);
-        }
         scriptable::ScriptableMeshPointer rotateVec3Degrees(const glm::vec3& eulerAngles, const glm::vec3& origin = glm::vec3(NAN));
         scriptable::ScriptableMeshPointer rotateDegrees(float x, float y, float z, const glm::vec3& origin = glm::vec3(NAN));
         scriptable::ScriptableMeshPointer rotate(const glm::quat& rotation, const glm::vec3& origin = glm::vec3(NAN));

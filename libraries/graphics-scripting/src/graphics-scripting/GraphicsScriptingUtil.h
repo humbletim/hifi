@@ -1,4 +1,5 @@
-#pragma once
+#ifndef hifi_GraphicsScriptingUtil_h
+#define hifi_GraphicsScriptingUtil_h
 
 #include <QtScript/QScriptEngine>
 #include <QtScript/QScriptValue>
@@ -14,32 +15,25 @@
 #include <graphics/BufferViewHelpers.h>
 #include <shared/Scriptable.h>
 #include <RegisteredMetaTypes.h>
-
 #include "Forward.h"
-Q_DECLARE_LOGGING_CATEGORY(graphics_scripting)
 
 class Extents;
 class AABox;
 namespace gpu {
     class Element;
 }
+Q_DECLARE_LOGGING_CATEGORY(graphics_scripting)
+
 HIFI_DECLARE_CUSTOM_METATYPE(Extents)
-HIFI_DECLARE_CUSTOM_METATYPE(AABox) 
+HIFI_DECLARE_CUSTOM_METATYPE(AABox)
+HIFI_DECLARE_CUSTOM_METATYPE(gpu::BufferView)
 HIFI_DECLARE_CUSTOM_METATYPE(gpu::Element)
-HIFI_DECLARE_CUSTOM_METATYPE(std::string)
 HIFI_DECLARE_CUSTOM_METATYPE(std::vector<std::string>)
 
 namespace scriptable {
     using MappedQObject = std::pair<const QObject*, const QMetaObject*>;
 }
 HIFI_DECLARE_CUSTOM_METATYPE(scriptable::MappedQObject)
-
-// TODO: update code in RegisteredMetaTypes.h to use Qt standardized QVariant::fromValue<T> and QVariant::value<T> methods
-_HIFI_DECLARE_CUSTOM_VARIANT(glm::mat4)
-_HIFI_DECLARE_CUSTOM_VARIANT(glm::vec2)
-_HIFI_DECLARE_CUSTOM_VARIANT(glm::vec3)
-_HIFI_DECLARE_CUSTOM_VARIANT(glm::vec4)
-_HIFI_DECLARE_CUSTOM_VARIANT(glm::quat)
 
 namespace scriptable {
     inline bool jsThrowError(QScriptEngine* engine, const QString& error, const QLoggingCategory &cat() = &graphics_scripting) {
@@ -82,3 +76,5 @@ namespace scriptable {
 }
 
 inline QDebug operator<<(QDebug dbg, graphics::MeshPointer mesh) { return dbg << mesh.get(); }
+
+#endif // hifi_GraphicsScriptingUtil_h

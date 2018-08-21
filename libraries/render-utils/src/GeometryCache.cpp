@@ -2470,11 +2470,15 @@ void GeometryCache::renderWireCubeInstance(RenderArgs* args, gpu::Batch& batch, 
 graphics::MeshPointer GeometryCache::meshFromShape(Shape geometryShape, glm::vec3 color) {
     auto shapeData = getShapeData(geometryShape);
 
-    qDebug() << "GeometryCache::getMeshProxyListFromShape" << shapeData << stringFromShape(geometryShape);
-
     auto positionsBufferView = buffer_helpers::clone(shapeData->_positionView);
     auto normalsBufferView = buffer_helpers::clone(shapeData->_normalView);
-    auto indexBufferView = buffer_helpers::clone(shapeData->_indicesView);
+    std::vector<glm::uint32> indices;
+    if (shapeData->_indicesView._element.getType() == gpu::UINT16) {
+        indices = buffer_helpers::coerceVector<glm::uint32>(buffer_helpers::bufferToVector<glm::uint16>(shapeData->_indicesView));
+    } else {
+        indices = buffer_helpers::bufferToVector<glm::uint32>(shapeData->_indicesView);
+    }
+    auto indexBufferView = buffer_helpers::newFromVector(indices, gpu::Element::INDEX_INT32);
 
     gpu::BufferView::Size numVertices = positionsBufferView.getNumElements();
     Q_ASSERT(numVertices == normalsBufferView.getNumElements());

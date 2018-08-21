@@ -143,6 +143,12 @@ void scriptable::ScriptableModelBase::append(graphics::MeshPointer mesh) {
 }
 
 void scriptable::ScriptableModelBase::appendMaterial(const graphics::MaterialLayer& materialLayer, int shapeID, std::string materialName) {
+    if (!materialLayer.material) {
+        qCWarning(graphics_scripting) <<
+            QString("ScriptableModelBase::appendMaterial -- invalid materialLayer.material shapeID=%1 materialName=%2")
+            .arg(shapeID).arg(QString::fromStdString(materialName));
+        return;
+    }
     materialLayers[QString::number(shapeID)].push_back(ScriptableMaterialLayer(materialLayer));
     materialLayers["mat::" + QString::fromStdString(materialName)].push_back(ScriptableMaterialLayer(materialLayer));
 }
@@ -214,7 +220,7 @@ Extents scriptable::ScriptableModel::getModelExtents() const {
     Extents extents;
     if (auto self = getNativeObject()) {
         for (auto& mesh : self->meshes) {
-            extents.add(mesh->evalPartsBound(0, (int)mesh->getNumParts()));;
+            extents.add(scriptable::ScriptableMesh(mesh).getMeshExtents());
         }
     } else {
         qCDebug(graphics_scripting) << "getModelExtents -- invalid native object" << getNativeObject();

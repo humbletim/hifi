@@ -94,12 +94,7 @@ namespace scriptable {
             return invokeAll(&ScriptableMesh::translate, translation);
         }
         scriptable::ScriptableModelPointer scale(const glm::vec3& scaleFactor, const glm::vec3& origin = glm::vec3(NAN)) {
-            scriptable::ScriptableMeshPointer (ScriptableMesh::*scaleVec3)(const glm::vec3&, const glm::vec3&) = &ScriptableMesh::scale;
-            return invokeAll(scaleVec3, scaleFactor, origin);
-        }
-        scriptable::ScriptableModelPointer scale(const glm::float32 uniformScale, const glm::vec3& origin = glm::vec3(NAN)) {
-            scriptable::ScriptableMeshPointer (ScriptableMesh::*scaleFloat)(const glm::float32, const glm::vec3&) = &ScriptableMesh::scale;
-            return invokeAll(scaleFloat, uniformScale, origin);
+            return invokeAll(&ScriptableMesh::scale, scaleFactor, origin);
         }
         scriptable::ScriptableModelPointer rotateVec3Degrees(const glm::vec3& eulerAngles, const glm::vec3& origin = glm::vec3(NAN)) {
             return invokeAll(&ScriptableMesh::rotateVec3Degrees, eulerAngles, origin);

@@ -11,6 +11,8 @@
 #ifndef hifi_model_Forward_h
 #define hifi_model_Forward_h
 
+#include <memory>
+
 namespace graphics {
     class Mesh;
     using MeshPointer = std::shared_ptr<Mesh>;

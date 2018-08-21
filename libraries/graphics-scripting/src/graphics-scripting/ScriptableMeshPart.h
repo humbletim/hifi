@@ -28,7 +28,7 @@ namespace scriptable {
     class ScriptableMeshPart : public QObject, public QScriptable {
         Q_OBJECT
         Q_PROPERTY(bool valid READ isValid)
-        Q_PROPERTY(glm::uint32 partIndex MEMBER partIndex CONSTANT)
+        Q_PROPERTY(glm::uint32 partIndex READ getPartIndex CONSTANT)
         Q_PROPERTY(glm::uint32 numIndices READ getNumIndices WRITE setNumIndices)
         Q_PROPERTY(int numVerticesPerFace READ getTopologyLength)
         Q_PROPERTY(glm::uint32 numFaces READ getNumFaces)
@@ -47,7 +47,7 @@ namespace scriptable {
         scriptable::ScriptableMeshPartPointer getNativeObject() const {
             return _nativeObject ? _nativeObject : qscriptvalue_cast<scriptable::ScriptableMeshPartPointer>(thisObject());
         }
-        bool isValid() const { auto mesh = getMeshPointer(); return mesh && partIndex < mesh->getNumParts(); }
+        bool isValid() const { auto mesh = getMeshPointer(); return mesh && getPartIndex() < mesh->getNumParts(); }
 
         static auto constexpr BIGGEST_INDEX_POSSIBLE = std::numeric_limits<glm::uint32>::max();
     public slots:
@@ -65,12 +65,10 @@ namespace scriptable {
         QString toString() const;
         QVariant toVariant() const;
 
-    public:
-        glm::uint32 partIndex{ 0 };
-
     protected:
         const graphics::Mesh::Part& getMeshPart() const;
         graphics::MeshPointer getMeshPointer() const { return getNativeObject() ? getNativeObject()->parentMesh : nullptr; }
+        glm::uint32 getPartIndex() const { return getNativeObject() ? getNativeObject()->partIndex : NAN; }
 
         bool setTopology(graphics::Mesh::Topology topology);
         graphics::Mesh::Topology getTopology() const { return isValid() ? getMeshPart()._topology : graphics::Mesh::Topology(); }

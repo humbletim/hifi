@@ -16,16 +16,8 @@
 
 Q_LOGGING_CATEGORY(graphics_scripting, "hifi.scripting.graphics")
 
-HIFI_REGISTER_METATYPE(std::string)
-template<> std::string QVariant::value<std::string>() const {
-    return toString().toStdString();
-}
-template<> QVariant QVariant::fromValue(const std::string& value) {
-    return QString::fromStdString(value);
-}
-
 HIFI_REGISTER_METATYPE(std::vector<std::string>)
-template<> std::vector<std::string> QVariant::value<std::vector<std::string>>() const {
+template<> std::vector<std::string> QVariant::value() const {
     // QVariantList (this) -> std::vector
     const auto& list = toList();
     std::vector<std::string> result;
@@ -45,52 +37,52 @@ template<> QVariant QVariant::fromValue(const std::vector<std::string>& value) {
     return result;
 }
 
-HIFI_REGISTER_METATYPE(glm::mat4)
-template<> QVariant QVariant::fromValue(const glm::mat4& value) {
-    const auto ptr = glm::value_ptr(value);
-    QVariant v;
-    v.setValue(QVector<float>::fromStdVector(std::vector<float>{ptr, ptr + 16}));
-    return v;
-}
-template<> glm::mat4 QVariant::value<glm::mat4>() const {
-    QVector<float> floats = value<QVector<float>>();
-    return floats.size() == 16 ? glm::make_mat4(floats.data()) : glm::mat4(NAN);
-}
 
 template <typename T> QVariant glmVecToVariant(const T& value) { return QVariant::fromValue<T>(value); }
 
 HIFI_REGISTER_READONLY_METATYPE(Extents)
-template<> QVariant QVariant::fromValue(const Extents& value) {
+template<> QVariant QVariant::fromValue(const Extents& box) {
     return QVariantMap{
-        { "center", glmVecToVariant(value.minimum + (value.size() / 2.0f)) },
-        { "minimum", glmVecToVariant(value.minimum) },
-        { "maximum", glmVecToVariant(value.maximum) },
-        { "dimensions", glmVecToVariant(value.size()) },
+        { "center", glmVecToVariant(box.minimum + (box.size() / 2.0f)) },
+        { "minimum", glmVecToVariant(box.minimum) },
+        { "maximum", glmVecToVariant(box.maximum) },
+        { "dimensions", glmVecToVariant(box.size()) },
     };
 }
 
 HIFI_REGISTER_READONLY_METATYPE(AABox)
-template<> QVariant QVariant::fromValue(const AABox& value) {
+template<> QVariant QVariant::fromValue(const AABox& box) {
     return QVariantMap{
-        { "brn", glmVecToVariant(value.getCorner()) },
-        { "tfl", glmVecToVariant(value.calcTopFarLeft()) },
-        { "center", glmVecToVariant(value.calcCenter()) },
-        { "minimum", glmVecToVariant(value.getMinimumPoint()) },
-        { "maximum", glmVecToVariant(value.getMaximumPoint()) },
-        { "dimensions", glmVecToVariant(value.getDimensions()) },
+        { "brn", glmVecToVariant(box.getCorner()) },
+        { "tfl", glmVecToVariant(box.calcTopFarLeft()) },
+        { "center", glmVecToVariant(box.calcCenter()) },
+        { "minimum", glmVecToVariant(box.getMinimumPoint()) },
+        { "maximum", glmVecToVariant(box.getMaximumPoint()) },
+        { "dimensions", glmVecToVariant(box.getDimensions()) },
     };
 }
 
 HIFI_REGISTER_READONLY_METATYPE(gpu::Element)
-template<> QVariant QVariant::fromValue(const gpu::Element& value) {
+template<> QVariant QVariant::fromValue(const gpu::Element& element) {
     return QVariantMap{
-        { "type", gpu::toString(value.getType()) },
-        { "semantic", gpu::toString(value.getSemantic()) },
-        { "dimension", gpu::toString(value.getDimension()) },
-        { "scalarCount", value.getScalarCount() },
-        { "byteSize", value.getSize() },
-        { "BYTES_PER_value", value.getSize() / value.getScalarCount() },
+        { "type", gpu::toString(element.getType()) },
+        { "semantic", gpu::toString(element.getSemantic()) },
+        { "dimension", gpu::toString(element.getDimension()) },
+        { "scalarCount", element.getScalarCount() },
+        { "byteSize", element.getSize() },
+        { "BYTES_PER_ELEMENT", element.getSize() / element.getScalarCount() },
      };
+}
+
+HIFI_REGISTER_READONLY_METATYPE(gpu::BufferView)
+template<> QVariant QVariant::fromValue(const gpu::BufferView& value) {
+    return QVariantMap{
+        { "length", (glm::uint32) value.getNumElements() },
+        { "byteLength", (glm::uint32) value._size },
+        { "offset", (glm::uint32) value._offset },
+        { "stride", (glm::uint32) value._stride },
+        { "element", QVariant::fromValue(value._element) },
+    };
 }
 
 HIFI_REGISTER_METATYPE(scriptable::MappedQObject)
@@ -111,10 +103,6 @@ template<> QVariant QVariant::fromValue(const scriptable::MappedQObject& value) 
     }
     return result;
 }
-template<> QVariant QVariant::fromValue(const glm::vec2& value) { return buffer_helpers::glmVecToVariant(value); }
-template<> QVariant QVariant::fromValue(const glm::vec3& value) { return buffer_helpers::glmVecToVariant(value); }
-template<> QVariant QVariant::fromValue(const glm::vec4& value) { return buffer_helpers::glmVecToVariant(value); }
-template<> QVariant QVariant::fromValue(const glm::quat& value) { return buffer_helpers::glmVecToVariant(value); }
 
 namespace scriptable {
 

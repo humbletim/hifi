@@ -118,8 +118,7 @@ namespace scriptable {
         QVector<QString> materialNames;
 
         ScriptableModelBase(QObject* parent = nullptr) : QObject(parent) {}
-        ScriptableModelBase(const ScriptableModelBase& other) :
-            QObject(other.parent()) { *this = other; }
+        ScriptableModelBase(const ScriptableModelBase& other) : QObject(other.parent()) { *this = other; }
         ScriptableModelBase& operator=(const ScriptableModelBase& other);
         virtual ~ScriptableModelBase();
 

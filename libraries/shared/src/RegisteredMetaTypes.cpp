@@ -12,6 +12,7 @@
 #include "RegisteredMetaTypes.h"
 
 #include <glm/gtc/quaternion.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include <QtCore/QUrl>
 #include <QtCore/QUuid>
@@ -967,3 +968,33 @@ void qVectorMeshFaceFromScriptValue(const QScriptValue& array, QVector<MeshFace>
         result << meshFace;
     }
 }
+
+HIFI_REGISTER_METATYPE(std::string)
+template<> std::string QVariant::value() const {
+    return toString().toStdString();
+}
+template<> QVariant QVariant::fromValue(const std::string& value) {
+    return QString::fromStdString(value);
+}
+
+HIFI_REGISTER_METATYPE(glm::mat4)
+template<> QVariant QVariant::fromValue(const glm::mat4& value) {
+    auto ptr = glm::value_ptr(value);
+    QVariant v;
+    v.setValue(QVector<float>::fromStdVector(std::vector<float>{ptr, ptr + 16}));
+    return v;
+}
+template<> glm::mat4 QVariant::value() const {
+    QVector<float> floats = value<QVector<float>>();
+    return floats.size() == 16 ? glm::make_mat4(floats.data()) : glm::mat4(NAN);
+}
+
+static constexpr auto quattoVariant = quatToVariant;
+#define GLM_VECTYPE(type)                                               \
+    HIFI_REGISTER_METATYPE(glm::type)                                   \
+    template<> QVariant QVariant::fromValue(const glm::type& value) { return type##toVariant(value); } \
+    template<> glm::type QVariant::value() const { return type##FromVariant(*this); }
+GLM_VECTYPE(vec2)
+GLM_VECTYPE(vec3)
+GLM_VECTYPE(vec4)
+GLM_VECTYPE(quat)

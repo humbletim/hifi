@@ -700,11 +700,11 @@ bool Model::replaceScriptableModelMeshPart(scriptable::ScriptableModelBasePointe
         for (const auto& newMesh : meshes) {
             FBXMesh mesh;
             mesh._mesh = newMesh;
-            mesh.vertices = buffer_helpers::mesh::attributeToVector<glm::vec3>(mesh._mesh, gpu::Stream::POSITION);
+            mesh.vertices = QVector<glm::vec3>::fromStdVector(buffer_helpers::mesh::attributeToVector<glm::vec3>(mesh._mesh, gpu::Stream::POSITION));
             int numParts = (int)newMesh->getNumParts();
             for (int partID = 0; partID < numParts; partID++) {
                 FBXMeshPart part;
-                part.triangleIndices = buffer_helpers::bufferToVector<int>(mesh._mesh->getIndexBuffer(), "part.triangleIndices");
+                part.triangleIndices = QVector<int>::fromStdVector(buffer_helpers::bufferToVector<int>(mesh._mesh->getIndexBuffer(), "part.triangleIndices"));
                 mesh.parts << part;
             }
             {
@@ -738,7 +738,11 @@ scriptable::ScriptableModelBase Model::getScriptableModel() {
     for (int i = 0; i < numberOfMeshes; i++) {
         const FBXMesh& fbxMesh = geometry.meshes.at(i);
         if (auto mesh = fbxMesh._mesh) {
-            result.append(mesh);
+            auto out = buffer_helpers::mesh::clone(mesh);
+            auto offset = geometry.offset * fbxMesh.modelTransform;
+            buffer_helpers::mesh::transformVec3Buffer(out, gpu::Stream::POSITION, offset);
+            buffer_helpers::mesh::transformVec3Buffer(out, gpu::Stream::NORMAL, offset, true);
+            result.append(out);
 
             int numParts = (int)mesh->getNumParts();
             for (int partIndex = 0; partIndex < numParts; partIndex++) {

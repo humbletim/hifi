@@ -29,7 +29,7 @@ QString scriptable::ScriptableMeshPart::toString() const {
         const QString TOSTRING_TEMPLATE{ "[MeshPart%1 partIndex=%2 numIndices=%3]" };
         auto objectName = getNativeObject()->objectName();
         auto name = objectName.isEmpty() ? "" : " name=" + objectName;
-        return TOSTRING_TEMPLATE.arg(name).arg(partIndex).arg(getNumIndices());
+        return TOSTRING_TEMPLATE.arg(name).arg(getPartIndex()).arg(getNumIndices());
     }
     return "[MeshPart nullptr]";
 }
@@ -81,9 +81,9 @@ bool scriptable::ScriptableMeshPart::replaceMeshPartData(scriptable::ScriptableM
     if (attributes.isEmpty()) {
         auto attributeViews = buffer_helpers::mesh::getAllBufferViews(target);
         for (const auto& a : attributeViews) {
-            auto attribute = buffer_helpers::ATTRIBUTES[a.first];
+            auto slot = buffer_helpers::ATTRIBUTES[a.first];
             if (!attributes.contains(a.first)) {
-                target->removeAttribute(attribute);
+                target->removeAttribute(slot);
             }
         }
     }
@@ -93,15 +93,15 @@ bool scriptable::ScriptableMeshPart::replaceMeshPartData(scriptable::ScriptableM
     target->setPartBuffer(buffer_helpers::clone(source->getPartBuffer()));
 
     for (const auto& a : attributes) {
-        auto attribute = buffer_helpers::ATTRIBUTES[a];
-        if (attribute == gpu::Stream::POSITION) {
+        auto slot = buffer_helpers::ATTRIBUTES[a];
+        if (slot == gpu::Stream::POSITION) {
             continue;
         }
-        auto& input = source->getAttributeBuffer(attribute);
+        auto& input = source->getAttributeBuffer(slot);
         if (input.getNumElements() == 0) {
-            target->removeAttribute(attribute);
+            target->removeAttribute(slot);
         } else {
-            target->addAttribute(attribute, buffer_helpers::clone(input));
+            target->addAttribute(slot, buffer_helpers::clone(input));
         }
     }
     return true;
@@ -110,7 +110,7 @@ bool scriptable::ScriptableMeshPart::replaceMeshPartData(scriptable::ScriptableM
 scriptable::ScriptableMeshPartPointer scriptable::ScriptableMeshPart::cloneMeshPart() {
     if (auto mesh = getMeshPointer()) {
         if (auto clone = buffer_helpers::mesh::clone(mesh)) {
-            return scriptable::ScriptableMeshPartPointer::create(clone, partIndex);
+            return scriptable::ScriptableMeshPartPointer::create(clone, getPartIndex());
         }
     }
     return nullptr;
@@ -121,10 +121,17 @@ std::vector<glm::uint32> scriptable::ScriptableMeshPart::getIndices(glm::uint32 
         if (pos == BIGGEST_INDEX_POSSIBLE) {
             pos = getFirstVertexIndex();
         }
-        if (len == BIGGEST_INDEX_POSSIBLE) {
-            len = getNumIndices();
+        auto maxLength = getNumIndices() - pos;
+        if (len > maxLength) {
+            len = maxLength;
         }
-        return buffer_helpers::bufferToVector<glm::uint32>(mesh->getIndexBuffer()).mid(pos, len).toStdVector();
+        auto indices = mesh->getIndexBuffer();
+        auto shorts = indices._element.getType() == gpu::UINT16;
+        std::vector<glm::uint32> result(len);
+        for (glm::uint32 i=0; i < len; i++) {
+            result[i] = shorts ? indices.get<glm::uint16>(pos + i) : indices.get<glm::uint32>(pos + i);
+        }
+        return result;
     }
     return std::vector<glm::uint32>();
 }
@@ -133,7 +140,7 @@ bool scriptable::ScriptableMeshPart::setFirstVertexIndex( glm::uint32 vertexInde
     if (!isValidIndex(vertexIndex)) {
         return false;
     }
-    auto& part = getMeshPointer()->getPartBuffer().edit<graphics::Mesh::Part>(partIndex);
+    auto& part = getMeshPointer()->getPartBuffer().edit<graphics::Mesh::Part>(getPartIndex());
     part._startIndex = vertexIndex;
     return true;
 }
@@ -142,7 +149,7 @@ bool scriptable::ScriptableMeshPart::setBaseVertexIndex( glm::uint32 vertexIndex
     if (!isValidIndex(vertexIndex)) {
         return false;
     }
-    auto& part = getMeshPointer()->getPartBuffer().edit<graphics::Mesh::Part>(partIndex);
+    auto& part = getMeshPointer()->getPartBuffer().edit<graphics::Mesh::Part>(getPartIndex());
     part._baseVertex = vertexIndex;
     return true;
 }
@@ -151,7 +158,7 @@ bool scriptable::ScriptableMeshPart::setLastVertexIndex( glm::uint32 vertexIndex
     if (!isValidIndex(vertexIndex) || vertexIndex <= getFirstVertexIndex()) {
         return false;
     }
-    auto& part = getMeshPointer()->getPartBuffer().edit<graphics::Mesh::Part>(partIndex);
+    auto& part = getMeshPointer()->getPartBuffer().edit<graphics::Mesh::Part>(getPartIndex());
     part._numIndices = vertexIndex - part._startIndex;
     return true;
 }
@@ -189,7 +196,7 @@ const graphics::Mesh::Part& scriptable::ScriptableMeshPart::getMeshPart() const 
         qCWarning(graphics_scripting) << "getMeshPart() -- parent mesh is invalid";
         return invalidPart;
     }
-    return getMeshPointer()->getPartBuffer().get<graphics::Mesh::Part>(partIndex);
+    return getMeshPointer()->getPartBuffer().get<graphics::Mesh::Part>(getPartIndex());
 }
 
 // FIXME: how we handle topology will need to be reworked if wanting to support TRIANGLE_STRIP, QUADS and QUAD_STRIP
@@ -197,7 +204,7 @@ bool scriptable::ScriptableMeshPart::setTopology(graphics::Mesh::Topology topolo
     if (!isValid()) {
         return false;
     }
-    auto& part = getMeshPointer()->getPartBuffer().edit<graphics::Mesh::Part>(partIndex);
+    auto& part = getMeshPointer()->getPartBuffer().edit<graphics::Mesh::Part>(getPartIndex());
     switch (topology) {
 #ifdef DEV_BUILD
     case graphics::Mesh::Topology::POINTS:
@@ -237,9 +244,15 @@ std::vector<glm::uint32> scriptable::ScriptableMeshPart::getFace(glm::uint32 fac
 }
 
 Extents scriptable::ScriptableMeshPart::getPartExtents() const {
-    graphics::Box box;
+    Extents extents;
     if (auto mesh = getMeshPointer()) {
-        box = mesh->evalPartBound(partIndex);
+        auto pos = mesh->getVertexBuffer();
+        auto indices = mesh->getIndexBuffer();
+        auto from = getFirstVertexIndex(), to = getLastVertexIndex();
+        auto shorts = indices._element.getType() == gpu::UINT16;
+        for (glm::uint32 i = from; i <= to; i++) {
+            extents.addPoint(pos.get<glm::vec3>(shorts ? indices.get<glm::uint16>(i) : indices.get<glm::uint32>(i)));
+        }
     }
-    return box;
+    return extents;
 }

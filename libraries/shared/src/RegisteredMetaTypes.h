@@ -24,15 +24,17 @@
 #include "SharedUtil.h"
 #include "shared/Bilateral.h"
 #include "Transform.h"
+#include "shared/Scriptable.h"
 
 class QColor;
 class QUrl;
 
-Q_DECLARE_METATYPE(glm::vec4)
-Q_DECLARE_METATYPE(glm::vec3)
-Q_DECLARE_METATYPE(glm::vec2)
-Q_DECLARE_METATYPE(glm::quat)
-Q_DECLARE_METATYPE(glm::mat4)
+HIFI_DECLARE_CUSTOM_METATYPE(glm::vec4)
+HIFI_DECLARE_CUSTOM_METATYPE(glm::vec3)
+HIFI_DECLARE_CUSTOM_METATYPE(glm::vec2)
+HIFI_DECLARE_CUSTOM_METATYPE(glm::quat)
+HIFI_DECLARE_CUSTOM_METATYPE(glm::mat4)
+HIFI_DECLARE_CUSTOM_METATYPE(std::string)
 Q_DECLARE_METATYPE(xColor)
 Q_DECLARE_METATYPE(QVector<glm::vec3>)
 Q_DECLARE_METATYPE(QVector<float>)

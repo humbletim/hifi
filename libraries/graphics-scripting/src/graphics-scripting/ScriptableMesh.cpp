@@ -13,10 +13,8 @@
 #include "GraphicsScriptingInterface.h"
 #include "GraphicsScriptingUtil.h"
 #include "OBJWriter.h"
-#include "MeshUtils.h"
 #include <BaseScriptEngine.h>
 #include <QtScript/QScriptValue>
-#include <QtCore/QJsonObject>
 #include <glm/glm.hpp>
 #include <glm/gtx/norm.hpp>
 #include <glm/gtx/transform.hpp>
@@ -24,6 +22,19 @@
 #include <graphics/GpuHelpers.h>
 #include <graphics/Geometry.h>
 #include <shared/Scriptable.h>
+
+namespace {
+    Extents getBounds(const graphics::MeshPointer& mesh) {
+        Extents extents;
+        auto view = mesh->getVertexBuffer();
+        std::for_each(view.cbegin<glm::vec3>(), view.cend<glm::vec3>(), [&](const glm::vec3& pos) { extents.addPoint(pos); });
+        return extents;
+    }
+    glm::vec3 getCenterPoint(const graphics::MeshPointer& mesh) {
+        Extents extents = getBounds(mesh);
+        return (extents.maximum + extents.minimum) / 2.0f;
+    }
+}
 
 QString scriptable::ScriptableMesh::toString() const {
     if (isValid()) {
@@ -63,7 +74,12 @@ glm::uint32 scriptable::ScriptableMesh::getNumVertices() const {
 
 std::vector<glm::uint32> scriptable::ScriptableMesh::getIndices() const {
     if (auto mesh = getMeshPointer()) {
-        return buffer_helpers::bufferToVector<glm::uint32>(mesh->getIndexBuffer()).toStdVector();
+        auto indices = mesh->getIndexBuffer();
+        if (indices._element.getType() == gpu::UINT16) {
+            return buffer_helpers::coerceVector<glm::uint32>(buffer_helpers::bufferToVector<glm::uint16>(indices));
+        } else {
+            return buffer_helpers::bufferToVector<glm::uint32>(indices);
+        }
     }
     return std::vector<glm::uint32>();
 }
@@ -120,64 +136,49 @@ QVariantMap scriptable::ScriptableMesh::getBufferFormats() const {
         return QVariantMap();
     }
     auto bufferView = mesh->getIndexBuffer();
-    QVariantMap result = {
-        { "index", QVariantMap{
-            { "length", (glm::uint32)bufferView.getNumElements() },
-            { "byteLength", (glm::uint32)bufferView._size },
-            { "offset", (glm::uint32) bufferView._offset },
-            { "stride", (glm::uint32)bufferView._stride },
-            { "element", QVariant::fromValue(bufferView._element) },
-        }
-    }};
+    QVariantMap result = {{ "index", QVariant::fromValue(bufferView) }};
 
     for (const auto& a : buffer_helpers::ATTRIBUTES.toStdMap()) {
         auto bufferView = buffer_helpers::mesh::getBufferView(mesh, a.second);
-        if (!bufferView.getNumElements()) {
-            continue;
+        if (bufferView.getNumElements() > 0) {
+            auto map = QVariant::fromValue(bufferView).toMap();
+            map["slot"] = a.second;
+            result[a.first] = map;
         }
-        result[a.first] = QVariantMap{
-            { "slot", a.second },
-            { "length", (glm::uint32)bufferView.getNumElements() },
-            { "byteLength", (glm::uint32)bufferView._size },
-            { "offset", (glm::uint32) bufferView._offset },
-            { "stride", (glm::uint32)bufferView._stride },
-            { "element", QVariant::fromValue(bufferView._element) },
-        };
     }
     return result;
 }
 
 bool scriptable::ScriptableMesh::removeAttribute(const QString& attributeName) {
-    auto attribute = isValid() ? getSlotNumber(attributeName) : -1;
-    if (attribute < 0) {
+    auto slot = isValid() ? getSlotNumber(attributeName) : -1;
+    if (slot < 0) {
         return false;
     }
-    if (attribute == gpu::Stream::POSITION) {
+    if (slot == gpu::Stream::POSITION) {
         context()->throwError("cannot remove .position attribute");
         return false;
     }
-    if (buffer_helpers::mesh::getBufferView(getMeshPointer(), attribute).getNumElements()) {
-        getMeshPointer()->removeAttribute(attribute);
+    if (buffer_helpers::mesh::getBufferView(getMeshPointer(), slot).getNumElements()) {
+        getMeshPointer()->removeAttribute(slot);
         return true;
     }
     return false;
 }
 
 glm::uint32 scriptable::ScriptableMesh::addAttribute(const QString& attributeName, const QVariant& defaultValue) {
-    auto attribute = isValid() ? getSlotNumber(attributeName) : -1;
-    if (attribute < 0) {
+    auto slot = isValid() ? getSlotNumber(attributeName) : -1;
+    if (slot < 0) {
         return 0;
     }
     auto mesh = getMeshPointer();
     auto numVertices = getNumVertices();
     auto names = getAttributeNames();
     if (std::find(names.begin(), names.end(), attributeName.toStdString()) == names.end()) {
-        QVector<QVariant> values;
-        values.fill(defaultValue, numVertices);
-        mesh->addAttribute(attribute, buffer_helpers::newFromVector(values, gpu::Stream::getDefaultElements()[attribute]));
-        return values.size();
+        std::vector<QVariant> values(numVertices, defaultValue);
+        mesh->addAttribute(slot, buffer_helpers::newFromVector(values, gpu::Stream::getDefaultElements()[slot]));
+        return (glm::uint32)values.size();
     } else {
-        auto bufferView = buffer_helpers::mesh::getBufferView(mesh, attribute);
+        auto bufferView = buffer_helpers::mesh::getBufferView(mesh, slot);
         auto current = (glm::uint32)bufferView.getNumElements();
         if (current < numVertices) {
             bufferView = buffer_helpers::resized(bufferView, numVertices);
@@ -194,21 +195,22 @@ glm::uint32 scriptable::ScriptableMesh::addAttribute(const QString& attributeNam
 }
 
 glm::uint32 scriptable::ScriptableMesh::fillAttribute(const QString& attributeName, const QVariant& value) {
-    auto attribute = isValid() ? getSlotNumber(attributeName) : -1;
-    if (attribute < 0) {
+    auto slot = isValid() ? getSlotNumber(attributeName) : -1;
+    if (slot < 0) {
         return 0;
     }
     auto mesh = getMeshPointer();
     auto numVertices = getNumVertices();
-    QVector<QVariant> values;
-    values.fill(value, numVertices);
-    mesh->addAttribute(attribute, buffer_helpers::newFromVector(values, gpu::Stream::getDefaultElements()[attribute]));
+    std::vector<QVariant> values(numVertices, value);
+    mesh->addAttribute(slot, buffer_helpers::newFromVector(values, gpu::Stream::getDefaultElements()[slot]));
     return true;
 }
 
-AABox scriptable::ScriptableMesh::getMeshExtents() const {
-    auto mesh = getMeshPointer();
-    return mesh ? mesh->evalPartsBound(0, (int)mesh->getNumParts()) : AABox();
+Extents scriptable::ScriptableMesh::getMeshExtents() const {
+    if (auto mesh = getMeshPointer()) {
+        return getBounds(mesh);
+    }
+    return Extents();
 }
 
 glm::uint32 scriptable::ScriptableMesh::getNumParts() const {
@@ -224,8 +226,8 @@ QVariantList scriptable::ScriptableMesh::queryVertexAttributes(QVariant selector
     if (!isValidIndex(0, attributeName)) {
         return result;
     }
-    auto attribute = getSlotNumber(attributeName);
-    const auto& bufferView = buffer_helpers::mesh::getBufferView(getMeshPointer(), static_cast<gpu::Stream::Slot>(attribute));
+    auto slotNum = getSlotNumber(attributeName);
+    const auto& bufferView = buffer_helpers::mesh::getBufferView(getMeshPointer(), static_cast<gpu::Stream::Slot>(slotNum));
     glm::uint32 numElements = (glm::uint32)bufferView.getNumElements();
     const std::string debugHint = attributeName.toStdString();
     for (glm::uint32 i = 0; i < numElements; i++) {
@@ -238,8 +240,8 @@ QVariant scriptable::ScriptableMesh::getVertexProperty(glm::uint32 vertexIndex, 
     if (!isValidIndex(vertexIndex, attributeName)) {
         return QVariant();
     }
-    auto attribute = getSlotNumber(attributeName);
-    const auto& bufferView = buffer_helpers::mesh::getBufferView(getMeshPointer(), static_cast<gpu::Stream::Slot>(attribute));
+    auto slotNum = getSlotNumber(attributeName);
+    const auto& bufferView = buffer_helpers::mesh::getBufferView(getMeshPointer(), static_cast<gpu::Stream::Slot>(slotNum));
     return buffer_helpers::getValue<QVariant>(bufferView, vertexIndex, qUtf8Printable(attributeName));
 }
 
@@ -247,8 +249,8 @@ bool scriptable::ScriptableMesh::setVertexProperty(glm::uint32 vertexIndex, cons
     if (!isValidIndex(vertexIndex, attributeName)) {
         return false;
     }
-    auto attribute = getSlotNumber(attributeName);
-    const auto& bufferView = buffer_helpers::mesh::getBufferView(getMeshPointer(), static_cast<gpu::Stream::Slot>(attribute));
+    auto slotNum = getSlotNumber(attributeName);
+    const auto& bufferView = buffer_helpers::mesh::getBufferView(getMeshPointer(), static_cast<gpu::Stream::Slot>(slotNum));
     return buffer_helpers::setValue(bufferView, vertexIndex, value);
 }
 
@@ -338,14 +340,14 @@ bool scriptable::ScriptableMesh::isValidIndex(glm::uint32 vertexIndex, const QSt
         return false;
     }
     if (!attributeName.isEmpty()) {
-        auto attribute = getSlotNumber(attributeName);
-        if (attribute < 0) {
+        auto slotNum = getSlotNumber(attributeName);
+        if (slotNum < 0) {
             if (context()) {
                 context()->throwError(QString("invalid attributeName=%1").arg(attributeName));
             }
             return false;
         }
-        auto view = buffer_helpers::mesh::getBufferView(getMeshPointer(), static_cast<gpu::Stream::Slot>(attribute));
+        auto view = buffer_helpers::mesh::getBufferView(getMeshPointer(), static_cast<gpu::Stream::Slot>(slotNum));
         if (vertexIndex >= (glm::uint32)view.getNumElements()) {
             if (context()) {
                 context()->throwError(QString("vertexIndex=%1 out of range (attribute=%2, numElements=%3)").arg(vertexIndex).arg(attributeName).arg(view.getNumElements()));
@@ -358,31 +360,33 @@ bool scriptable::ScriptableMesh::isValidIndex(glm::uint32 vertexIndex, const QSt
 
 scriptable::ScriptableMeshPointer scriptable::ScriptableMesh::recenter(const glm::vec3& origin) {
     if (auto mesh = getMeshPointer()) {
-        auto box = mesh->evalPartsBound(0, (int)mesh->getNumParts());
-        glm::vec3 center = box.calcCenter();
         glm::vec3 zero = glm::isnan(origin.x) ? glm::vec3() : origin;
-        return translate(zero - center);
+        return translate(zero - getCenterPoint(mesh));
     }
     return nullptr;
 }
 
 scriptable::ScriptableMeshPointer scriptable::ScriptableMesh::scaleToFit(float unitScale) {
     if (auto mesh = getMeshPointer()) {
-        auto box = mesh->evalPartsBound(0, (int)mesh->getNumParts());
-        auto center = box.calcCenter();
-        float maxDimension = box.getLargestDimension();
-        return scale(glm::vec3(unitScale / maxDimension), center);
+        float maxDimension = getBounds(mesh).largestDimension();
+        return scale(glm::vec3(unitScale / maxDimension), getCenterPoint(mesh));
     }
     return {};
 }
 scriptable::ScriptableMeshPointer scriptable::ScriptableMesh::translate(const glm::vec3& translation) {
     return transform(glm::translate(translation));
 }
-scriptable::ScriptableMeshPointer scriptable::ScriptableMesh::scale(const glm::vec3& scale, const glm::vec3& origin) {
+scriptable::ScriptableMeshPointer scriptable::ScriptableMesh::scale(const glm::vec3& inputScale, const glm::vec3& origin) {
+    glm::vec3 scale = inputScale;
+    if (!glm::length(scale) && context()) {
+        scale = glm::vec3(context()->argument(0).toNumber());
+    }
+    if (!jsAssert(glm::length(scale), "scale: expected non-zero scaling factor")) {
+        return nullptr;
+    }
     if (auto mesh = getMeshPointer()) {
-        auto box = mesh->evalPartsBound(0, (int)mesh->getNumParts());
-        glm::vec3 center = glm::isnan(origin.x) ? box.calcCenter() : origin;
-        return transform(glm::translate(center) * glm::scale(scale) * glm::translate(-center));
+        glm::vec3 offset = glm::isnan(origin.x) ? getCenterPoint(mesh) : origin;
+        return transform(glm::translate(-offset) * glm::scale(scale) * glm::translate(offset));
     }
     return {};
 }
@@ -394,19 +398,17 @@ scriptable::ScriptableMeshPointer scriptable::ScriptableMesh::rotateDegrees(floa
 }
 scriptable::ScriptableMeshPointer scriptable::ScriptableMesh::rotate(const glm::quat& rotation, const glm::vec3& origin) {
     if (auto mesh = getMeshPointer()) {
-        auto box = mesh->evalPartsBound(0, (int)mesh->getNumParts());
-        glm::vec3 center = glm::isnan(origin.x) ? box.calcCenter() : origin;
-        return transform(glm::translate(center) * glm::toMat4(rotation) * glm::translate(-center));
+        glm::vec3 offset = glm::isnan(origin.x) ? getCenterPoint(mesh) : origin;
+        return transform(glm::translate(-offset) * glm::toMat4(rotation) * glm::translate(offset));
     }
     return {};
 }
 scriptable::ScriptableMeshPointer scriptable::ScriptableMesh::transform(const glm::mat4& transform) {
     if (auto mesh = getMeshPointer()) {
-        const auto& pos = buffer_helpers::mesh::getBufferView(mesh, gpu::Stream::POSITION);
-        const glm::uint32 num = (glm::uint32)pos.getNumElements();
-        for (glm::uint32 i = 0; i < num; i++) {
-            auto& position = pos.edit<glm::vec3>(i);
-            position = transform * glm::vec4(position, 1.0f);
+        float angle = glm::angle(glm::quat(transform));
+        buffer_helpers::mesh::transformVec3Buffer(mesh, gpu::Stream::POSITION, transform);
+        if (!glm::isnan(angle) && angle != 0.0f) {
+            buffer_helpers::mesh::transformVec3Buffer(mesh, gpu::Stream::NORMAL, transform, true);
         }
         return getNativeObject();
     }
@@ -425,5 +427,6 @@ QString scriptable::ScriptableMesh::toOBJ() {
 
 scriptable::ScriptableMeshPointer scriptable::ScriptableMesh::dedupeVertices(float epsilon, bool resetNormals) {
     const auto mesh = jsAssert(getMeshPointer(), "dedupeVertices on null mesh");
-    return mesh ? graphics::utils::dedupeVertices(mesh, epsilon, resetNormals) : nullptr;
+    jsThrowError(engine(), "TODO: dedupeVertices moved to separate PR");
+    return nullptr;
 }
