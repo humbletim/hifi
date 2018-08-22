@@ -72,13 +72,13 @@ xColor Text3DOverlay::getBackgroundColor() {
     float pulseLevel = updatePulse();
     xColor result = _backgroundColor;
     if (_colorPulse < 0.0f) {
-        result.red *= (1.0f - pulseLevel);
-        result.green *= (1.0f - pulseLevel);
-        result.blue *= (1.0f - pulseLevel);
+        result.x *= (1.0f - pulseLevel);
+        result.y *= (1.0f - pulseLevel);
+        result.z *= (1.0f - pulseLevel);
     } else {
-        result.red *= pulseLevel;
-        result.green *= pulseLevel;
-        result.blue *= pulseLevel;
+        result.x *= pulseLevel;
+        result.y *= pulseLevel;
+        result.z *= pulseLevel;
     }
     return result;
 }
@@ -96,8 +96,7 @@ void Text3DOverlay::render(RenderArgs* args) {
 
     const float MAX_COLOR = 255.0f;
     xColor backgroundColor = getBackgroundColor();
-    glm::vec4 quadColor(backgroundColor.red / MAX_COLOR, backgroundColor.green / MAX_COLOR,
-                        backgroundColor.blue / MAX_COLOR, getBackgroundAlpha());
+    glm::vec4 quadColor(glm::vec3(backgroundColor) / MAX_COLOR, getBackgroundAlpha());
 
     glm::vec2 dimensions = getDimensions();
     glm::vec2 halfDimensions = dimensions * 0.5f;
@@ -123,8 +122,7 @@ void Text3DOverlay::render(RenderArgs* args) {
     transform.setScale(scaleFactor);
     batch.setModelTransform(transform);
 
-    glm::vec4 textColor = { _color.red / MAX_COLOR, _color.green / MAX_COLOR,
-                            _color.blue / MAX_COLOR, getTextAlpha() };
+    glm::vec4 textColor = { glm::vec3(_color) / MAX_COLOR, getTextAlpha() };
 
     // FIXME: Factor out textRenderer so that Text3DOverlay overlay parts can be grouped by pipeline for a gpu performance increase.
     _textRenderer->draw(batch, 0, 0, getText(), textColor, glm::vec2(-1.0f), true);

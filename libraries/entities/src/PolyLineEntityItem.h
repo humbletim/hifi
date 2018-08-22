@@ -50,9 +50,9 @@ class PolyLineEntityItem : public EntityItem {
     }
     void setColor(const xColor& value) {
         _strokeColorsChanged = true;
-        _color[RED_INDEX] = value.red;
-        _color[GREEN_INDEX] = value.green;
-        _color[BLUE_INDEX] = value.blue;
+        _color[RED_INDEX] = value.x;
+        _color[GREEN_INDEX] = value.y;
+        _color[BLUE_INDEX] = value.z;
     }
 
     void setLineWidth(float lineWidth){ _lineWidth = lineWidth; }

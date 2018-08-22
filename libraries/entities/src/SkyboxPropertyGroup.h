@@ -84,11 +84,7 @@ public:
                                                 bool& somethingChanged) override;
 
     glm::vec3 getColorVec3() const {
-        const quint8 MAX_COLOR = 255;
-        glm::vec3 color = { (float)_color.red / (float)MAX_COLOR,
-                            (float)_color.green / (float)MAX_COLOR,
-                            (float)_color.blue / (float)MAX_COLOR };
-        return color;
+        return glm::vec3(_color) / 255.0f;
     }
 
     static const xColor DEFAULT_COLOR;

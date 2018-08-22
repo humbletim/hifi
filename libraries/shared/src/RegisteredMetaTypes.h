@@ -100,13 +100,12 @@ QRect qRectFromVariant(const QVariant& object, bool& isValid);
 QRect qRectFromVariant(const QVariant& object);
 QVariant qRectToVariant(const QRect& rect);
 
+QScriptValue xColorToScriptValue(QScriptEngine* engine, const xColor& vec3);
+void xColorFromScriptValue(const QScriptValue& object, xColor& vec3);
+inline QVariant xColorToVariant(const xColor& color) { return vec3toVariant(color); }
+inline xColor xColorFromVariant(const QVariant& object) { return vec3FromVariant(object); }
+inline xColor xColorFromVariant(const QVariant& object, bool& valid) { return vec3FromVariant(object, valid); }
 
-// xColor
-QScriptValue xColorToScriptValue(QScriptEngine* engine, const xColor& color);
-void xColorFromScriptValue(const QScriptValue &object, xColor& color);
-
-QVariant xColorToVariant(const xColor& color);
-xColor xColorFromVariant(const QVariant &object, bool& isValid);
 
 // QColor
 QScriptValue qColorToScriptValue(QScriptEngine* engine, const QColor& color);

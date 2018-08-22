@@ -369,9 +369,9 @@ void ZoneEntityRenderer::updateHazeFromEntity(const TypedEntityPointer& entity) 
 
     haze->setHazeRangeFactor(graphics::Haze::convertHazeRangeToHazeRangeFactor(_hazeProperties.getHazeRange()));
     xColor hazeColor = _hazeProperties.getHazeColor();
-    haze->setHazeColor(glm::vec3(hazeColor.red / 255.0, hazeColor.green / 255.0, hazeColor.blue / 255.0));
+    haze->setHazeColor(glm::vec3(hazeColor) / 255.0f);
     xColor hazeGlareColor = _hazeProperties.getHazeGlareColor();
-    haze->setHazeGlareColor(glm::vec3(hazeGlareColor.red / 255.0, hazeGlareColor.green / 255.0, hazeGlareColor.blue / 255.0));
+    haze->setHazeGlareColor(glm::vec3(hazeGlareColor) / 255.0f);
     haze->setHazeEnableGlare(_hazeProperties.getHazeEnableGlare());
     haze->setHazeGlareBlend(graphics::Haze::convertGlareAngleToPower(_hazeProperties.getHazeGlareAngle()));
 

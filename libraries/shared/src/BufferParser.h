@@ -96,9 +96,9 @@ inline void BufferParser::readValue(QUuid& result) {
 
 template<>
 inline void BufferParser::readValue(xColor& result) {
-    readValue(result.red);
-    readValue(result.blue);
-    readValue(result.green);
+    readValue(result.x);
+    readValue(result.y);
+    readValue(result.z);
 }
 
 template<>

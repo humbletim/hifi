@@ -333,9 +333,9 @@ inline xColor xColor_convertFromScriptValue(const QScriptValue& v, bool& isValid
         b = v.property("z");
     }
     if (r.isValid() && g.isValid() && b.isValid()) {
-        newValue.red = r.toVariant().toInt();
-        newValue.green = g.toVariant().toInt();
-        newValue.blue = b.toVariant().toInt();
+        newValue.x = r.toVariant().toInt();
+        newValue.y = g.toVariant().toInt();
+        newValue.z = b.toVariant().toInt();
         isValid = true;
     }
     return newValue;

@@ -25,6 +25,8 @@
 #include <QtCore/QCoreApplication>
 #include <QUuid>
 
+#include <glm/glm.hpp>
+
 #include "NumericalConstants.h"
 // When writing out avatarEntities to a QByteArray, if the parentID is the ID of MyAvatar, use this ID instead.  This allows
 // the value to be reset when the sessionID changes.
@@ -91,31 +93,15 @@ inline QDebug& operator<<(QDebug& dbg, const rgbColor& c) {
     return dbg;
 }
 
-struct xColor {
-    xColor() {}
-    xColor(unsigned char r, unsigned char g, unsigned char b) : red(r), green(g), blue(b) {}
-    unsigned char red;
-    unsigned char green;
-    unsigned char blue;
-};
+using xColor = glm::u8vec3;
 
 inline QDebug& operator<<(QDebug& dbg, const xColor& c) {
     dbg.nospace() << "{type='xColor'"
-        ", red=" << c.red <<
-        ", green=" << c.green <<
-        ", blue=" << c.blue <<
+        ", red=" << c.x <<
+        ", green=" << c.y <<
+        ", blue=" << c.z <<
         "}";
     return dbg;
-}
-
-inline bool operator==(const xColor& lhs, const xColor& rhs)
-{
-    return (lhs.red == rhs.red) && (lhs.green == rhs.green) && (lhs.blue == rhs.blue);
-}
-
-inline bool operator!=(const xColor& lhs, const xColor& rhs)
-{
-    return (lhs.red != rhs.red) || (lhs.green != rhs.green) || (lhs.blue != rhs.blue);
 }
 
 // Use a custom User-Agent to avoid ModSecurity filtering, e.g. by hosting providers.

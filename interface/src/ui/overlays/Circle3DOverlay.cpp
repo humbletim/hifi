@@ -239,12 +239,12 @@ void Circle3DOverlay::render(RenderArgs* args) {
             }
             
             xColor majorColorX = getMajorTickMarksColor();
-            glm::vec4 majorColor(majorColorX.red / MAX_COLOR, majorColorX.green / MAX_COLOR, majorColorX.blue / MAX_COLOR, alpha);
+            glm::vec4 majorColor(glm::vec3(majorColorX) / MAX_COLOR, alpha);
             
             geometryCache->updateVertices(_majorTicksVerticesID, majorPoints, majorColor);
             
             xColor minorColorX = getMinorTickMarksColor();
-            glm::vec4 minorColor(minorColorX.red / MAX_COLOR, minorColorX.green / MAX_COLOR, minorColorX.blue / MAX_COLOR, alpha);
+            glm::vec4 minorColor(glm::vec3(minorColorX) / MAX_COLOR, alpha);
             
             geometryCache->updateVertices(_minorTicksVerticesID, minorPoints, minorColor);
         }

@@ -298,7 +298,7 @@ bool OctreePacketData::appendValue(const nodeColor& color) {
 }
 
 bool OctreePacketData::appendValue(const xColor& color) {
-    return appendColor(color.red, color.green, color.blue);
+    return appendColor(color.x, color.y, color.z);
 }
 
 bool OctreePacketData::appendValue(const rgbColor& color) {
@@ -696,9 +696,9 @@ int OctreePacketData::unpackDataFromBytes(const unsigned char* dataBytes, QUuid&
 }
 
 int OctreePacketData::unpackDataFromBytes(const unsigned char* dataBytes, xColor& result) { 
-    result.red = dataBytes[RED_INDEX];
-    result.green = dataBytes[GREEN_INDEX];
-    result.blue = dataBytes[BLUE_INDEX];
+    result.x = dataBytes[RED_INDEX];
+    result.y = dataBytes[GREEN_INDEX];
+    result.z = dataBytes[BLUE_INDEX];
     return sizeof(rgbColor);
 }
 

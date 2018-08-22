@@ -450,7 +450,7 @@ glm::vec2 toGlm(const QPointF& pt) {
 
 glm::vec3 toGlm(const xColor& color) {
     static const float MAX_COLOR = 255.0f;
-    return glm::vec3(color.red, color.green, color.blue) / MAX_COLOR;
+    return glm::vec3(color) / MAX_COLOR;
 }
 
 xColor xColorFromGlm(const glm::vec3 & color) {
@@ -476,7 +476,7 @@ QSize fromGlm(const glm::ivec2 & v) {
 }
 
 vec4 toGlm(const xColor& color, float alpha) {
-    return vec4((float)color.red / 255.0f, (float)color.green / 255.0f, (float)color.blue / 255.0f, alpha);
+    return vec4(glm::vec3(color) / 255.0f, alpha);
 }
 
 QRectF glmToRect(const glm::vec2 & pos, const glm::vec2 & size) {

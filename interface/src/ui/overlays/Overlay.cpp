@@ -151,13 +151,13 @@ xColor Overlay::getColor() {
     float pulseLevel = updatePulse();
     xColor result = _color;
     if (_colorPulse < 0.0f) {
-        result.red *= (1.0f - pulseLevel);
-        result.green *= (1.0f - pulseLevel);
-        result.blue *= (1.0f - pulseLevel);
+        result.x *= (1.0f - pulseLevel);
+        result.y *= (1.0f - pulseLevel);
+        result.z *= (1.0f - pulseLevel);
     } else {
-        result.red *= pulseLevel;
-        result.green *= pulseLevel;
-        result.blue *= pulseLevel;
+        result.x *= pulseLevel;
+        result.y *= pulseLevel;
+        result.z *= pulseLevel;
     }
     return result;
 }

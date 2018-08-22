@@ -230,9 +230,9 @@ void TextEntityItem::setTextColor(const rgbColor& value) {
 
 void TextEntityItem::setTextColor(const xColor& value) {
     withWriteLock([&] {
-        _textColor[RED_INDEX] = value.red;
-        _textColor[GREEN_INDEX] = value.green;
-        _textColor[BLUE_INDEX] = value.blue;
+        _textColor[RED_INDEX] = value.x;
+        _textColor[GREEN_INDEX] = value.y;
+        _textColor[BLUE_INDEX] = value.z;
     });
 }
 
@@ -252,9 +252,9 @@ void TextEntityItem::setBackgroundColor(const rgbColor& value) {
 
 void TextEntityItem::setBackgroundColor(const xColor& value) {
     withWriteLock([&] {
-        _backgroundColor[RED_INDEX] = value.red;
-        _backgroundColor[GREEN_INDEX] = value.green;
-        _backgroundColor[BLUE_INDEX] = value.blue;
+        _backgroundColor[RED_INDEX] = value.x;
+        _backgroundColor[GREEN_INDEX] = value.y;
+        _backgroundColor[BLUE_INDEX] = value.z;
     });
 }
 

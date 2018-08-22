@@ -116,7 +116,7 @@ void Image3DOverlay::render(RenderArgs* args) {
 
     DependencyManager::get<GeometryCache>()->renderQuad(
         *batch, topLeft, bottomRight, texCoordTopLeft, texCoordBottomRight,
-        glm::vec4(color.red / MAX_COLOR, color.green / MAX_COLOR, color.blue / MAX_COLOR, alpha),
+        glm::vec4(glm::vec3(color) / MAX_COLOR, alpha),
         _geometryId
     );
 

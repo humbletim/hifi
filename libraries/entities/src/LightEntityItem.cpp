@@ -231,9 +231,9 @@ void LightEntityItem::setColor(const rgbColor& value) {
 
 void LightEntityItem::setColor(const xColor& value) {
     withWriteLock([&] {
-        _color[RED_INDEX] = value.red;
-        _color[GREEN_INDEX] = value.green;
-        _color[BLUE_INDEX] = value.blue;
+        _color[RED_INDEX] = value.x;
+        _color[GREEN_INDEX] = value.y;
+        _color[BLUE_INDEX] = value.z;
         _lightPropertiesChanged = true;
     });
 }

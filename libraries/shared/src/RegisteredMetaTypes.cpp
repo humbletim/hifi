@@ -119,36 +119,74 @@ void vec4FromScriptValue(const QScriptValue& object, glm::vec4& vec4) {
 }
 
 QScriptValue vec3toScriptValue(QScriptEngine* engine, const glm::vec3 &vec3) {
-    QScriptValue obj = engine->newObject();
-    if (vec3.x != vec3.x || vec3.y != vec3.y || vec3.z != vec3.z) {
-        // if vec3 contains a NaN don't try to convert it
-        return obj;
+    auto prototype = engine->globalObject().property("__hifi_vec3_float__");
+    if (!prototype.property("defined").toBool()) {
+        prototype = engine->evaluate(
+            "__hifi_vec3_float__ = Object.defineProperties({}, { "
+            "defined: { value: true },"
+            "0: { set: function(nv) { return this.x = nv; }, get: function() { return this.x; } },"
+            "1: { set: function(nv) { return this.y = nv; }, get: function() { return this.y; } },"
+            "2: { set: function(nv) { return this.z = nv; }, get: function() { return this.z; } },"
+            "r: { set: function(nv) { return this.x = nv; }, get: function() { return this.x; } },"
+            "g: { set: function(nv) { return this.y = nv; }, get: function() { return this.y; } },"
+            "b: { set: function(nv) { return this.z = nv; }, get: function() { return this.z; } },"
+            "red: { set: function(nv) { return this.x = nv; }, get: function() { return this.x; } },"
+            "green: { set: function(nv) { return this.y = nv; }, get: function() { return this.y; } },"
+            "blue: { set: function(nv) { return this.z = nv; }, get: function() { return this.z; } },"
+            "width: { set: function(nv) { return this.x = nv; }, get: function() { return this.x; } },"
+            "height: { set: function(nv) { return this.y = nv; }, get: function() { return this.y; } },"
+            "depth: { set: function(nv) { return this.z = nv; }, get: function() { return this.z; } }"
+            "})"
+        );
     }
-    obj.setProperty("x", vec3.x);
-    obj.setProperty("y", vec3.y);
-    obj.setProperty("z", vec3.z);
-    obj.setProperty("red", vec3.x);
-    obj.setProperty("green", vec3.y);
-    obj.setProperty("blue", vec3.z);
-    return obj;
+    QScriptValue value = engine->newObject();
+    value.setProperty("x", vec3.x);
+    value.setProperty("y", vec3.y);
+    value.setProperty("z", vec3.z);
+    value.setPrototype(prototype);
+    return value;
 }
 
 void vec3FromScriptValue(const QScriptValue &object, glm::vec3 &vec3) {
-    auto x = object.property("x").toVariant();
+    auto x = object.property("x");
     if (!x.isValid()) {
-        x = object.property("red").toVariant();
+        x = object.property("r");
     }
-    auto y = object.property("y").toVariant();
+    if (!x.isValid()) {
+        x = object.property("red");
+    }
+    if (!x.isValid()) {
+        x = object.property("width");
+    }
+    auto y = object.property("y");
     if (!y.isValid()) {
-        y = object.property("green").toVariant();
+        y = object.property("g");
     }
-    auto z = object.property("z").toVariant();
+    if (!y.isValid()) {
+        y = object.property("green");
+    }
+    if (!y.isValid()) {
+        y = object.property("height");
+    }
+    auto z = object.property("z");
     if (!z.isValid()) {
-        z = object.property("blue").toVariant();
+        z = object.property("b");
     }
-    vec3.x = x.toFloat();
-    vec3.y = y.toFloat();
-    vec3.z = z.toFloat();
+    if (!z.isValid()) {
+        z = object.property("blue");
+    }
+    if (!z.isValid()) {
+        z = object.property("depth");
+    }
+    if (x.isValid() && y.isValid() && z.isValid()) {
+        vec3.x = x.toVariant().toFloat();
+        vec3.y = y.toVariant().toFloat();
+        vec3.z = z.toVariant().toFloat();
+        return;
+    }
+
+    vec3 = glm::vec3();
+    return;
 }
 
 QVariant vec3toVariant(const glm::vec3& vec3) {
@@ -199,18 +237,52 @@ glm::vec3 vec3FromVariant(const QVariant& object, bool& valid) {
         v.y = qvec3.y();
         v.z = qvec3.z();
         valid = true;
+    } else if (object.canConvert<QString>()) {
+        QColor qColor(object.toString());
+        if (qColor.isValid()) {
+            v.x = (uint8_t)qColor.red();
+            v.y = (uint8_t)qColor.blue();
+            v.z = (uint8_t)qColor.green();
+            valid = true;
+        }
+    } else if (object.canConvert<QColor>()) {
+        QColor qColor = qvariant_cast<QColor>(object);
+        if (qColor.isValid()) {
+            v.x = (uint8_t)qColor.red();
+            v.y = (uint8_t)qColor.blue();
+            v.z = (uint8_t)qColor.green();
+            valid = true;
+        }
     } else {
         auto map = object.toMap();
         auto x = map["x"];
-        auto y = map["y"];
-        auto z = map["z"];
+        if (!x.isValid()) {
+            x = map["r"];
+        }
+        if (!x.isValid()) {
+            x = map["red"];
+        }
         if (!x.isValid()) {
             x = map["width"];
+        }
+        auto y = map["y"];
+        if (!y.isValid()) {
+            y = map["g"];
+        }
+        if (!y.isValid()) {
+            y = map["green"];
         }
         if (!y.isValid()) {
             y = map["height"];
         }
-        if (!y.isValid()) {
+        auto z = map["z"];
+        if (!z.isValid()) {
+            z = map["b"];
+        }
+        if (!z.isValid()) {
+            z = map["blue"];
+        }
+        if (!z.isValid()) {
             z = map["depth"];
         }
 
@@ -297,11 +369,11 @@ void quatFromScriptValue(const QScriptValue& object, glm::quat &quat) {
 glm::quat quatFromVariant(const QVariant &object, bool& isValid) {
     glm::quat q;
     if (object.canConvert<QQuaternion>()) {
-        auto qvec3 = qvariant_cast<QQuaternion>(object);
-        q.x = qvec3.x();
-        q.y = qvec3.y();
-        q.z = qvec3.z();
-        q.w = qvec3.scalar();
+        auto qquat = qvariant_cast<QQuaternion>(object);
+        q.x = qquat.x();
+        q.y = qquat.y();
+        q.z = qquat.z();
+        q.w = qquat.scalar();
 
         // enforce normalized quaternion
         float length = glm::length(q);
@@ -340,7 +412,7 @@ glm::quat quatFromVariant(const QVariant& object) {
 
 QVariant quatToVariant(const glm::quat& quat) {
     if (quat.x != quat.x || quat.y != quat.y || quat.z != quat.z) {
-        // if vec3 contains a NaN don't try to convert it
+        // if quat contains a NaN don't try to convert it
         return QVariant();
     }
     QVariantMap result;
@@ -496,15 +568,49 @@ void qVectorBoolFromScriptValue(const QScriptValue& array, QVector<bool>& vector
 }
 
 QScriptValue vec2toScriptValue(QScriptEngine* engine, const glm::vec2 &vec2) {
-    QScriptValue obj = engine->newObject();
-    obj.setProperty("x", vec2.x);
-    obj.setProperty("y", vec2.y);
-    return obj;
+    auto prototype = engine->globalObject().property("__hifi_vec2_float__");
+    if (!prototype.property("defined").toBool()) {
+        prototype = engine->evaluate(
+            "__hifi_vec2_float__ = Object.defineProperties({}, { "
+            "defined: { value: true },"
+            "0: { set: function(nv) { return this.x = nv; }, get: function() { return this.x; } },"
+            "1: { set: function(nv) { return this.y = nv; }, get: function() { return this.y; } },"
+            "u: { set: function(nv) { return this.x = nv; }, get: function() { return this.x; } },"
+            "v: { set: function(nv) { return this.y = nv; }, get: function() { return this.y; } },"
+            "width: { set: function(nv) { return this.x = nv; }, get: function() { return this.x; } },"
+            "height: { set: function(nv) { return this.y = nv; }, get: function() { return this.y; } }"
+            "})"
+        );
+    }
+    QScriptValue value = engine->newObject();
+    value.setProperty("x", vec2.x);
+    value.setProperty("y", vec2.y);
+    value.setPrototype(prototype);
+    return value;
 }
 
 void vec2FromScriptValue(const QScriptValue &object, glm::vec2 &vec2) {
-    vec2.x = object.property("x").toVariant().toFloat();
-    vec2.y = object.property("y").toVariant().toFloat();
+    auto x = object.property("x");
+    if (!x.isValid()) {
+        x = object.property("u");
+    }
+    if (!x.isValid()) {
+        x = object.property("width");
+    }
+    auto y = object.property("y");
+    if (!y.isValid()) {
+        y = object.property("v");
+    }
+    if (!y.isValid()) {
+        y = object.property("height");
+    }
+    if (x.isValid() && y.isValid()) {
+        vec2.x = x.toVariant().toFloat();
+        vec2.y = y.toVariant().toFloat();
+        return;
+    }
+
+    vec2 = glm::vec2();
 }
 
 QVariant vec2toVariant(const glm::vec2 &vec2) {
@@ -523,17 +629,25 @@ glm::vec2 vec2FromVariant(const QVariant &object, bool& isValid) {
     glm::vec2 result;
     if (object.canConvert<float>()) {
         result = glm::vec2(object.toFloat());
+        isValid = true;
     } else if (object.canConvert<QVector2D>()) {
         auto qvec2 = qvariant_cast<QVector2D>(object);
         result.x = qvec2.x();
         result.y = qvec2.y();
+        isValid = true;
     } else {
         auto map = object.toMap();
         auto x = map["x"];
         if (!x.isValid()) {
+            x = map["u"];
+        }
+        if (!x.isValid()) {
             x = map["width"];
         }
         auto y = map["y"];
+        if (!y.isValid()) {
+            y = map["v"];
+        }
         if (!y.isValid()) {
             y = map["height"];
         }
@@ -568,12 +682,37 @@ void qRectFromScriptValue(const QScriptValue &object, QRect& rect) {
     rect.setHeight(object.property("height").toVariant().toInt());
 }
 
-QScriptValue xColorToScriptValue(QScriptEngine *engine, const xColor& color) {
-    QScriptValue obj = engine->newObject();
-    obj.setProperty("red", color.red);
-    obj.setProperty("green", color.green);
-    obj.setProperty("blue", color.blue);
-    return obj;
+QScriptValue xColorToScriptValue(QScriptEngine* engine, const xColor& vec3) {
+    auto prototype = engine->globalObject().property("__hifi_vec3_uchar__");
+    if (!prototype.property("defined").toBool()) {
+        prototype = engine->evaluate(
+            "__hifi_vec3_uchar__ = Object.defineProperties({}, { "
+            "defined: { value: true },"
+            "0: { set: function(nv) { return this.x = nv; }, get: function() { return this.x; } },"
+            "1: { set: function(nv) { return this.y = nv; }, get: function() { return this.y; } },"
+            "2: { set: function(nv) { return this.z = nv; }, get: function() { return this.z; } },"
+            "r: { set: function(nv) { return this.x = nv; }, get: function() { return this.x; } },"
+            "g: { set: function(nv) { return this.y = nv; }, get: function() { return this.y; } },"
+            "b: { set: function(nv) { return this.z = nv; }, get: function() { return this.z; } },"
+            "red: { set: function(nv) { return this.x = nv; }, get: function() { return this.x; } },"
+            "green: { set: function(nv) { return this.y = nv; }, get: function() { return this.y; } },"
+            "blue: { set: function(nv) { return this.z = nv; }, get: function() { return this.z; } },"
+            "width: { set: function(nv) { return this.x = nv; }, get: function() { return this.x; } },"
+            "height: { set: function(nv) { return this.y = nv; }, get: function() { return this.y; } },"
+            "depth: { set: function(nv) { return this.z = nv; }, get: function() { return this.z; } }"
+            "})"
+        );
+    }
+    QScriptValue value = engine->newObject();
+    if (vec3.x != vec3.x || vec3.y != vec3.y || vec3.z != vec3.z) {
+        // if vec3 contains a NaN don't try to convert it
+        return value;
+    }
+    value.setProperty("x", vec3.x);
+    value.setProperty("y", vec3.y);
+    value.setProperty("z", vec3.z);
+    value.setPrototype(prototype);
+    return value;
 }
 
 /**jsdoc
@@ -615,25 +754,55 @@ QRect qRectFromVariant(const QVariant& object) {
     return qRectFromVariant(object, valid);
 }
 
-
-void xColorFromScriptValue(const QScriptValue &object, xColor& color) {
-    if (!object.isValid()) {
-        return;
-    }
-    if (object.isNumber()) {
-        color.red = color.green = color.blue = (uint8_t)object.toUInt32();
-    } else if (object.isString()) {
-        QColor qcolor(object.toString());
-        if (qcolor.isValid()) {
-            color.red = (uint8_t)qcolor.red();
-            color.blue = (uint8_t)qcolor.blue();
-            color.green = (uint8_t)qcolor.green();
+void xColorFromScriptValue(const QScriptValue& object, xColor& vec3) {
+    if (object.isString()) {
+        QColor qColor(object.toString());
+        if (qColor.isValid()) {
+            vec3.x = (uint8_t)qColor.red();
+            vec3.y = (uint8_t)qColor.blue();
+            vec3.z = (uint8_t)qColor.green();
+            return;
         }
     } else {
-        color.red = object.property("red").toVariant().toInt();
-        color.green = object.property("green").toVariant().toInt();
-        color.blue = object.property("blue").toVariant().toInt();
+        QScriptValue x = object.property("x");
+        if (!x.isValid()) {
+            x = object.property("r");
+        }
+        if (!x.isValid()) {
+            x = object.property("red");
+        }
+        if (!x.isValid()) {
+            x = object.property("width");
+        }
+
+        QScriptValue y = object.property("y");
+        if (!y.isValid()) {
+            y = object.property("g");
+        }
+        if (!y.isValid()) {
+            y = object.property("green");
+        }
+        if (!y.isValid()) {
+            y = object.property("height");
+        }
+
+        QScriptValue z = object.property("z");
+        if (!z.isValid()) {
+            z = object.property("b");
+        }
+        if (!z.isValid()) {
+            z = object.property("blue");
+        }
+        if (!z.isValid()) {
+            z = object.property("depth");
+        }
+
+        vec3.x = x.toVariant().toUInt();
+        vec3.y = y.toVariant().toUInt();
+        vec3.z = z.toVariant().toUInt();
+        return;
     }
+    vec3 = xColor();
 }
 
 /**jsdoc
@@ -643,57 +812,6 @@ void xColorFromScriptValue(const QScriptValue &object, xColor& color) {
  * @property {number} green - Green component value. Integer in the range <code>0</code> - <code>255</code>.
  * @property {number} blue - Blue component value. Integer in the range <code>0</code> - <code>255</code>.
  */
-QVariant xColorToVariant(const xColor& color) {
-    QVariantMap obj;
-    obj["red"] = color.red;
-    obj["green"] = color.green;
-    obj["blue"] = color.blue;
-    return obj;
-}
-
-xColor xColorFromVariant(const QVariant &object, bool& isValid) {
-    isValid = false;
-    xColor color { 0, 0, 0 };
-    if (!object.isValid()) {
-        return color;
-    }
-    if (object.canConvert<int>()) {
-        isValid = true;
-        color.red = color.green = color.blue = (uint8_t)object.toInt();
-    } else if (object.canConvert<QString>()) {
-        QColor qcolor(object.toString());
-        if (qcolor.isValid()) {
-            isValid = true;
-            color.red = (uint8_t)qcolor.red();
-            color.blue = (uint8_t)qcolor.blue();
-            color.green = (uint8_t)qcolor.green();
-        }
-    } else if (object.canConvert<QColor>()) {
-        QColor qcolor = qvariant_cast<QColor>(object);
-        if (qcolor.isValid()) {
-            isValid = true;
-            color.red = (uint8_t)qcolor.red();
-            color.blue = (uint8_t)qcolor.blue();
-            color.green = (uint8_t)qcolor.green();
-        }
-    } else {
-        QVariantMap map = object.toMap();
-        color.red = map["red"].toInt(&isValid);
-        if (isValid) {
-            color.green = map["green"].toInt(&isValid);
-        }
-        if (isValid) {
-            color.blue = map["blue"].toInt(&isValid);
-        }
-    }
-    return color;
-}
-
-xColor xColorFromVariant(const QVariant &object) {
-    bool valid;
-    return xColorFromVariant(object, valid);
-}
-
 
 QScriptValue qColorToScriptValue(QScriptEngine* engine, const QColor& color) {
     QScriptValue object = engine->newObject();

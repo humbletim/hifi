@@ -510,17 +510,17 @@ void ParticleEffectEntityItem::setColor(const vec3& value) {
 
 void ParticleEffectEntityItem::setColor(const xColor& value) {
     withWriteLock([&] {
-        _particleProperties.color.gradient.target.r = value.red;
-        _particleProperties.color.gradient.target.g = value.green;
-        _particleProperties.color.gradient.target.b = value.blue;
+        _particleProperties.color.gradient.target.r = value.x;
+        _particleProperties.color.gradient.target.g = value.y;
+        _particleProperties.color.gradient.target.b = value.z;
     });
 }
 
 xColor ParticleEffectEntityItem::getXColor() const {
     xColor color;
-    color.red = _particleProperties.color.gradient.target.r;
-    color.green = _particleProperties.color.gradient.target.g;
-    color.blue = _particleProperties.color.gradient.target.b;
+    color.x = _particleProperties.color.gradient.target.r;
+    color.y = _particleProperties.color.gradient.target.g;
+    color.z = _particleProperties.color.gradient.target.b;
     return color;
 }
 
@@ -714,17 +714,17 @@ void ParticleEffectEntityItem::setColorFinish(const vec3& colorFinish) {
 
 void ParticleEffectEntityItem::setColorSpread(const xColor& value) {
     withWriteLock([&] {
-        _particleProperties.color.gradient.spread.r = value.red;
-        _particleProperties.color.gradient.spread.g = value.green;
-        _particleProperties.color.gradient.spread.b = value.blue;
+        _particleProperties.color.gradient.spread.r = value.x;
+        _particleProperties.color.gradient.spread.g = value.y;
+        _particleProperties.color.gradient.spread.b = value.z;
     });
 }
 
 xColor ParticleEffectEntityItem::getColorSpread() const {
     xColor color;
-    color.red = _particleProperties.color.gradient.spread.r;
-    color.green = _particleProperties.color.gradient.spread.g;
-    color.blue = _particleProperties.color.gradient.spread.b;
+    color.x = _particleProperties.color.gradient.spread.r;
+    color.y = _particleProperties.color.gradient.spread.g;
+    color.z = _particleProperties.color.gradient.spread.b;
     return color;
 }
 

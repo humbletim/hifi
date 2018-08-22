@@ -220,7 +220,7 @@ xColor ShapeEntityItem::getXColor() const {
 }
 
 void ShapeEntityItem::setColor(const xColor& value) {
-    setColor(rgbColor { value.red, value.green, value.blue });
+    setColor(rgbColor { value.x, value.y, value.z });
 }
 
 QColor ShapeEntityItem::getQColor() const {
