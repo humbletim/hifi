@@ -1,0 +1,4433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Namespace: Vec3</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Namespace: Vec3</h1>
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>Vec3
+            <sup class="variation">0</sup></h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description"><table><tr><th>Available in:</th><td>Interface Scripts</td><td>Client Entity Scripts</td><td>Server Entity Scripts</td><td>Assignment Client Scripts</td></tr></table><br>The Vec3 API facilities for generating and manipulating 3-dimensional vectors. High Fidelity uses a right-handed 
+Cartesian coordinate system where the y-axis is the "up" and the negative z-axis is the "front" direction.
+<img alt="High Fidelity coordinate system" src="https://docs.highfidelity.com/images/opengl-coord-system.jpg" /></div>
+        
+
+        
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>UNIT_X</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><code>{ x: 1, y: 0, z: 0 }</code> : Unit vector in the x-axis direction. <em>Read-only.</em></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>UNIT_Y</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><code>{ x: 0, y: 1, z: 0 }</code> : Unit vector in the y-axis direction. <em>Read-only.</em></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>UNIT_Z</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><code>{ x: 0, y: 0, z: 1 }</code> : Unit vector in the z-axis direction. <em>Read-only.</em></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>UNIT_NEG_X</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><code>{ x: -1, y: 0, z: 0 }</code> : Unit vector in the negative x-axis direction. 
+    <em>Read-only.</em></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>UNIT_NEG_Y</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><code>{ x: 0, y: -1, z: 0 }</code> : Unit vector in the negative y-axis direction. 
+    <em>Read-only.</em></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>UNIT_NEG_Z</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><code>{ x: 0, y: 0, z: -1 }</code> : Unit vector in the negative z-axis direction. 
+    <em>Read-only.</em></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>UNIT_XY</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><code>{ x: 0.707107, y: 0.707107, z: 0 }</code> : Unit vector in the direction of the diagonal 
+    between the x and y axes. <em>Read-only.</em></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>UNIT_XZ</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><code>{ x: 0.707107, y: 0, z: 0.707107 }</code> : Unit vector in the direction of the diagonal 
+    between the x and z axes. <em>Read-only.</em></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>UNIT_YZ</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><code>{ x: 0, y: 0.707107, z: 0.707107 }</code> : Unit vector in the direction of the diagonal 
+    between the y and z axes. <em>Read-only.</em></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>UNIT_XYZ</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><code>{ x: 0.577350, y: 0.577350, z: 0.577350 }</code> : Unit vector in the direction of the 
+    diagonal between the x, y, and z axes. <em>Read-only.</em></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>FLOAT_MAX</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><code>{ x: 3.402823e+38, y: 3.402823e+38, z: 3.402823e+38 }</code> : Vector with all axis 
+    values set to the maximum floating point value. <em>Read-only.</em></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>FLOAT_MIN</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><code>{ x: -3.402823e+38, y: -3.402823e+38, z: -3.402823e+38 }</code> : Vector with all axis 
+    values set to the negative of the maximum floating point value. <em>Read-only.</em></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>ZERO</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><code>{ x: 0, y: 0, z: 0 }</code> : Vector with all axis values set to <code>0</code>. 
+    <em>Read-only.</em></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>ONE</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><code>{ x: 1, y: 1, z: 1 }</code> : Vector with all axis values set to <code>1</code>. 
+    <em>Read-only.</em></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>TWO</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><code>{ x: 2, y: 2, z: 2 }</code> : Vector with all axis values set to <code>2</code>. 
+    <em>Read-only.</em></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>HALF</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><code>{ x: 0.5, y: 0.5, z: 0.5 }</code> : Vector with all axis values set to <code>0.5</code>. 
+    <em>Read-only.</em></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>RIGHT</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><code>{ x: 1, y: 0, z: 0 }</code> : Unit vector in the "right" direction. Synonym for 
+    <code>UNIT_X</code>. <em>Read-only.</em></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>UP</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><code>{ x: 0, y: 1, z: 0 }</code> : Unit vector in the "up" direction. Synonym for 
+    <code>UNIT_Y</code>. <em>Read-only.</em></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>FRONT</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><code>{ x: 0, y: 0, z: -1 }</code> : Unit vector in the "front" direction. Synonym for 
+    <code>UNIT_NEG_Z</code>. <em>Read-only.</em></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".cross"><span class="type-signature">(static) </span>cross<span class="signature">(v1, v2)</span><span class="type-signature"> &rarr; {<a href="global.html#Vec3">Vec3</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Calculate the cross product of two vectors.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>v1</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The first vector.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>v2</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The second vector.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The cross product of <code>v1</code> and <code>v2</code>.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">The cross product of x and y unit vectors is the z unit vector.</p>
+    
+    <pre class="prettyprint"><code>var v1 = { x: 1, y: 0, z: 0 };
+var v2 = { x: 0, y: 1, z: 0 };
+var crossProduct = Vec3.cross(v1, v2);
+print(JSON.stringify(crossProduct)); // {"x":0,"y":0,"z":1}</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".distance"><span class="type-signature">(static) </span>distance<span class="signature">(p1, p2)</span><span class="type-signature"> &rarr; {number}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Calculate the distance between two points.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>p1</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The first point.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>p2</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The second point.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The distance between the two points.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">number</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">The distance between two points is aways positive.</p>
+    
+    <pre class="prettyprint"><code>var p1 = { x: 0, y: 0, z: 0 };
+var p2 = { x: 0, y: 0, z: 10 };
+var distance = Vec3.distance(p1, p2);
+print(distance); // 10
+
+p2 = { x: 0, y: 0, z: -10 };
+distance = Vec3.distance(p1, p2);
+print(distance); // 10</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".dot"><span class="type-signature">(static) </span>dot<span class="signature">(v1, v2)</span><span class="type-signature"> &rarr; {number}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Calculate the dot product of two vectors.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>v1</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The first vector.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>v2</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The second vector.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The dot product of <code>v1</code> and <code>v2</code>.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">number</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">The dot product of vectors at right angles is <code>0</code>.</p>
+    
+    <pre class="prettyprint"><code>var v1 = { x: 1, y: 0, z: 0 };
+var v2 = { x: 0, y: 1, z: 0 };
+var dotProduct = Vec3.dot(v1, v2);
+print(dotProduct); // 0</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".equal"><span class="type-signature">(static) </span>equal<span class="signature">(v1, v2)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Test whether two vectors are equal. <strong>Note:</strong> The vectors must be exactly equal in order for 
+<code>true</code> to be returned; it is often better to use <a href="Vec3.html#.withinEpsilon">withinEpsilon</a>.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>v1</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The first vector.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>v2</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The second vector.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <code>true</code> if the two vectors are exactly equal, otherwise <code>false</code>.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption"> Vectors are only equal if exactly the same.</p>
+    
+    <pre class="prettyprint"><code>var v1 = { x: 10, y: 10, z: 10 };
+var v2 = { x: 10, y: 10, z: 10 };
+var equal = Vec3.equal(v1, v2);
+print(equal);  // true
+
+v2 = { x: 10, y: 10, z: 10.0005 };
+equal = Vec3.equal(v1, v2);
+print(equal);  // false</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".fromPolar"><span class="type-signature">(static) </span>fromPolar<span class="signature">(polar)</span><span class="type-signature"> &rarr; {<a href="global.html#Vec3">Vec3</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Calculate the coordinates of a point from polar coordinate transformation of the unit z-axis vector.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>polar</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The polar coordinates of a point: <code>x</code> elevation rotation about the x-axis in radians, 
+   <code>y</code> azimuth rotation about the y-axis in radians, and <code>z</code> scale.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The coordinates of the point.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Polar coordinates to Cartesian.</p>
+    
+    <pre class="prettyprint"><code>var polar = { x: -19.471 * Math.PI / 180, y: 45 * Math.PI / 180, z: 7.5 };
+var p = Vec3.fromPolar(polar);
+print(JSON.stringify(p));  // {"x":5,"y":2.5,"z":5}</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".fromPolar"><span class="type-signature">(static) </span>fromPolar<span class="signature">(elevation, azimuth)</span><span class="type-signature"> &rarr; {<a href="global.html#Vec3">Vec3</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Calculate the unit vector corresponding to polar coordinates elevation and azimuth transformation of the unit z-axis 
+vector.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>elevation</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Rotation about the x-axis, in radians.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>azimuth</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Rotation about the y-axis, in radians.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    Unit vector for the direction specified by <code>elevation</code> and <code>azimuth</code>.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Polar coordinates to Cartesian.</p>
+    
+    <pre class="prettyprint"><code>var elevation = -19.471 * Math.PI / 180;
+var rotation = 45 * Math.PI / 180;
+var p = Vec3.fromPolar(elevation, rotation);
+print(JSON.stringify(p));  // {"x":0.667,"y":0.333,"z":0.667}
+
+p = Vec3.multiply(7.5, p);
+print(JSON.stringify(p));  // {"x":5,"y":2.5,"z":5}</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".getAngle"><span class="type-signature">(static) </span>getAngle<span class="signature">(v1, v2)</span><span class="type-signature"> &rarr; {number}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Calculate the angle between two vectors.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>v1</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The first vector.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>v2</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The second vector.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The angle between the two vectors, in radians.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">number</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Calculate the angle between two vectors.</p>
+    
+    <pre class="prettyprint"><code>var v1 = { x: 10, y: 0, z: 0 };
+var v2 = { x: 0, y: 0, z: 10 };
+var angle = Vec3.getAngle(v1, v2);
+print(angle * 180 / Math.PI);  // 90
+     </code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".length"><span class="type-signature">(static) </span>length<span class="signature">(v)</span><span class="type-signature"> &rarr; {number}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Calculate the length of a vector
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>v</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The vector.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The length of the vector.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">number</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".mix"><span class="type-signature">(static) </span>mix<span class="signature">(v1, v2, factor)</span><span class="type-signature"> &rarr; {<a href="global.html#Vec3">Vec3</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Calculate a linear interpolation between two vectors.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>v1</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The first vector.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>v2</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The second vector.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>factor</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The interpolation factor in the range <code>0.0</code> to <code>1.0</code>.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The linear interpolation between the two vectors: <code>(1 - factor) * v1 + factor * v2</code>.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Linear interpolation between two vectors.</p>
+    
+    <pre class="prettyprint"><code>var v1 = { x: 10, y: 0, z: 0 };
+var v2 = { x: 0, y: 10, z: 0 };
+var interpolated = Vec3.mix(v1, v2, 0.75);  // 1/4 of v1 and 3/4 of v2.
+print(JSON.stringify(interpolated));  // {"x":2.5,"y":7.5","z":0}</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".multiply"><span class="type-signature">(static) </span>multiply<span class="signature">(v, scale)</span><span class="type-signature"> &rarr; {<a href="global.html#Vec3">Vec3</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Multiply a vector by a scale factor.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>v</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The vector.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>scale</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The scale factor.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The vector with each ordinate value multiplied by the <code>scale</code>.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".multiply"><span class="type-signature">(static) </span>multiply<span class="signature">(scale, v)</span><span class="type-signature"> &rarr; {<a href="global.html#Vec3">Vec3</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Multiply a vector by a scale factor.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>scale</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The scale factor.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>v</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The vector.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The vector with each ordinate value multiplied by the <code>scale</code>.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".multiplyQbyV"><span class="type-signature">(static) </span>multiplyQbyV<span class="signature">(q, v)</span><span class="type-signature"> &rarr; {<a href="global.html#Vec3">Vec3</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Rotate a vector.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>q</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Quat">Quat</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The rotation to apply.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>v</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The vector to rotate.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <code>v</code> rotated by <code>q</code>.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Rotate the negative z-axis by 90 degrees about the x-axis.</p>
+    
+    <pre class="prettyprint"><code>var v = Vec3.UNIT_NEG_Z;
+var q = Quat.fromPitchYawRollDegrees(90, 0, 0);
+var result = Vec3.multiplyQbyV(q, v);
+print(JSON.stringify(result));  // {"x":0,"y":1.000,"z":1.19e-7}</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".multiplyVbyV"><span class="type-signature">(static) </span>multiplyVbyV<span class="signature">(v1, v2)</span><span class="type-signature"> &rarr; {<a href="global.html#Vec3">Vec3</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Multiply two vectors.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>v1</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The first vector.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>v2</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The second vector.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    A vector formed by multiplying the ordinates of two vectors: <code>{ x: v1.x * v2.x, y: v1.y * v2.y, 
+    z: v1.z * v2.z }</code>.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Multiply two vectors.</p>
+    
+    <pre class="prettyprint"><code>var v1 = { x: 1, y: 2, z: 3 };
+var v2 = { x: 1, y: 2, z: 3 };
+var multiplied = Vec3.multiplyVbyV(v1, v2);
+print(JSON.stringify(multiplied));  // {"x":1,"y":4,"z":9}</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".normalize"><span class="type-signature">(static) </span>normalize<span class="signature">(v)</span><span class="type-signature"> &rarr; {<a href="global.html#Vec3">Vec3</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Normalize a vector so that its length is <code>1</code>.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>v</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The vector to normalize.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The vector normalized to have a length of <code>1</code>.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Normalize a vector.</p>
+    
+    <pre class="prettyprint"><code>var v = { x: 10, y: 10, z: 0 };
+var normalized = Vec3.normalize(v);
+print(JSON.stringify(normalized));  // {"x":0.7071,"y":0.7071,"z":0}
+print(Vec3.length(normalized));  // 1</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".orientedAngle"><span class="type-signature">(static) </span>orientedAngle<span class="signature">(v1, v2, ref)</span><span class="type-signature"> &rarr; {number}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Calculate the angle of rotation from one vector onto another, with the sign depending on a reference vector.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>v1</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The first vector.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>v2</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The second vector.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>ref</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Reference vector.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The angle of rotation from the first vector to the second, in degrees, with a positive sign if the 
+rotation axis aligns with the reference vector (has a positive dot product) otherwise a negative sign.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">number</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Compare <code>Vec3.angle()</code> and <code>Vec3.orientedAngle()</code>.</p>
+    
+    <pre class="prettyprint"><code>var v1 = { x: 5, y: 0, z: 0 };
+var v2 = { x: 5, y: 0, z: 5 };
+var angle = Vec3.getAngle(v1, v2);
+print(angle * 180 / Math.PI);  // 45
+
+print(Vec3.orientedAngle(v1, v2, Vec3.UNIT_Y));  // -45
+print(Vec3.orientedAngle(v1, v2, Vec3.UNIT_NEG_Y));  // 45
+print(Vec3.orientedAngle(v1, v2, { x: 1, y: 2, z: -1 }));  // -45
+print(Vec3.orientedAngle(v1, v2, { x: 1, y: -2, z: -1 }));  // 45</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".print"><span class="type-signature">(static) </span>print<span class="signature">(label, v)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Print to the program log a text label followed by a vector value.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>label</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The label to print.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>v</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The vector value to print.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Two ways of printing a label and vector value.</p>
+    
+    <pre class="prettyprint"><code>var v = { x: 1, y: 2, z: 3 };
+Vec3.print("Vector: ", v);  // dvec3(1.000000, 2.000000, 3.000000)
+print("Vector: " + JSON.stringify(v));  // {"x":1,"y":2,"z":3}</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".reflect"><span class="type-signature">(static) </span>reflect<span class="signature">(v, normal)</span><span class="type-signature"> &rarr; {<a href="global.html#Vec3">Vec3</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Calculate the reflection of a vector in a plane.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>v</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The vector to reflect.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>normal</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The normal of the plane.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The vector reflected in the plane given by the normal.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Reflect a vector in the x-z plane.</p>
+    
+    <pre class="prettyprint"><code>var v = { x: 1, y: 2, z: 3 };
+var normal = Vec3.UNIT_Y;
+var reflected = Vec3.reflect(v, normal);
+print(JSON.stringify(reflected));  // {"x":1,"y":-2,"z":3}</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".subtract"><span class="type-signature">(static) </span>subtract<span class="signature">(v1, v2)</span><span class="type-signature"> &rarr; {<a href="global.html#Vec3">Vec3</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Calculate one vector subtracted from another.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>v1</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The first vector.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>v2</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The second vector.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The second vector subtracted from the first.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".sum"><span class="type-signature">(static) </span>sum<span class="signature">(v1, v2)</span><span class="type-signature"> &rarr; {<a href="global.html#Vec3">Vec3</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Calculate the sum of two vectors.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>v1</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The first vector.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>v2</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The second vector.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The sum of the two vectors.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".toPolar"><span class="type-signature">(static) </span>toPolar<span class="signature">(p)</span><span class="type-signature"> &rarr; {<a href="global.html#Vec3">Vec3</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Calculate polar coordinates (elevation, azimuth, radius) that transform the unit z-axis vector onto a point.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>p</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The point to calculate the polar coordinates for.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    Vector of polar coordinates for the point: <code>x</code> elevation rotation about the x-axis in 
+    radians, <code>y</code> azimuth rotation about the y-axis in radians, and <code>z</code> scale.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Polar coordinates for a point.</p>
+    
+    <pre class="prettyprint"><code>var v = { x: 5, y: 2.5, z: 5 };
+var polar = Vec3.toPolar(v);
+print("Elevation: " + polar.x * 180 / Math.PI);  // -19.471
+print("Azimuth: " + polar.y * 180 / Math.PI);  // 45
+print("Radius: " + polar.z);  // 7.5</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".withinEpsilon"><span class="type-signature">(static) </span>withinEpsilon<span class="signature">(v1, v2, epsilon)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Test whether two vectors are equal within a tolerance. <strong>Note:</strong> It is often better to use this function 
+than <a href="Vec3.html#.equal">equal</a>.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>v1</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The first vector.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>v2</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The second vector.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>epsilon</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The maximum distance between the two vectors.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <code>true</code> if the distance between the points represented by the vectors is less than or equal 
+to the <code>epsilon</code>, otherwise <code>false</code>.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Testing vectors for near equality.</p>
+    
+    <pre class="prettyprint"><code>var v1 = { x: 10, y: 10, z: 10 };
+var v2 = { x: 10, y: 10, z: 10.0005 };
+var equal = Vec3.equal(v1, v2);
+print(equal);  // false
+
+equal = Vec3.withinEpsilon(v1, v2, 0.001);
+print(equal);  // true</code></pre>
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AnimationObject.html">AnimationObject</a></li><li><a href="AudioEffectOptions.html">AudioEffectOptions</a></li><li><a href="AudioInjector.html">AudioInjector</a></li><li><a href="AudioStats.AudioStreamStats.html">AudioStreamStats</a></li><li><a href="InteractiveWindow.html">InteractiveWindow</a></li><li><a href="MappingObject.html">MappingObject</a></li><li><a href="MeshProxy.html">MeshProxy</a></li><li><a href="OverlayWebWindow.html">OverlayWebWindow</a></li><li><a href="OverlayWindow.html">OverlayWindow</a></li><li><a href="ResourceObject.html">ResourceObject</a></li><li><a href="RouteObject.html">RouteObject</a></li><li><a href="Scene.Stage.html">Stage</a></li><li><a href="ScriptsModel.html">ScriptsModel</a></li><li><a href="ScriptsModelFilter.html">ScriptsModelFilter</a></li><li><a href="SoundObject.html">SoundObject</a></li><li><a href="TabletButtonProxy.html">TabletButtonProxy</a></li><li><a href="TabletProxy.html">TabletProxy</a></li><li><a href="ToolbarButtonProxy.html">ToolbarButtonProxy</a></li><li><a href="ToolbarProxy.html">ToolbarProxy</a></li></ul><h3>Namespaces</h3><ul><li><a href="AccountServices.html">AccountServices</a></li><li><a href="Agent.html">Agent</a></li><li><a href="AnimationCache.html">AnimationCache</a></li><li><a href="Assets.html">Assets</a></li><li><a href="Audio.html">Audio</a></li><li><a href="AudioScope.html">AudioScope</a></li><li><a href="AudioStats.html">AudioStats</a></li><li><a href="Avatar.html">Avatar</a></li><li><a href="AvatarBookmarks.html">AvatarBookmarks</a></li><li><a href="AvatarInputs.html">AvatarInputs</a></li><li><a href="AvatarList.html">AvatarList</a></li><li><a href="AvatarManager.html">AvatarManager</a></li><li><a href="Camera.html">Camera</a></li><li><a href="Clipboard.html">Clipboard</a></li><li><a href="Controller.html">Controller</a></li><li><a href="DebugDraw.html">DebugDraw</a></li><li><a href="Desktop.html">Desktop</a></li><li><a href="Entities.html">Entities</a></li><li><a href="EntityViewer.html">EntityViewer</a></li><li><a href="FaceTracker.html">FaceTracker</a></li><li><a href="File.html">File</a></li><li><a href="GooglePoly.html">GooglePoly</a></li><li><a href="Graphics.html">Graphics</a></li><li><a href="Graphics.RenderFlags.html">RenderFlags</a></li><li><a href="HifiAbout.html">HifiAbout</a></li><li><a href="HMD.html">HMD</a></li><li><a href="LaserPointers.html">LaserPointers</a></li><li><a href="location.html">location</a></li><li><a href="LocationBookmarks.html">LocationBookmarks</a></li><li><a href="LODManager.html">LODManager</a></li><li><a href="Mat4.html">Mat4</a></li><li><a href="Menu.html">Menu</a></li><li><a href="Messages.html">Messages</a></li><li><a href="Midi.html">Midi</a></li><li><a href="ModelCache.html">ModelCache</a></li><li><a href="MyAvatar.html">MyAvatar</a></li><li><a href="OffscreenFlags.html">OffscreenFlags</a></li><li><a href="Overlays.html">Overlays</a></li><li><a href="Paths.html">Paths</a></li><li><a href="Picks.html">Picks</a></li><li><a href="PickType.html">PickType</a></li><li><a href="Pointers.html">Pointers</a></li><li><a href="Quat.html">Quat</a></li><li><a href="RayPick.html">RayPick</a></li><li><a href="Recording.html">Recording</a></li><li><a href="Render.html">Render</a></li><li><a href="Resource.html">Resource</a></li><li><a href="Resources.html">Resources</a></li><li><a href="Reticle.html">Reticle</a></li><li><a href="Scene.html">Scene</a></li><li><a href="Script.html">Script</a></li><li><a href="ScriptDiscoveryService.html">ScriptDiscoveryService</a></li><li><a href="Selection.html">Selection</a></li><li><a href="Settings.html">Settings</a></li><li><a href="Snapshot.html">Snapshot</a></li><li><a href="SoundCache.html">SoundCache</a></li><li><a href="SpeechRecognizer.html">SpeechRecognizer</a></li><li><a href="Stats.html">Stats</a></li><li><a href="Steam.html">Steam</a></li><li><a href="Tablet.html">Tablet</a></li><li><a href="tabletInterface.html">tabletInterface</a></li><li><a href="TextureCache.html">TextureCache</a></li><li><a href="Toolbars.html">Toolbars</a></li><li><a href="Users.html">Users</a></li><li><a href="Uuid.html">Uuid</a></li><li><a href="Vec3.html">Vec3</a></li><li><a href="Wallet.html">Wallet</a></li><li><a href="Window.html">Window</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Aug 22 2018 14:55:20 GMT-0400 (EDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

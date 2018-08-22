@@ -1,0 +1,1517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Namespace: Messages</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Namespace: Messages</h1>
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>Messages</h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description"><table><tr><th>Available in:</th><td>Interface Scripts</td><td>Client Entity Scripts</td><td>Server Entity Scripts</td><td>Assignment Client Scripts</td></tr></table><br><p>The Messages API enables text and data to be sent between scripts over named "channels". A channel can have an arbitrary 
+name to help separate messaging between different sets of scripts.</p>
+
+<p><strong>Note:</strong> If you want to call a function in another script, you should use one of the following rather than 
+sending a message:</p>
+<ul>
+  <li><a href="Entities.html#.callEntityClientMethod">Entities.callEntityClientMethod</a></li>
+  <li><a href="Entities.html#.callEntityMethod">Entities.callEntityMethod</a></li>
+  <li><a href="Entities.html#.callEntityServerMethod">Entities.callEntityServerMethod</a></li>
+  <li><a href="Script.html#.callEntityScriptMethod">Script.callEntityScriptMethod</a></li>
+</ul></div>
+        
+
+        
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".dataReceived"><span class="type-signature">(static) </span>dataReceived<span class="signature">(channel, data, senderID, localOnly)</span><span class="type-signature"> &rarr; {Signal}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Triggered when a data message is received.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>channel</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The channel that the message was sent on. You can use this to filter out messages not relevant
+    to your script.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The data received. The data is handled as a byte stream, for example as may be used by a 
+    JavaScript <code>Int8Array</code> object.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>senderID</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Uuid.html">Uuid</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The UUID of the sender: the user's session UUID if sent by an Interface or client entity
+    script, the UUID of the entity script server if sent by a server entity script, or the UUID of the assignment client
+    script, the UUID of the entity script server if sent by a server entity script, or the UUID of the assignment client
+    instance if sent by an assignment client script.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>localOnly</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><code>true</code> if the message was sent with <code>localOnly = true</code>.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Signal</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".messageReceived"><span class="type-signature">(static) </span>messageReceived<span class="signature">(channel, message, senderID, localOnly)</span><span class="type-signature"> &rarr; {Signal}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Triggered when the a text message is received.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>channel</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The channel that the message was sent on. You can use this to filter out messages not relevant 
+    to your script.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>message</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The message received.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>senderID</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Uuid.html">Uuid</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The UUID of the sender: the user's session UUID if sent by an Interface or client entity 
+    script, the UUID of the entity script server if sent by a server entity script, or the UUID of the assignment client 
+    instance if sent by an assignment client script.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>localOnly</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><code>true</code> if the message was sent with <code>localOnly = true</code>.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Signal</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".sendData"><span class="type-signature">(static) </span>sendData<span class="signature">(channel, data, localOnly<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Send a data message on a channel.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>channel</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">The channel to send the data on.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">The data to send. The data is handled as a byte stream, for example as may be provided via a 
+    JavaScript <code>Int8Array</code> object.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>localOnly</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last">If <code>false</code> then the message is sent to all Interface, client entity,
+    server entity, and assignment client scripts in the domain.<br />
+    If <code>true</code> then: if sent from an Interface or client entity script it is received by all Interface and
+    client entity scripts; if sent from a server entity script it is received by all entity server scripts; and if sent
+    from an assignment client script it is received only by that same assignment client script.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Send and receive data.</p>
+    
+    <pre class="prettyprint"><code>// Receiving script.
+var channelName = "com.highfidelity.example.messages-example";
+
+function onDataReceived(channel, data, sender, localOnly) {
+    var int8data = new Int8Array(data);
+    var dataAsString = "";
+    for (var i = 0; i &lt; int8data.length; i++) {
+        if (i > 0) {
+            dataAsString += ", ";
+        }
+        dataAsString += int8data[i];
+    }
+    print("Data received:");
+    print("- channel: " + channel);
+    print("- data: " + dataAsString);
+    print("- sender: " + sender);
+    print("- localOnly: " + localOnly);
+}
+
+Messages.subscribe(channelName);
+Messages.dataReceived.connect(onDataReceived);
+
+Script.scriptEnding.connect(function () {
+    Messages.dataReceived.disconnect(onDataReceived);
+    Messages.unsubscribe(channelName);
+});
+
+
+// Sending script.
+var channelName = "com.highfidelity.example.messages-example";
+var int8data = new Int8Array([1, 1, 2, 3, 5, 8, 13]);
+Messages.sendData(channelName, int8data.buffer);</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".sendLocalMessage"><span class="type-signature">(static) </span>sendLocalMessage<span class="signature">(channel, message)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Send a text message locally on a channel.
+This is the same as calling <a href="Messages.html#.sendMessage">sendMessage</a> with <code>localOnly</code> set to 
+<code>true</code>.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>channel</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The channel to send the message on.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>message</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The message to send.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".sendMessage"><span class="type-signature">(static) </span>sendMessage<span class="signature">(channel, message, localOnly<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Send a text message on a channel.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>channel</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">The channel to send the message on.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>message</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">The message to send.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>localOnly</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last">If <code>false</code> then the message is sent to all Interface, client entity, 
+    server entity, and assignment client scripts in the domain.<br />
+    If <code>true</code> then: if sent from an Interface or client entity script it is received by all Interface and 
+    client entity scripts; if sent from a server entity script it is received by all entity server scripts; and if sent 
+    from an assignment client script it is received only by that same assignment client script.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Send and receive a message.</p>
+    
+    <pre class="prettyprint"><code>// Receiving script.
+var channelName = "com.highfidelity.example.messages-example";
+
+function onMessageReceived(channel, message, sender, localOnly) {
+    print("Message received:");
+    print("- channel: " + channel);
+    print("- message: " + message);
+    print("- sender: " + sender);
+    print("- localOnly: " + localOnly);
+}
+
+Messages.subscribe(channelName);
+Messages.messageReceived.connect(onMessageReceived);
+
+Script.scriptEnding.connect(function () {
+    Messages.messageReceived.disconnect(onMessageReceived);
+    Messages.unsubscribe(channelName);
+});
+
+
+// Sending script.
+var channelName = "com.highfidelity.example.messages-example";
+var message = "Hello";
+Messages.sendMessage(channelName, message);</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".subscribe"><span class="type-signature">(static) </span>subscribe<span class="signature">(channel)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Subscribe the scripting environment &mdash; Interface, the entity script server, or assignment client instance &mdash; 
+to receive messages on a specific channel. Note that, for example, if there are two Interface scripts that subscribe to 
+different channels, both scripts will receive messages on both channels.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>channel</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The channel to subscribe to.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".unsubscribe"><span class="type-signature">(static) </span>unsubscribe<span class="signature">(channel)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Unsubscribe the scripting environment from receiving messages on a specific channel.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>channel</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The channel to unsubscribe from.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AnimationObject.html">AnimationObject</a></li><li><a href="AudioEffectOptions.html">AudioEffectOptions</a></li><li><a href="AudioInjector.html">AudioInjector</a></li><li><a href="AudioStats.AudioStreamStats.html">AudioStreamStats</a></li><li><a href="InteractiveWindow.html">InteractiveWindow</a></li><li><a href="MappingObject.html">MappingObject</a></li><li><a href="MeshProxy.html">MeshProxy</a></li><li><a href="OverlayWebWindow.html">OverlayWebWindow</a></li><li><a href="OverlayWindow.html">OverlayWindow</a></li><li><a href="ResourceObject.html">ResourceObject</a></li><li><a href="RouteObject.html">RouteObject</a></li><li><a href="Scene.Stage.html">Stage</a></li><li><a href="ScriptsModel.html">ScriptsModel</a></li><li><a href="ScriptsModelFilter.html">ScriptsModelFilter</a></li><li><a href="SoundObject.html">SoundObject</a></li><li><a href="TabletButtonProxy.html">TabletButtonProxy</a></li><li><a href="TabletProxy.html">TabletProxy</a></li><li><a href="ToolbarButtonProxy.html">ToolbarButtonProxy</a></li><li><a href="ToolbarProxy.html">ToolbarProxy</a></li></ul><h3>Namespaces</h3><ul><li><a href="AccountServices.html">AccountServices</a></li><li><a href="Agent.html">Agent</a></li><li><a href="AnimationCache.html">AnimationCache</a></li><li><a href="Assets.html">Assets</a></li><li><a href="Audio.html">Audio</a></li><li><a href="AudioScope.html">AudioScope</a></li><li><a href="AudioStats.html">AudioStats</a></li><li><a href="Avatar.html">Avatar</a></li><li><a href="AvatarBookmarks.html">AvatarBookmarks</a></li><li><a href="AvatarInputs.html">AvatarInputs</a></li><li><a href="AvatarList.html">AvatarList</a></li><li><a href="AvatarManager.html">AvatarManager</a></li><li><a href="Camera.html">Camera</a></li><li><a href="Clipboard.html">Clipboard</a></li><li><a href="Controller.html">Controller</a></li><li><a href="DebugDraw.html">DebugDraw</a></li><li><a href="Desktop.html">Desktop</a></li><li><a href="Entities.html">Entities</a></li><li><a href="EntityViewer.html">EntityViewer</a></li><li><a href="FaceTracker.html">FaceTracker</a></li><li><a href="File.html">File</a></li><li><a href="GooglePoly.html">GooglePoly</a></li><li><a href="Graphics.html">Graphics</a></li><li><a href="Graphics.RenderFlags.html">RenderFlags</a></li><li><a href="HifiAbout.html">HifiAbout</a></li><li><a href="HMD.html">HMD</a></li><li><a href="LaserPointers.html">LaserPointers</a></li><li><a href="location.html">location</a></li><li><a href="LocationBookmarks.html">LocationBookmarks</a></li><li><a href="LODManager.html">LODManager</a></li><li><a href="Mat4.html">Mat4</a></li><li><a href="Menu.html">Menu</a></li><li><a href="Messages.html">Messages</a></li><li><a href="Midi.html">Midi</a></li><li><a href="ModelCache.html">ModelCache</a></li><li><a href="MyAvatar.html">MyAvatar</a></li><li><a href="OffscreenFlags.html">OffscreenFlags</a></li><li><a href="Overlays.html">Overlays</a></li><li><a href="Paths.html">Paths</a></li><li><a href="Picks.html">Picks</a></li><li><a href="PickType.html">PickType</a></li><li><a href="Pointers.html">Pointers</a></li><li><a href="Quat.html">Quat</a></li><li><a href="RayPick.html">RayPick</a></li><li><a href="Recording.html">Recording</a></li><li><a href="Render.html">Render</a></li><li><a href="Resource.html">Resource</a></li><li><a href="Resources.html">Resources</a></li><li><a href="Reticle.html">Reticle</a></li><li><a href="Scene.html">Scene</a></li><li><a href="Script.html">Script</a></li><li><a href="ScriptDiscoveryService.html">ScriptDiscoveryService</a></li><li><a href="Selection.html">Selection</a></li><li><a href="Settings.html">Settings</a></li><li><a href="Snapshot.html">Snapshot</a></li><li><a href="SoundCache.html">SoundCache</a></li><li><a href="SpeechRecognizer.html">SpeechRecognizer</a></li><li><a href="Stats.html">Stats</a></li><li><a href="Steam.html">Steam</a></li><li><a href="Tablet.html">Tablet</a></li><li><a href="tabletInterface.html">tabletInterface</a></li><li><a href="TextureCache.html">TextureCache</a></li><li><a href="Toolbars.html">Toolbars</a></li><li><a href="Users.html">Users</a></li><li><a href="Uuid.html">Uuid</a></li><li><a href="Vec3.html">Vec3</a></li><li><a href="Wallet.html">Wallet</a></li><li><a href="Window.html">Window</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Aug 22 2018 14:55:20 GMT-0400 (EDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

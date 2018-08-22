@@ -1,0 +1,3741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Namespace: Audio</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Namespace: Audio</h1>
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>Audio</h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description"><table><tr><th>Available in:</th><td>Interface Scripts</td><td>Client Entity Scripts</td><td>Server Entity Scripts</td><td>Assignment Client Scripts</td></tr></table><br>The <code>Audio</code> API provides facilities to interact with audio inputs and outputs and to play sounds.</div>
+        
+
+        
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>muted</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><code>true</code> if the audio input is muted, otherwise <code>false</code>.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>noiseReduction</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><code>true</code> if noise reduction is enabled, otherwise <code>false</code>. When 
+    enabled, the input audio signal is blocked (fully attenuated) when it falls below an adaptive threshold set just 
+    above the noise floor.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>inputLevel</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The loudness of the audio input, range <code>0.0</code> (no sound) &ndash; 
+    <code>1.0</code> (the onset of clipping). <em>Read-only.</em></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>inputVolume</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Adjusts the volume of the input audio; range <code>0.0</code> &ndash; <code>1.0</code>. 
+    If set to a value, the resulting value depends on the input device: for example, the volume can't be changed on some 
+    devices, and others might only support values of <code>0.0</code> and <code>1.0</code>.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>isStereoInput</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><code>true</code> if the input audio is being used in stereo, otherwise 
+    <code>false</code>. Some devices do not support stereo, in which case the value is always <code>false</code>.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>context</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The current context of the audio: either <code>"Desktop"</code> or <code>"HMD"</code>.
+    <em>Read-only.</em></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>devices</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><em>Read-only.</em> <strong>Deprecated:</strong> This property is deprecated and will be
+    removed.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".contextChanged"><span class="type-signature">(static) </span>contextChanged<span class="signature">(context)</span><span class="type-signature"> &rarr; {Signal}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Triggered when the current context of the audio changes.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>context</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The current context of the audio: either <code>"Desktop"</code> or <code>"HMD"</code>.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Signal</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".disconnected"><span class="type-signature">(static) </span>disconnected<span class="signature">()</span><span class="type-signature"> &rarr; {Signal}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Triggered when the client is disconnected from the audio mixer.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Signal</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".environmentMuted"><span class="type-signature">(static) </span>environmentMuted<span class="signature">()</span><span class="type-signature"> &rarr; {Signal}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Triggered when the client is muted by the mixer because they're within a certain radius (50m) of someone who requested 
+the mute through Developer &gt; Audio &gt; Mute Environment.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Signal</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".getRecording"><span class="type-signature">(static) </span>getRecording<span class="signature">()</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Check whether an audio recording is currently being made.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <code>true</code> if an audio recording is currently being made, otherwise <code>false</code>.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".inputLevelChanged"><span class="type-signature">(static) </span>inputLevelChanged<span class="signature">(level)</span><span class="type-signature"> &rarr; {Signal}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Triggered when the input audio level changes.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>level</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The loudness of the input audio, range <code>0.0</code> (no sound) &ndash; <code>1.0</code> (the 
+    onset of clipping).</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Signal</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".inputReceived"><span class="type-signature">(static) </span>inputReceived<span class="signature">(inputSamples)</span><span class="type-signature"> &rarr; {Signal}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Triggered when a frame of audio input is processed.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>inputSamples</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Int16Array</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The audio input processed.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Signal</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".inputVolumeChanged"><span class="type-signature">(static) </span>inputVolumeChanged<span class="signature">(volume)</span><span class="type-signature"> &rarr; {Signal}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Triggered when the input audio volume changes.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>volume</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The requested volume to be applied to the audio input, range <code>0.0</code> &ndash; 
+    <code>1.0</code>. The resulting value of <code>Audio.inputVolume</code> depends on the capabilities of the device: 
+    for example, the volume can't be changed on some devices, and others might only support values of <code>0.0</code> 
+    and <code>1.0</code>.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Signal</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".isStereoInput"><span class="type-signature">(static) </span>isStereoInput<span class="signature">()</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Get whether or not the audio input is used in stereo.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <code>true</code> if the audio input is used in stereo, otherwise <code>false</code>.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".isStereoInputChanged"><span class="type-signature">(static) </span>isStereoInputChanged<span class="signature">(isStereo)</span><span class="type-signature"> &rarr; {Signal}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Triggered when the input audio use changes between mono and stereo.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>isStereo</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><code>true</code> if the input audio is stereo, otherwise <code>false</code>.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Signal</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".mutedByMixer"><span class="type-signature">(static) </span>mutedByMixer<span class="signature">()</span><span class="type-signature"> &rarr; {Signal}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Triggered when the client is muted by the mixer because their loudness value for the noise background has reached the 
+threshold set for the domain in the server settings.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Signal</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".mutedChanged"><span class="type-signature">(static) </span>mutedChanged<span class="signature">(isMuted)</span><span class="type-signature"> &rarr; {Signal}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Triggered when the audio input is muted or unmuted.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>isMuted</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><code>true</code> if the audio input is muted, otherwise <code>false</code>.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Signal</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Report when audio input is muted or unmuted</p>
+    
+    <pre class="prettyprint"><code>Audio.mutedChanged.connect(function (isMuted) {
+    print("Audio muted: " + isMuted);
+});</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".noiseGateClosed"><span class="type-signature">(static) </span>noiseGateClosed<span class="signature">()</span><span class="type-signature"> &rarr; {Signal}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Triggered when the noise gate is closed: the input audio signal is blocked (fully attenuated) because it has fallen 
+below an adaptive threshold set just above the noise floor. Only occurs if <code>Audio.noiseReduction</code> is 
+<code>true</code>.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Signal</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".noiseGateOpened"><span class="type-signature">(static) </span>noiseGateOpened<span class="signature">()</span><span class="type-signature"> &rarr; {Signal}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Triggered when the noise gate is opened: the input audio signal is no longer blocked (fully attenuated) because it has 
+risen above an adaptive threshold set just above the noise floor. Only occurs if <code>Audio.noiseReduction</code> is 
+<code>true</code>.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Signal</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".noiseReductionChanged"><span class="type-signature">(static) </span>noiseReductionChanged<span class="signature">(isEnabled)</span><span class="type-signature"> &rarr; {Signal}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Triggered when the audio input noise reduction is enabled or disabled.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>isEnabled</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><code>true</code> if audio input noise reduction is enabled, otherwise <code>false</code>.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Signal</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".nop"><span class="type-signature">(static) </span>nop<span class="signature">()</span><span class="type-signature"> &rarr; {Signal}</span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <dt class="important tag-deprecated">Deprecated:</dt><dd><ul class="dummy"><li>This signal is deprecated and will be removed.</li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Signal</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".onContextChanged"><span class="type-signature">(static) </span>onContextChanged<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <dt class="important tag-deprecated">Deprecated:</dt><dd><ul class="dummy"><li>This function is deprecated and will be removed.</li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".playSound"><span class="type-signature">(static) </span>playSound<span class="signature">(sound, injectorOptions<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="AudioInjector.html">AudioInjector</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Starts playing &mdash; "injecting" &mdash; the content of an audio file. The sound is played globally (sent to the audio 
+mixer) so that everyone hears it, unless the <code>injectorOptions</code> has <code>localOnly</code> set to 
+<code>true</code> in which case only the client hears the sound played. No sound is played if sent to the audio mixer 
+but the client is not connected to an audio mixer. The <a href="AudioInjector.html">AudioInjector</a> object returned by the function can be used 
+to control the playback and get information about its current state.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>sound</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="SoundObject.html">SoundObject</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">The content of an audio file, loaded using <a href="SoundCache.html#.getSound">SoundCache.getSound</a>. See 
+<a href="SoundObject.html">SoundObject</a> for supported formats.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>injectorOptions</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="AudioInjector.html#.AudioInjectorOptions">AudioInjector.AudioInjectorOptions</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    {}
+                
+                </td>
+            
+
+            <td class="description last">Audio injector configuration.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The audio injector that plays the audio file.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="AudioInjector.html">AudioInjector</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Play a sound.</p>
+    
+    <pre class="prettyprint"><code>var sound = SoundCache.getSound(Script.resourcesPath() + "sounds/sample.wav");
+var injector;
+var injectorOptions = {
+    position: MyAvatar.position
+};
+
+Script.setTimeout(function () { // Give the sound time to load.
+    injector = Audio.playSound(sound, injectorOptions);
+}, 1000);</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".playSystemSound"><span class="type-signature">(static) </span>playSystemSound<span class="signature">(sound, position)</span><span class="type-signature"> &rarr; {<a href="AudioInjector.html">AudioInjector</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Start playing the content of an audio file, locally (isn't sent to the audio mixer). This is the same as calling 
+<a href="Audio.html#.playSound">Audio.playSound</a> with <a href="AudioInjector.html#.AudioInjectorOptions">AudioInjector.AudioInjectorOptions</a> <code>localOnly</code> set <code>true</code> and 
+the specified <code>position</code>.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>sound</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="SoundObject.html">SoundObject</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The content of an audio file, loaded using <a href="SoundCache.html#.getSound">SoundCache.getSound</a>. See 
+<a href="SoundObject.html">SoundObject</a> for supported formats.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>position</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The position in the domain to play the sound.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The audio injector that plays the audio file.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="AudioInjector.html">AudioInjector</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".receivedFirstPacket"><span class="type-signature">(static) </span>receivedFirstPacket<span class="signature">()</span><span class="type-signature"> &rarr; {Signal}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Triggered when the client receives its first packet from the audio mixer.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Signal</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".setInputDevice"><span class="type-signature">(static) </span>setInputDevice<span class="signature">(device, isHMD)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>device</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>isHMD</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <dt class="important tag-deprecated">Deprecated:</dt><dd><ul class="dummy"><li>This function is deprecated and will be removed.</li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".setOutputDevice"><span class="type-signature">(static) </span>setOutputDevice<span class="signature">(device, isHMD)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>device</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>isHMD</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <dt class="important tag-deprecated">Deprecated:</dt><dd><ul class="dummy"><li>This function is deprecated and will be removed.</li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".setReverb"><span class="type-signature">(static) </span>setReverb<span class="signature">(enable)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Enable or disable reverberation. Reverberation is done by the client, on the post-mix audio. The reverberation options 
+come from either the domain's audio zone if used &mdash; configured on the server &mdash; or as scripted by 
+<a href="Audio.html#.setReverbOptions">setReverbOptions</a>.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>enable</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><code>true</code> to enable reverberation, <code>false</code> to disable.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Enable reverberation for a short while.</p>
+    
+    <pre class="prettyprint"><code>var sound = SoundCache.getSound(Script.resourcesPath() + "sounds/sample.wav");
+var injector;
+var injectorOptions = {
+    position: MyAvatar.position
+};
+
+Script.setTimeout(function () {
+    print("Reverb OFF");
+    Audio.setReverb(false);
+    injector = Audio.playSound(sound, injectorOptions);
+}, 1000);
+
+Script.setTimeout(function () {
+    var reverbOptions = new AudioEffectOptions();
+    reverbOptions.roomSize = 100;
+    Audio.setReverbOptions(reverbOptions);
+    print("Reverb ON");
+    Audio.setReverb(true);
+}, 4000);
+
+Script.setTimeout(function () {
+    print("Reverb OFF");
+    Audio.setReverb(false);
+}, 8000);</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".setReverbOptions"><span class="type-signature">(static) </span>setReverbOptions<span class="signature">(options)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Configure reverberation options. Use <a href="Audio.html#.setReverb">setReverb</a> to enable or disable reverberation.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="AudioEffectOptions.html">AudioEffectOptions</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The reverberation options.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".setStereoInput"><span class="type-signature">(static) </span>setStereoInput<span class="signature">(stereo)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Set whether or not the audio input should be used in stereo. If the audio input does not support stereo then setting a 
+value of <code>true</code> has no effect.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>stereo</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><code>true</code> if the audio input should be used in stereo, otherwise <code>false</code>.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".startRecording"><span class="type-signature">(static) </span>startRecording<span class="signature">(filename)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Starts making an audio recording of the audio being played in-world (i.e., not local-only audio) to a file in WAV format.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>filename</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The path and name of the file to make the recording in. Should have a <code>.wav</code> 
+    extension. The file is overwritten if it already exists.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <code>true</code> if the specified file could be opened and audio recording has started, otherwise 
+    <code>false</code>.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Make a 10 second audio recording.</p>
+    
+    <pre class="prettyprint"><code>var filename = File.getTempDir() + "/audio.wav";
+if (Audio.startRecording(filename)) {
+    Script.setTimeout(function () {
+        Audio.stopRecording();
+        print("Audio recording made in: " + filename);
+    }, 10000);
+
+} else {
+    print("Could not make an audio recording in: " + filename);
+}</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".stopRecording"><span class="type-signature">(static) </span>stopRecording<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Finish making an audio recording started with <a href="Audio.html#.startRecording">startRecording</a>.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AnimationObject.html">AnimationObject</a></li><li><a href="AudioEffectOptions.html">AudioEffectOptions</a></li><li><a href="AudioInjector.html">AudioInjector</a></li><li><a href="AudioStats.AudioStreamStats.html">AudioStreamStats</a></li><li><a href="InteractiveWindow.html">InteractiveWindow</a></li><li><a href="MappingObject.html">MappingObject</a></li><li><a href="MeshProxy.html">MeshProxy</a></li><li><a href="OverlayWebWindow.html">OverlayWebWindow</a></li><li><a href="OverlayWindow.html">OverlayWindow</a></li><li><a href="ResourceObject.html">ResourceObject</a></li><li><a href="RouteObject.html">RouteObject</a></li><li><a href="Scene.Stage.html">Stage</a></li><li><a href="ScriptsModel.html">ScriptsModel</a></li><li><a href="ScriptsModelFilter.html">ScriptsModelFilter</a></li><li><a href="SoundObject.html">SoundObject</a></li><li><a href="TabletButtonProxy.html">TabletButtonProxy</a></li><li><a href="TabletProxy.html">TabletProxy</a></li><li><a href="ToolbarButtonProxy.html">ToolbarButtonProxy</a></li><li><a href="ToolbarProxy.html">ToolbarProxy</a></li></ul><h3>Namespaces</h3><ul><li><a href="AccountServices.html">AccountServices</a></li><li><a href="Agent.html">Agent</a></li><li><a href="AnimationCache.html">AnimationCache</a></li><li><a href="Assets.html">Assets</a></li><li><a href="Audio.html">Audio</a></li><li><a href="AudioScope.html">AudioScope</a></li><li><a href="AudioStats.html">AudioStats</a></li><li><a href="Avatar.html">Avatar</a></li><li><a href="AvatarBookmarks.html">AvatarBookmarks</a></li><li><a href="AvatarInputs.html">AvatarInputs</a></li><li><a href="AvatarList.html">AvatarList</a></li><li><a href="AvatarManager.html">AvatarManager</a></li><li><a href="Camera.html">Camera</a></li><li><a href="Clipboard.html">Clipboard</a></li><li><a href="Controller.html">Controller</a></li><li><a href="DebugDraw.html">DebugDraw</a></li><li><a href="Desktop.html">Desktop</a></li><li><a href="Entities.html">Entities</a></li><li><a href="EntityViewer.html">EntityViewer</a></li><li><a href="FaceTracker.html">FaceTracker</a></li><li><a href="File.html">File</a></li><li><a href="GooglePoly.html">GooglePoly</a></li><li><a href="Graphics.html">Graphics</a></li><li><a href="Graphics.RenderFlags.html">RenderFlags</a></li><li><a href="HifiAbout.html">HifiAbout</a></li><li><a href="HMD.html">HMD</a></li><li><a href="LaserPointers.html">LaserPointers</a></li><li><a href="location.html">location</a></li><li><a href="LocationBookmarks.html">LocationBookmarks</a></li><li><a href="LODManager.html">LODManager</a></li><li><a href="Mat4.html">Mat4</a></li><li><a href="Menu.html">Menu</a></li><li><a href="Messages.html">Messages</a></li><li><a href="Midi.html">Midi</a></li><li><a href="ModelCache.html">ModelCache</a></li><li><a href="MyAvatar.html">MyAvatar</a></li><li><a href="OffscreenFlags.html">OffscreenFlags</a></li><li><a href="Overlays.html">Overlays</a></li><li><a href="Paths.html">Paths</a></li><li><a href="Picks.html">Picks</a></li><li><a href="PickType.html">PickType</a></li><li><a href="Pointers.html">Pointers</a></li><li><a href="Quat.html">Quat</a></li><li><a href="RayPick.html">RayPick</a></li><li><a href="Recording.html">Recording</a></li><li><a href="Render.html">Render</a></li><li><a href="Resource.html">Resource</a></li><li><a href="Resources.html">Resources</a></li><li><a href="Reticle.html">Reticle</a></li><li><a href="Scene.html">Scene</a></li><li><a href="Script.html">Script</a></li><li><a href="ScriptDiscoveryService.html">ScriptDiscoveryService</a></li><li><a href="Selection.html">Selection</a></li><li><a href="Settings.html">Settings</a></li><li><a href="Snapshot.html">Snapshot</a></li><li><a href="SoundCache.html">SoundCache</a></li><li><a href="SpeechRecognizer.html">SpeechRecognizer</a></li><li><a href="Stats.html">Stats</a></li><li><a href="Steam.html">Steam</a></li><li><a href="Tablet.html">Tablet</a></li><li><a href="tabletInterface.html">tabletInterface</a></li><li><a href="TextureCache.html">TextureCache</a></li><li><a href="Toolbars.html">Toolbars</a></li><li><a href="Users.html">Users</a></li><li><a href="Uuid.html">Uuid</a></li><li><a href="Vec3.html">Vec3</a></li><li><a href="Wallet.html">Wallet</a></li><li><a href="Window.html">Window</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Aug 22 2018 14:55:19 GMT-0400 (EDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

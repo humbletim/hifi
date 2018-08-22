@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Class: MappingObject</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Class: MappingObject</h1>
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2><span class="attribs"><span class="type-signature"></span></span>MappingObject<span class="signature">()</span><span class="type-signature"></span></h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+    
+
+    
+    <h4 class="name" id="MappingObject"><span class="type-signature"></span>new MappingObject<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <table><tr><th>Available in:</th><td>Interface Scripts</td><td>Client Entity Scripts</td></tr></table><br><p>A <a href="Controller.html">Controller</a> mapping object that can contain a set of routes that map:</p>
+<ul>
+    <li><a href="Controller.html#.Standard">Controller.Standard</a> outputs to <a href="Controller.html#.Actions">Controller.Actions</a> actions or script functions.</li>
+    <li><a href="Controller.html#.Hardware">Controller.Hardware</a> outputs to <a href="Controller.html#.Standard">Controller.Standard</a> outputs, <a href="Controller.html#.Actions">Controller.Actions</a> actions, or 
+    script functions.</li>
+</ul>
+
+<p>Create by one of the following methods:</p>
+<ul>
+    <li>Use <a href="Controller.html#.newMapping">Controller.newMapping</a> to create the mapping object, add routes using <a href="MappingObject.html#from">from</a> or
+    <a href="MappingObject.html#makeAxis">makeAxis</a>, and map the routes to actions or functions using <a href="RouteObject.html">RouteObject</a> 
+    methods.</li>
+    <li>Use <a href="Controller.html#.parseMapping">Controller.parseMapping</a> or <a href="Controller.html#.loadMapping">Controller.loadMapping</a> to load a <a href="Controller.html#.MappingJSON">Controller.MappingJSON</a>.</li>
+</ul>
+
+<p>Enable the mapping using <a href="MappingObject.html#enable">enable</a> or <a href="Controller.html#.enableMapping">Controller.enableMapping</a> for it to take 
+effect.</p>
+
+<p>Mappings and their routes are applied according to the following rules:</p>
+<ul>
+    <li>One read per output: after a controller output has been read, it can't be read again. Exception: You can use 
+    <a href="RouteObject.html#peek">RouteObject#peek</a> to read a value without marking that output as having been read.</li>
+    <li>Existing mapping routes take precedence over new mapping routes: within a mapping, if a route is added for a control 
+    output that already has a route the new route is ignored.</li>
+    <li>New mappings override previous mappings: each output is processed using the route in the most recently enabled 
+    mapping that contains that output.</li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="disable"><span class="type-signature"></span>disable<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="MappingObject.html">MappingObject</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Disable the mapping. When disabled, the routes in the mapping have no effect.<br />
+Synonymous with <a href="Controller.html#.disableMapping">Controller.disableMapping</a>.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The mapping object, so that further routes can be added.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="MappingObject.html">MappingObject</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="enable"><span class="type-signature"></span>enable<span class="signature">(enable)</span><span class="type-signature"> &rarr; {<a href="MappingObject.html">MappingObject</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Enable or disable the mapping. When enabled, the routes in the mapping take effect.<br />
+Synonymous with <a href="Controller.html#.enableMapping">Controller.enableMapping</a>.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>enable</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    true
+                
+                </td>
+            
+
+            <td class="description last">If <code>true</code> then the mapping is enabled, otherwise it is disabled.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The mapping object, so that further routes can be added.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="MappingObject.html">MappingObject</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="from"><span class="type-signature"></span>from<span class="signature">(source)</span><span class="type-signature"> &rarr; {<a href="RouteObject.html">RouteObject</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Create a new <a href="RouteObject.html">RouteObject</a> from a controller output, ready to be mapped to a standard control, action, or 
+function.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>source</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Controller.html#.Standard">Controller.Standard</a></span>
+|
+
+<span class="param-type"><a href="Controller.html#.Hardware">Controller.Hardware</a></span>
+|
+
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The controller output or function that is the source 
+    of the route data. If a function, it must return a number or a <a href="global.html#Pose">Pose</a> value as the route data.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    A route ready for mapping to an action or function using <a href="RouteObject.html">RouteObject</a> methods.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="RouteObject.html">RouteObject</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="fromQml"><span class="type-signature"></span>fromQml<span class="signature">(source)</span><span class="type-signature"> &rarr; {<a href="RouteObject.html">RouteObject</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Create a new <a href="RouteObject.html">RouteObject</a> from a controller output, ready to be mapped to a standard control, action, or 
+function.<br />
+This is a QML-specific version of <a href="MappingObject.html#from">from</a>: use this version in QML files.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>source</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Controller.html#.Standard">Controller.Standard</a></span>
+|
+
+<span class="param-type"><a href="Controller.html#.Hardware">Controller.Hardware</a></span>
+|
+
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The controller output or function that is the source
+    of the route data. If a function, it must return a number or a <a href="global.html#Pose">Pose</a> value as the route data.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    A route ready for mapping to an action or function using <a href="RouteObject.html">RouteObject</a> methods.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="RouteObject.html">RouteObject</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="makeAxis"><span class="type-signature"></span>makeAxis<span class="signature">(source1, source2)</span><span class="type-signature"> &rarr; {<a href="RouteObject.html">RouteObject</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Create a new <a href="RouteObject.html">RouteObject</a> from two numeric <a href="Controller.html#.Hardware">Controller.Hardware</a> outputs, one applied in the negative 
+direction and the other in the positive direction, ready to be mapped to a standard control, action, or function.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>source1</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Controller.html#.Hardware">Controller.Hardware</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The first, negative-direction controller output.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>source2</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Controller.html#.Hardware">Controller.Hardware</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The second, positive-direction controller output.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    A route ready for mapping to an action or function using <a href="RouteObject.html">RouteObject</a> methods. The data
+    value passed to the route is the combined value of <code>source2 - source1</code>.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="RouteObject.html">RouteObject</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Make the Oculus Touch triggers move your avatar up and down.</p>
+    
+    <pre class="prettyprint"><code>var MAPPING_NAME = "com.highfidelity.controllers.example.newMapping";
+var mapping = Controller.newMapping(MAPPING_NAME);
+mapping
+    .makeAxis(Controller.Hardware.OculusTouch.LT, Controller.Hardware.OculusTouch.RT)
+    .to(Controller.Actions.Up);
+Controller.enableMapping(MAPPING_NAME);
+
+Script.scriptEnding.connect(function () {
+    Controller.disableMapping(MAPPING_NAME);
+});</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="makeAxisQml"><span class="type-signature"></span>makeAxisQml<span class="signature">(source1, source2)</span><span class="type-signature"> &rarr; {<a href="RouteObject.html">RouteObject</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Create a new <a href="RouteObject.html">RouteObject</a> from two numeric <a href="Controller.html#.Hardware">Controller.Hardware</a> outputs, one applied in the negative 
+direction and the other in the positive direction, ready to be mapped to a standard control, action, or function.<br />
+This is a QML-specific version of <a href="MappingObject.html#makeAxis">makeAxis</a>: use this version in QML files.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>source1</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Controller.html#.Hardware">Controller.Hardware</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The first, negative-direction controller output.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>source2</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Controller.html#.Hardware">Controller.Hardware</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The second, positive-direction controller output.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    A route ready for mapping to an action or function using <a href="RouteObject.html">RouteObject</a> methods. The data 
+    value passed to the route is the combined value of <code>source2 - source1</code>.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="RouteObject.html">RouteObject</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AnimationObject.html">AnimationObject</a></li><li><a href="AudioEffectOptions.html">AudioEffectOptions</a></li><li><a href="AudioInjector.html">AudioInjector</a></li><li><a href="AudioStats.AudioStreamStats.html">AudioStreamStats</a></li><li><a href="InteractiveWindow.html">InteractiveWindow</a></li><li><a href="MappingObject.html">MappingObject</a></li><li><a href="MeshProxy.html">MeshProxy</a></li><li><a href="OverlayWebWindow.html">OverlayWebWindow</a></li><li><a href="OverlayWindow.html">OverlayWindow</a></li><li><a href="ResourceObject.html">ResourceObject</a></li><li><a href="RouteObject.html">RouteObject</a></li><li><a href="Scene.Stage.html">Stage</a></li><li><a href="ScriptsModel.html">ScriptsModel</a></li><li><a href="ScriptsModelFilter.html">ScriptsModelFilter</a></li><li><a href="SoundObject.html">SoundObject</a></li><li><a href="TabletButtonProxy.html">TabletButtonProxy</a></li><li><a href="TabletProxy.html">TabletProxy</a></li><li><a href="ToolbarButtonProxy.html">ToolbarButtonProxy</a></li><li><a href="ToolbarProxy.html">ToolbarProxy</a></li></ul><h3>Namespaces</h3><ul><li><a href="AccountServices.html">AccountServices</a></li><li><a href="Agent.html">Agent</a></li><li><a href="AnimationCache.html">AnimationCache</a></li><li><a href="Assets.html">Assets</a></li><li><a href="Audio.html">Audio</a></li><li><a href="AudioScope.html">AudioScope</a></li><li><a href="AudioStats.html">AudioStats</a></li><li><a href="Avatar.html">Avatar</a></li><li><a href="AvatarBookmarks.html">AvatarBookmarks</a></li><li><a href="AvatarInputs.html">AvatarInputs</a></li><li><a href="AvatarList.html">AvatarList</a></li><li><a href="AvatarManager.html">AvatarManager</a></li><li><a href="Camera.html">Camera</a></li><li><a href="Clipboard.html">Clipboard</a></li><li><a href="Controller.html">Controller</a></li><li><a href="DebugDraw.html">DebugDraw</a></li><li><a href="Desktop.html">Desktop</a></li><li><a href="Entities.html">Entities</a></li><li><a href="EntityViewer.html">EntityViewer</a></li><li><a href="FaceTracker.html">FaceTracker</a></li><li><a href="File.html">File</a></li><li><a href="GooglePoly.html">GooglePoly</a></li><li><a href="Graphics.html">Graphics</a></li><li><a href="Graphics.RenderFlags.html">RenderFlags</a></li><li><a href="HifiAbout.html">HifiAbout</a></li><li><a href="HMD.html">HMD</a></li><li><a href="LaserPointers.html">LaserPointers</a></li><li><a href="location.html">location</a></li><li><a href="LocationBookmarks.html">LocationBookmarks</a></li><li><a href="LODManager.html">LODManager</a></li><li><a href="Mat4.html">Mat4</a></li><li><a href="Menu.html">Menu</a></li><li><a href="Messages.html">Messages</a></li><li><a href="Midi.html">Midi</a></li><li><a href="ModelCache.html">ModelCache</a></li><li><a href="MyAvatar.html">MyAvatar</a></li><li><a href="OffscreenFlags.html">OffscreenFlags</a></li><li><a href="Overlays.html">Overlays</a></li><li><a href="Paths.html">Paths</a></li><li><a href="Picks.html">Picks</a></li><li><a href="PickType.html">PickType</a></li><li><a href="Pointers.html">Pointers</a></li><li><a href="Quat.html">Quat</a></li><li><a href="RayPick.html">RayPick</a></li><li><a href="Recording.html">Recording</a></li><li><a href="Render.html">Render</a></li><li><a href="Resource.html">Resource</a></li><li><a href="Resources.html">Resources</a></li><li><a href="Reticle.html">Reticle</a></li><li><a href="Scene.html">Scene</a></li><li><a href="Script.html">Script</a></li><li><a href="ScriptDiscoveryService.html">ScriptDiscoveryService</a></li><li><a href="Selection.html">Selection</a></li><li><a href="Settings.html">Settings</a></li><li><a href="Snapshot.html">Snapshot</a></li><li><a href="SoundCache.html">SoundCache</a></li><li><a href="SpeechRecognizer.html">SpeechRecognizer</a></li><li><a href="Stats.html">Stats</a></li><li><a href="Steam.html">Steam</a></li><li><a href="Tablet.html">Tablet</a></li><li><a href="tabletInterface.html">tabletInterface</a></li><li><a href="TextureCache.html">TextureCache</a></li><li><a href="Toolbars.html">Toolbars</a></li><li><a href="Users.html">Users</a></li><li><a href="Uuid.html">Uuid</a></li><li><a href="Vec3.html">Vec3</a></li><li><a href="Wallet.html">Wallet</a></li><li><a href="Window.html">Window</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Aug 22 2018 14:55:20 GMT-0400 (EDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

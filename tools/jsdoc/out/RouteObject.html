@@ -1,0 +1,3565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Class: RouteObject</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Class: RouteObject</h1>
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2><span class="attribs"><span class="type-signature"></span></span>RouteObject<span class="signature">()</span><span class="type-signature"></span></h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+    
+
+    
+    <h4 class="name" id="RouteObject"><span class="type-signature"></span>new RouteObject<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <table><tr><th>Available in:</th><td>Interface Scripts</td><td>Client Entity Scripts</td></tr></table><br><p>A route in a <a href="MappingObject.html">MappingObject</a> used by the <a href="Controller.html">Controller</a> API.</p>
+
+<p>Create a route using <a href="MappingObject.html">MappingObject</a> methods and apply this object's methods to process it, terminating with 
+<a href="RouteObject.html#to">RouteObject#to</a> to apply it to a <code>Standard</code> control, action, or script function. Note: Loops are not 
+permitted.</p>
+
+<p>Some methods apply to routes with number data, some apply routes with <a href="global.html#Pose">Pose</a> data, and some apply to both route 
+types.<p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="clamp"><span class="type-signature"></span>clamp<span class="signature">(min, max)</span><span class="type-signature"> &rarr; {<a href="RouteObject.html">RouteObject</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Filter numeric route values to lie between two values; values outside this range are not passed on through the 
+route.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>min</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The minimum value to pass through.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>max</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The maximum value to pass through.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The route object with the clamp filter added.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="RouteObject.html">RouteObject</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Clamp right trigger values to between 0.3 and 0.7.</p>
+    
+    <pre class="prettyprint"><code>var MAPPING_NAME = "com.highfidelity.controllers.example.newMapping";
+var mapping = Controller.newMapping(MAPPING_NAME);
+mapping.from(Controller.Standard.RT).clamp(0.3, 0.7).to(function (value) {
+    print("Value: " + value);
+});
+Controller.enableMapping(MAPPING_NAME);
+
+Script.scriptEnding.connect(function () {
+    Controller.disableMapping(MAPPING_NAME);
+});</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="constrainToInteger"><span class="type-signature"></span>constrainToInteger<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="RouteObject.html">RouteObject</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Filter numeric route values such that they are rounded to <code>-1</code>, <code>0</code>, or <code>1</code>.
+For example, this enables you to use an analog input as if it were a toggle or, in the case of a bidirectional axis, 
+a tri-state switch.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The <code>RouteObject</code> with the filter applied.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="RouteObject.html">RouteObject</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Round the right joystick forward/back values to <code>-1</code>, <code>0</code>, or 
+    <code>1</code>.</p>
+    
+    <pre class="prettyprint"><code>var MAPPING_NAME = "com.highfidelity.controllers.example.newMapping";
+var mapping = Controller.newMapping(MAPPING_NAME);
+mapping.from(Controller.Standard.RY).constrainToInteger().to(function (value) {
+    print("Value: " + value);  // -1, 0, or 1
+});
+Controller.enableMapping(MAPPING_NAME);
+
+Script.scriptEnding.connect(function () {
+    Controller.disableMapping(MAPPING_NAME);
+});</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="constrainToPositiveInteger"><span class="type-signature"></span>constrainToPositiveInteger<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="RouteObject.html">RouteObject</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Filter numeric route values such that they are rounded to <code>0</code> or <code>1</code>. For example, this 
+enables you to use an analog input as if it were a toggle.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The <code>RouteObject</code> with the filter applied.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="RouteObject.html">RouteObject</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Round the right joystick forward/back values to <code>0</code> or <code>1</code>.</p>
+    
+    <pre class="prettyprint"><code>var MAPPING_NAME = "com.highfidelity.controllers.example.newMapping";
+var mapping = Controller.newMapping(MAPPING_NAME);
+mapping.from(Controller.Standard.RY).constrainToPositiveInteger().to(function (value) {
+    print("Value: " + value);  // 0, or 1
+});
+Controller.enableMapping(MAPPING_NAME);
+
+Script.scriptEnding.connect(function () {
+    Controller.disableMapping(MAPPING_NAME);
+});</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="deadZone"><span class="type-signature"></span>deadZone<span class="signature">(min)</span><span class="type-signature"> &rarr; {<a href="RouteObject.html">RouteObject</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Filter numeric route values such that they're sent only when the input value is outside a dead-zone. When the input 
+passes the dead-zone value, output is sent starting at <code>0.0</code> and catching up with the input value. As the 
+input returns toward the dead-zone value, output values reduce to <code>0.0</code> at the dead-zone value.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>min</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The minimum input value at which to start sending output. For negative input values, the 
+   negative of this value is used.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The <code>RouteObject</code> with the filter applied.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="RouteObject.html">RouteObject</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Apply a dead-zone to the right joystick forward/back values.</p>
+    
+    <pre class="prettyprint"><code>var MAPPING_NAME = "com.highfidelity.controllers.example.newMapping";
+var mapping = Controller.newMapping(MAPPING_NAME);
+mapping.from(Controller.Standard.RY).deadZone(0.2).to(function (value) {
+    print("Value: " + value);  // 0.0 - 1.0 values once outside the dead-zone.
+});
+Controller.enableMapping(MAPPING_NAME);
+
+Script.scriptEnding.connect(function () {
+    Controller.disableMapping(MAPPING_NAME);
+});</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="debug"><span class="type-signature"></span>debug<span class="signature">(enable<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="RouteObject.html">RouteObject</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Enable and disabling writing debug information for a route to the program log.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>enable</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    true
+                
+                </td>
+            
+
+            <td class="description last">If <code>true</code> then writing debug information is enabled for the route, 
+    otherwise it is disabled.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The <code>RouteObject</code> with debug output enabled or disabled.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="RouteObject.html">RouteObject</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Write debug information to the program log for a right trigger mapping.</p>
+    
+    <pre class="prettyprint"><code>var MAPPING_NAME = "com.highfidelity.controllers.example.newMapping";
+var mapping = Controller.newMapping(MAPPING_NAME);
+
+mapping.from(Controller.Standard.RT).debug().to(function (value) {
+    print("Value: " + value);
+});
+
+// Information similar to the following is written each frame:
+[DEBUG] [hifi.controllers] Beginning mapping frame
+[DEBUG] [hifi.controllers] Processing device routes
+[DEBUG] [hifi.controllers] Processing standard routes
+[DEBUG] [hifi.controllers] Applying route  ""
+[DEBUG] [hifi.controllers] Value was  5.96046e-07
+[DEBUG] [hifi.controllers] Filtered value was  5.96046e-07
+
+Controller.enableMapping(MAPPING_NAME);
+
+Script.scriptEnding.connect(function () {
+    Controller.disableMapping(MAPPING_NAME);
+});</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="exponentialSmoothing"><span class="type-signature"></span>exponentialSmoothing<span class="signature">(rotationConstant, translationConstant)</span><span class="type-signature"> &rarr; {<a href="RouteObject.html">RouteObject</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Filter <a href="global.html#Pose">Pose</a> route values to be smoothed by an exponential decay filter. The filter's rotation and 
+translation values are calculated as: <code>filterConstant * currentValue + (1 - filterConstant) * 
+previousValue</code>. Values near 1 are less smooth with lower latency; values near 0 are more smooth with higher 
+latency.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>rotationConstant</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Rotation filter constant, <code>0.0&ndash;1.0</code>.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>translationConstant</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Translation filter constant, <code>0.0&ndash;1.0</code>.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The <code>RouteObject</code> smoothed by an exponential filter.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="RouteObject.html">RouteObject</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="hysteresis"><span class="type-signature"></span>hysteresis<span class="signature">(min, max)</span><span class="type-signature"> &rarr; {<a href="RouteObject.html">RouteObject</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Filter numeric route values such that they are rounded to <code>0</code> or <code>1</code> without output values 
+flickering when the input value hovers around <code>0.5</code>. For example, this enables you to use an analog input 
+as if it were a toggle.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>min</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">When the input value drops below this value the output value changes to <code>0</code>.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>max</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">When the input value rises above this value the output value changes to <code>1</code>.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The <code>RouteObject</code> with the filter applied.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="RouteObject.html">RouteObject</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Round the right joystick forward/back values to 0 or 1 with hysteresis.</p>
+    
+    <pre class="prettyprint"><code>var MAPPING_NAME = "com.highfidelity.controllers.example.newMapping";
+var mapping = Controller.newMapping(MAPPING_NAME);
+mapping.from(Controller.Standard.RY).peek().to(function (value) {
+    print("Raw value: " + value);  // 0.0 - 1.0.
+});
+mapping.from(Controller.Standard.RY).hysteresis(0.3, 0.7).to(function (value) {
+    print("Hysteresis value: " + value);  // 0 or 1.
+});
+Controller.enableMapping(MAPPING_NAME);
+
+Script.scriptEnding.connect(function () {
+    Controller.disableMapping(MAPPING_NAME);
+});</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="invert"><span class="type-signature"></span>invert<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="RouteObject.html">RouteObject</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Filter numeric and <a href="global.html#Pose">Pose</a> route values to have the opposite sign, e.g., <code>0.5</code> is changed to 
+<code>-0.5</code>.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The <code>RouteObject</code> with the filter applied.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="RouteObject.html">RouteObject</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Invert the value of the right joystick forward/back values.</p>
+    
+    <pre class="prettyprint"><code>var MAPPING_NAME = "com.highfidelity.controllers.example.newMapping";
+var mapping = Controller.newMapping(MAPPING_NAME);
+mapping.from(Controller.Standard.LY).to(function (value) {
+    print("L value: " + value);  // -1.0 to 1.0 values, forward to back.
+});
+mapping.from(Controller.Standard.RY).invert().to(function (value) {
+    print("R value: " + value);  // 1.0 to -1.0 values, forward to back.
+});
+Controller.enableMapping(MAPPING_NAME);
+
+Script.scriptEnding.connect(function () {
+    Controller.disableMapping(MAPPING_NAME);
+});</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="logicalNot"><span class="type-signature"></span>logicalNot<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="RouteObject.html">RouteObject</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Filter numeric route values such that a value of <code>0.0</code> is changed to <code>1.0</code>, and other values 
+are changed to <code>0.0</code>.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The <code>RouteObject</code> with the filter applied.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="RouteObject.html">RouteObject</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Logical NOT of LSTouch value.</p>
+    
+    <pre class="prettyprint"><code>var MAPPING_NAME = "com.highfidelity.controllers.example.newMapping";
+var mapping = Controller.newMapping(MAPPING_NAME);
+
+mapping.from(Controller.Standard.RSTouch).peek().to(function (value) {
+    print("RSTouch: " + value);
+});
+mapping.from(Controller.Standard.RSTouch).logicalNot().to(function (value) {
+    print("localNot of RSTouch: " + value);
+});
+Controller.enableMapping(MAPPING_NAME);
+
+Script.scriptEnding.connect(function () {
+    Controller.disableMapping(MAPPING_NAME);
+});
+         </code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="lowVelocity"><span class="type-signature"></span>lowVelocity<span class="signature">(rotationConstant, translationConstant)</span><span class="type-signature"> &rarr; {<a href="RouteObject.html">RouteObject</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Filter <a href="global.html#Pose">Pose</a> route values to be smoothed by a low velocity filter. The filter's rotation and translation 
+values are calculated as: <code>(1 - f) * currentValue + f * previousValue</code> where 
+<code>f = currentVelocity / filterConstant</code>. At low velocities, the filter value is largely the previous 
+value; at high velocities the value is wholly the current controller value.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>rotationConstant</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The rotational velocity, in rad/s, at which the filter value is wholly the latest 
+    controller value.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>translationConstant</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The linear velocity, in m/s, at which the filter value is wholly the latest 
+    controller value.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The <code>RouteObject</code> smoothed by low velocity filtering.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="RouteObject.html">RouteObject</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="peek"><span class="type-signature"></span>peek<span class="signature">(enable<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="RouteObject.html">RouteObject</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Process the route without marking the controller output as having been read, so that other routes from the same 
+controller output can also process.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>enable</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    true
+                
+                </td>
+            
+
+            <td class="description last">If <code>true</code> then the route is processed without marking the route's 
+    controller source as having been read.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The <code>RouteObject</code> with the peek feature enabled.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="RouteObject.html">RouteObject</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="postTransform"><span class="type-signature"></span>postTransform<span class="signature">(transform)</span><span class="type-signature"> &rarr; {<a href="RouteObject.html">RouteObject</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Filter <a href="global.html#Pose">Pose</a> route values to have a post-transform applied.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>transform</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Mat4.html">Mat4</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The post-transform to apply.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The <code>RouteObject</code> with the post-transform applied.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="RouteObject.html">RouteObject</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="pulse"><span class="type-signature"></span>pulse<span class="signature">(interval)</span><span class="type-signature"> &rarr; {<a href="RouteObject.html">RouteObject</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Filter numeric route values to send at a specified interval.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>interval</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The interval between sending values, in seconds.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The <code>RouteObject</code> with the filter applied.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="RouteObject.html">RouteObject</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Send right trigger values every half second.</p>
+    
+    <pre class="prettyprint"><code>var MAPPING_NAME = "com.highfidelity.controllers.example.newMapping";
+var mapping = Controller.newMapping(MAPPING_NAME);
+mapping.from(Controller.Standard.RT).pulse(0.5).to(function (value) {
+    print("Value: " + value);
+});
+Controller.enableMapping(MAPPING_NAME);
+
+Script.scriptEnding.connect(function () {
+    Controller.disableMapping(MAPPING_NAME);
+});</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="rotate"><span class="type-signature"></span>rotate<span class="signature">(rotation)</span><span class="type-signature"> &rarr; {<a href="RouteObject.html">RouteObject</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Filter <a href="global.html#Pose">Pose</a> route values to have a pre-rotation applied.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>rotation</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Quat">Quat</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The pre-rotation to add to the pose.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The <code>RouteObject</code> with the pre-rotation applied.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="RouteObject.html">RouteObject</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="scale"><span class="type-signature"></span>scale<span class="signature">(multiplier)</span><span class="type-signature"> &rarr; {<a href="RouteObject.html">RouteObject</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Filter numeric and <a href="global.html#Pose">Pose</a> route values to be scaled by a constant amount.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>multiplier</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The scale to multiply the value by.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The <code>RouteObject</code> with the filter applied.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="RouteObject.html">RouteObject</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Scale the value of the right joystick forward/back values by 10.</p>
+    
+    <pre class="prettyprint"><code>var MAPPING_NAME = "com.highfidelity.controllers.example.newMapping";
+var mapping = Controller.newMapping(MAPPING_NAME);
+mapping.from(Controller.Standard.LY).to(function (value) {
+    print("L value: " + value);  // -1.0 to 1.0 values.
+});
+mapping.from(Controller.Standard.RY).scale(10.0).to(function (value) {
+    print("R value: " + value);  // -10.0 to -10.0 values.
+});
+Controller.enableMapping(MAPPING_NAME);
+
+Script.scriptEnding.connect(function () {
+    Controller.disableMapping(MAPPING_NAME);
+});</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="to"><span class="type-signature"></span>to<span class="signature">(destination)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Terminate the route with a standard control, an action, or a script function. The output value from the route is 
+sent to the specified destination.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>destination</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Controller.html#.Standard">Controller.Standard</a></span>
+|
+
+<span class="param-type"><a href="Controller.html#.Actions">Controller.Actions</a></span>
+|
+
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The standard control, action, or JavaScript 
+function that the route output is mapped to. For a function, the parameter can be either the name of the function or 
+an in-line function definition.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Examples</h5>
+    
+        <p class="code-caption">Make the right trigger move your avatar up.</p>
+    
+    <pre class="prettyprint"><code>var MAPPING_NAME = "com.highfidelity.controllers.example.newMapping";
+var mapping = Controller.newMapping(MAPPING_NAME);
+
+mapping.from(Controller.Standard.RT).to(Controller.Actions.TranslateY);
+Controller.enableMapping(MAPPING_NAME);
+
+Script.scriptEnding.connect(function () {
+    Controller.disableMapping(MAPPING_NAME);
+});</code></pre>
+
+        <p class="code-caption">Make the right trigger call a function.</p>
+    
+    <pre class="prettyprint"><code>function onRightTrigger(value) {
+    print("Trigger value: " + value);
+}
+
+var MAPPING_NAME = "com.highfidelity.controllers.example.newMapping";
+var mapping = Controller.newMapping(MAPPING_NAME);
+
+mapping.from(Controller.Standard.RT).to(onRightTrigger);
+Controller.enableMapping(MAPPING_NAME);
+
+Script.scriptEnding.connect(function () {
+    Controller.disableMapping(MAPPING_NAME);
+});</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="toQml"><span class="type-signature"></span>toQml<span class="signature">(destination)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Terminate the route with a standard control, an action, or a script function. The output value from the route is 
+sent to the specified destination.<br />
+This is a QML-specific version of to: use this version in QML files.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>destination</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Controller.html#.Standard">Controller.Standard</a></span>
+|
+
+<span class="param-type"><a href="Controller.html#.Actions">Controller.Actions</a></span>
+|
+
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The standard control, action, or JavaScript
+function that the route output is mapped to. For a function, the parameter can be either the name of the function or
+an in-line function definition.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="transform"><span class="type-signature"></span>transform<span class="signature">(transform)</span><span class="type-signature"> &rarr; {<a href="RouteObject.html">RouteObject</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Filter <a href="global.html#Pose">Pose</a> route values to have a pre-transform applied.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>transform</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Mat4.html">Mat4</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The pre-transform to apply.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The <code>RouteObject</code> with the pre-transform applied.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="RouteObject.html">RouteObject</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="translate"><span class="type-signature"></span>translate<span class="signature">(translate)</span><span class="type-signature"> &rarr; {<a href="RouteObject.html">RouteObject</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Filter <a href="global.html#Pose">Pose</a> route values to have a pre-translation applied.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>translate</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Vec3">Vec3</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The pre-translation to add to the pose.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The <code>RouteObject</code> with the pre-translation applied.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="RouteObject.html">RouteObject</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="when"><span class="type-signature"></span>when<span class="signature">(expression)</span><span class="type-signature"> &rarr; {<a href="RouteObject.html">RouteObject</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Process the route only if a condition is satisfied. The condition is evaluated before the route input is read, and 
+the input is read only if the condition is <code>true</code>. Thus, if the condition is not met then subsequent 
+routes using the same input are processed.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>expression</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">condition</span>
+|
+
+<span class="param-type">Array.&lt;condition></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>A <code>condition</code> may be a:</p>
+    <ul>
+        <li>A numeric <a href="Controller.html#.Hardware">Controller.Hardware</a> property, which is evaluated as a boolean.</li>
+        <li><code>!</code> followed by a <a href="Controller.html#.Hardware">Controller.Hardware</a> property to use the logical NOT of the property 
+        value.</li>
+        <li>A script function returning a boolean value. This can be either the name of the function or an in-line 
+        definition.</li>
+    </ul>
+<p>If an array of conditions is provided, their values are ANDed together.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The <code>RouteObject</code> with the condition added.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="RouteObject.html">RouteObject</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Process the right trigger differently in HMD and desktop modes.</p>
+    
+    <pre class="prettyprint"><code>var MAPPING_NAME = "com.highfidelity.controllers.example.newMapping";
+var mapping = Controller.newMapping(MAPPING_NAME);
+
+// Processed only if in HMD mode.
+mapping.from(Controller.Standard.RT)
+    .when(Controller.Hardware.Application.InHMD)
+    .to(function () { print("Trigger pressed in HMD mode."); });
+
+// Processed only if previous route not processed.
+mapping.from(Controller.Standard.RT)
+    .to(function () { print("Trigger pressed in desktop mode."); });
+
+Controller.enableMapping(MAPPING_NAME);
+
+Script.scriptEnding.connect(function () {
+    Controller.disableMapping(MAPPING_NAME);
+});</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="whenQml"><span class="type-signature"></span>whenQml<span class="signature">(expression)</span><span class="type-signature"> &rarr; {<a href="RouteObject.html">RouteObject</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Process the route only if a condition is satisfied. The condition is evaluated before the route input is read, and
+the input is read only if the condition is <code>true</code>. Thus, if the condition is not met then subsequent
+routes using the same input are processed.<br />
+This is a QML-specific version of to: use this version in QML files.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>expression</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">condition</span>
+|
+
+<span class="param-type">Array.&lt;condition></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>A <code>condition</code> may be a:</p>
+    <ul>
+        <li>A boolean or numeric <a href="Controller.html#.Hardware">Controller.Hardware</a> property, which is evaluated as a boolean.</li>
+        <li><code>!</code> followed by a <a href="Controller.html#.Hardware">Controller.Hardware</a> property, indicating the logical NOT should be
+        used.</li>
+        <li>A script function returning a boolean value. This can be either the name of the function or an in-line
+        definition.</li>
+    </ul>
+<p>If an array of conditions is provided, their values are ANDed together.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The <code>RouteObject</code> with the condition added.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="RouteObject.html">RouteObject</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AnimationObject.html">AnimationObject</a></li><li><a href="AudioEffectOptions.html">AudioEffectOptions</a></li><li><a href="AudioInjector.html">AudioInjector</a></li><li><a href="AudioStats.AudioStreamStats.html">AudioStreamStats</a></li><li><a href="InteractiveWindow.html">InteractiveWindow</a></li><li><a href="MappingObject.html">MappingObject</a></li><li><a href="MeshProxy.html">MeshProxy</a></li><li><a href="OverlayWebWindow.html">OverlayWebWindow</a></li><li><a href="OverlayWindow.html">OverlayWindow</a></li><li><a href="ResourceObject.html">ResourceObject</a></li><li><a href="RouteObject.html">RouteObject</a></li><li><a href="Scene.Stage.html">Stage</a></li><li><a href="ScriptsModel.html">ScriptsModel</a></li><li><a href="ScriptsModelFilter.html">ScriptsModelFilter</a></li><li><a href="SoundObject.html">SoundObject</a></li><li><a href="TabletButtonProxy.html">TabletButtonProxy</a></li><li><a href="TabletProxy.html">TabletProxy</a></li><li><a href="ToolbarButtonProxy.html">ToolbarButtonProxy</a></li><li><a href="ToolbarProxy.html">ToolbarProxy</a></li></ul><h3>Namespaces</h3><ul><li><a href="AccountServices.html">AccountServices</a></li><li><a href="Agent.html">Agent</a></li><li><a href="AnimationCache.html">AnimationCache</a></li><li><a href="Assets.html">Assets</a></li><li><a href="Audio.html">Audio</a></li><li><a href="AudioScope.html">AudioScope</a></li><li><a href="AudioStats.html">AudioStats</a></li><li><a href="Avatar.html">Avatar</a></li><li><a href="AvatarBookmarks.html">AvatarBookmarks</a></li><li><a href="AvatarInputs.html">AvatarInputs</a></li><li><a href="AvatarList.html">AvatarList</a></li><li><a href="AvatarManager.html">AvatarManager</a></li><li><a href="Camera.html">Camera</a></li><li><a href="Clipboard.html">Clipboard</a></li><li><a href="Controller.html">Controller</a></li><li><a href="DebugDraw.html">DebugDraw</a></li><li><a href="Desktop.html">Desktop</a></li><li><a href="Entities.html">Entities</a></li><li><a href="EntityViewer.html">EntityViewer</a></li><li><a href="FaceTracker.html">FaceTracker</a></li><li><a href="File.html">File</a></li><li><a href="GooglePoly.html">GooglePoly</a></li><li><a href="Graphics.html">Graphics</a></li><li><a href="Graphics.RenderFlags.html">RenderFlags</a></li><li><a href="HifiAbout.html">HifiAbout</a></li><li><a href="HMD.html">HMD</a></li><li><a href="LaserPointers.html">LaserPointers</a></li><li><a href="location.html">location</a></li><li><a href="LocationBookmarks.html">LocationBookmarks</a></li><li><a href="LODManager.html">LODManager</a></li><li><a href="Mat4.html">Mat4</a></li><li><a href="Menu.html">Menu</a></li><li><a href="Messages.html">Messages</a></li><li><a href="Midi.html">Midi</a></li><li><a href="ModelCache.html">ModelCache</a></li><li><a href="MyAvatar.html">MyAvatar</a></li><li><a href="OffscreenFlags.html">OffscreenFlags</a></li><li><a href="Overlays.html">Overlays</a></li><li><a href="Paths.html">Paths</a></li><li><a href="Picks.html">Picks</a></li><li><a href="PickType.html">PickType</a></li><li><a href="Pointers.html">Pointers</a></li><li><a href="Quat.html">Quat</a></li><li><a href="RayPick.html">RayPick</a></li><li><a href="Recording.html">Recording</a></li><li><a href="Render.html">Render</a></li><li><a href="Resource.html">Resource</a></li><li><a href="Resources.html">Resources</a></li><li><a href="Reticle.html">Reticle</a></li><li><a href="Scene.html">Scene</a></li><li><a href="Script.html">Script</a></li><li><a href="ScriptDiscoveryService.html">ScriptDiscoveryService</a></li><li><a href="Selection.html">Selection</a></li><li><a href="Settings.html">Settings</a></li><li><a href="Snapshot.html">Snapshot</a></li><li><a href="SoundCache.html">SoundCache</a></li><li><a href="SpeechRecognizer.html">SpeechRecognizer</a></li><li><a href="Stats.html">Stats</a></li><li><a href="Steam.html">Steam</a></li><li><a href="Tablet.html">Tablet</a></li><li><a href="tabletInterface.html">tabletInterface</a></li><li><a href="TextureCache.html">TextureCache</a></li><li><a href="Toolbars.html">Toolbars</a></li><li><a href="Users.html">Users</a></li><li><a href="Uuid.html">Uuid</a></li><li><a href="Vec3.html">Vec3</a></li><li><a href="Wallet.html">Wallet</a></li><li><a href="Window.html">Window</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Aug 22 2018 14:55:20 GMT-0400 (EDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

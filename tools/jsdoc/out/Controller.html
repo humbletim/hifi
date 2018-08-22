@@ -1,0 +1,10724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Namespace: Controller</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Namespace: Controller</h1>
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>Controller</h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description"><table><tr><th>Available in:</th><td>Interface Scripts</td><td>Client Entity Scripts</td></tr></table><br>The Controller API provides facilities to interact with computer and controller hardware.
+
+<h5>Functions</h5>
+
+<p>Properties</p>
+<ul>
+  <li><a href="Controller.html#.getActions">getActions</a></li>
+  <li><a href="Controller.html#.getHardware">getHardware</a></li>
+  <li><a href="Controller.html#.getStandard">getStandard</a></li>
+</ul>
+
+<p>Mappings</p>
+<ul>
+  <li><a href="Controller.html#.disableMapping">disableMapping</a></li>
+  <li><a href="Controller.html#.enableMapping">enableMapping</a></li>
+  <li><a href="Controller.html#.loadMapping">loadMapping</a></li>
+  <li><a href="Controller.html#.newMapping">newMapping</a></li>
+  <li><a href="Controller.html#.parseMapping">parseMapping</a></li>
+</ul>
+
+<p>Input, Hardware, and Action Reflection</p>
+<ul>
+  <li><a href="Controller.html#.findAction">findAction</a></li>
+  <li><a href="Controller.html#.findDevice">findDevice</a></li>
+  <li><a href="Controller.html#.getActionNames">getActionNames</a></li>
+  <li><a href="Controller.html#.getAllActions">getAllActions</a></li>
+  <li><a href="Controller.html#.getAvailableInputs">getAvailableInputs</a></li>
+  <li><a href="Controller.html#.getDeviceName">getDeviceName</a></li>
+  <li><a href="Controller.html#.getDeviceNames">getDeviceNames</a></li>
+</ul>
+
+<p>Input, Hardware, and Action Events</p>
+<ul>
+  <li><a href="Controller.html#.actionEvent">actionEvent</a></li>
+  <li><a href="Controller.html#.hardwareChanged">hardwareChanged</a></li>
+  <li><a href="Controller.html#.inputEvent">inputEvent</a></li>
+</ul>
+
+<p>Mouse, Keyboard, and Touch Events</p>
+<ul>
+  <li><a href="Controller.html#.keyPressEvent">keyPressEvent</a></li>
+  <li><a href="Controller.html#.keyReleaseEvent">keyReleaseEvent</a></li>
+  <li><a href="Controller.html#.mouseDoublePressEvent">mouseDoublePressEvent</a></li>
+  <li><a href="Controller.html#.mouseMoveEvent">mouseMoveEvent</a></li>
+  <li><a href="Controller.html#.mousePressEvent">mousePressEvent</a></li>
+  <li><a href="Controller.html#.mouseReleaseEvent">mouseReleaseEvent</a></li>
+  <li><a href="Controller.html#.touchBeginEvent">touchBeginEvent</a></li>
+  <li><a href="Controller.html#.touchEndEvent">touchEndEvent</a></li>
+  <li><a href="Controller.html#.touchUpdateEvent">touchUpdateEvent</a></li>
+  <li><a href="Controller.html#.wheelEvent">wheelEvent</a></li>
+</ul>
+
+<p>Control Capturing</p>
+<ul>
+  <li><a href="Controller.html#.captureMouseEvents">captureMouseEvents</a></li>
+  <li><a href="Controller.html#.captureTouchEvents">captureTouchEvents</a></li>
+  <li><a href="Controller.html#.captureWheelEvents">captureWheelEvents</a></li>
+  <li><a href="Controller.html#.releaseMouseEvents">releaseMouseEvents</a></li>
+  <li><a href="Controller.html#.releaseTouchEvents">releaseTouchEvents</a></li>
+  <li><a href="Controller.html#.releaseWheelEvents">releaseWheelEvents</a></li>
+</ul>
+
+<p>Action Capturing</p>
+<ul>
+  <li><a href="Controller.html#.captureActionEvents">captureActionEvents</a></li>
+  <li><a href="Controller.html#.captureEntityClickEvents">captureEntityClickEvents</a></li>
+  <li><a href="Controller.html#.captureJoystick">captureJoystick</a></li>
+  <li><a href="Controller.html#.captureKeyEvents">captureKeyEvents</a></li>
+  <li><a href="Controller.html#.releaseActionEvents">releaseActionEvents</a></li>
+  <li><a href="Controller.html#.releaseEntityClickEvents">releaseEntityClickEvents</a></li>
+  <li><a href="Controller.html#.releaseJoystick">releaseJoystick</a></li>
+  <li><a href="Controller.html#.releaseKeyEvents">releaseKeyEvents</a></li>
+</ul>
+
+<p>Controller and Action Values</p>
+<ul>
+  <li><a href="Controller.html#.getValue">getValue</a></li>
+  <li><a href="Controller.html#.getAxisValue">getAxisValue</a></li>
+  <li><a href="Controller.html#.getPoseValue">getgetPoseValue</a></li>
+  <li><a href="Controller.html#.getActionValue">getActionValue</a></li>
+</ul>
+
+<p>Haptics</p>
+<ul>
+  <li><a href="Controller.html#.triggerHapticPulse">triggerHapticPulse</a></li>
+  <li><a href="Controller.html#.triggerHapticPulseOnDevice">triggerHapticPulseOnDevice</a></li>
+  <li><a href="Controller.html#.triggerShortHapticPulse">triggerShortHapticPulse</a></li>
+  <li><a href="Controller.html#.triggerShortHapticPulseOnDevice">triggerShortHapticPulseOnDevice</a></li>
+</ul>
+
+<p>Display Information</p>
+<ul>
+  <li><a href="Controller.html#.getViewportDimensions">getViewportDimensions</a></li>
+  <li><a href="Controller.html#.getRecommendedHUDRect">getRecommendedHUDRect</a></li>
+</ul>
+
+<p>Virtual Game Pad</p>
+<ul>
+  <li><a href="Controller.html#.setVPadEnabled">setVPadEnabled</a></li>
+  <li><a href="Controller.html#.setVPadHidden">setVPadHidden</a></li>
+  <li><a href="Controller.html#.setVPadExtraBottomMargin">setVPadExtraBottomMargin</a></li>
+</ul>
+
+<p>Input Recordings</p>
+<ul>
+  <li><a href="Controller.html#.startInputRecording">startInputRecording</a></li>
+  <li><a href="Controller.html#.stopInputRecording">stopInputRecording</a></li>
+  <li><a href="Controller.html#.saveInputRecording">saveInputRecording</a></li>
+  <li><a href="Controller.html#.getInputRecorderSaveDirectory">getInputRecorderSaveDirectory</a></li>
+  <li><a href="Controller.html#.loadInputRecording">loadInputRecording</a></li>
+  <li><a href="Controller.html#.startInputPlayback">startInputPlayback</a></li>
+  <li><a href="Controller.html#.stopInputPlayback">stopInputPlayback</a></li>
+</ul>
+
+<h5>Entity Methods:</h5>
+
+<p>The default scripts implement hand controller actions that use <a href="Entities.html#.callEntityMethod">Entities.callEntityMethod</a> to call entity script 
+methods, if present in the entity being interacted with.</p>
+
+<table>
+  <thead>
+    <tr><th>Method Name</th><th>Description</th><th>Example</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>startFarTrigger</code><br /><code>continueFarTrigger</code><br /><code>stopFarTrigger</code></td>
+      <td>These methods are called when a user is more than 0.3m away from the entity, the entity is triggerable, and the 
+        user starts, continues, or stops squeezing the trigger.</td>
+      </td>
+      <td>A light switch that can be toggled on and off from a distance.</td>
+    </tr>
+    <tr>
+      <td><code>startNearTrigger</code><br /><code>continueNearTrigger</code><br /><code>stopNearTrigger</code></td>
+      <td>These methods are called when a user is less than 0.3m away from the entity, the entity is triggerable, and the 
+        user starts, continues, or stops squeezing the trigger.</td>
+      <td>A doorbell that can be rung when a user is near.</td>
+    </tr>
+    <tr>
+      <td><code>startDistanceGrab</code><br /><code>continueDistanceGrab</code><br /></td>
+      <td>These methods are called when a user is more than 0.3m away from the entity, the entity is either cloneable, or
+        grabbable and not locked, and the user starts or continues to squeeze the trigger.</td>
+      <td>A comet that emits icy particle trails when a user is dragging it through the sky.</td>
+    </tr>
+    <tr>
+      <td><code>startNearGrab</code><br /><code>continueNearGrab</code><br /></td>
+      <td>These methods are called when a user is less than 0.3m away from the entity, the entity is either cloneable, or 
+        grabbable and not locked, and the user starts or continues to squeeze the trigger.</td>
+      <td>A ball that glows when it's being held close.</td>
+    </tr>
+    <tr>
+      <td><code>releaseGrab</code></td>
+      <td>This method is called when a user releases the trigger when having been either distance or near grabbing an 
+        entity.</td>
+      <td>Turn off the ball glow or comet trail with the user finishes grabbing it.</td>
+    </tr>
+    <tr>
+      <td><code>startEquip</code><br /><code>continueEquip</code><br /><code>releaseEquip</code></td>
+      <td>These methods are called when a user starts, continues, or stops equipping an entity.</td>
+      <td>A glass that stays in the user's hand after the trigger is clicked.</td>
+    </tr>
+  </tbody>
+</table>
+<p>All the entity methods are called with the following two arguments:</p>
+<ul>
+  <li>The entity ID.</li>
+  <li>A string, <code>"hand,userID"</code> &mdash; where "hand" is <code>"left"</code> or <code>"right"</code>, and "userID"
+    is the user's <a href="MyAvatar.html">MyAvatar.sessionUUID</a>.</li>
+</ul></div>
+        
+
+        
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>Actions</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Controller.html#.Actions">Controller.Actions</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Predefined actions on Interface and the user's avatar. These can be used as end
+    points in a <a href="RouteObject.html">RouteObject</a> mapping. A synonym for <code>Controller.Hardware.Actions</code>.
+    <em>Read-only.</em><br />
+    Default mappings are provided from the <code>Controller.Hardware.Keyboard</code> and <code>Controller.Standard</code> to 
+    actions in 
+    <a href="https://github.com/highfidelity/hifi/blob/master/interface/resources/controllers/keyboardMouse.json">
+    keyboardMouse.json</a> and 
+    <a href="https://github.com/highfidelity/hifi/blob/master/interface/resources/controllers/standard.json">
+    standard.json</a>, respectively.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>Hardware</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Controller.html#.Hardware">Controller.Hardware</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Standard and hardware-specific controller and computer outputs, plus predefined 
+    actions on Interface and the user's avatar. The outputs can be mapped to <code>Actions</code> or functions in a 
+    <a href="RouteObject.html">RouteObject</a> mapping. Additionally, hardware-specific controller outputs can be mapped to <code>Standard</code> 
+    controller outputs. <em>Read-only.</em></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>Standard</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Controller.html#.Standard">Controller.Standard</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Standard controller outputs that can be mapped to <code>Actions</code> or 
+    functions in a <a href="RouteObject.html">RouteObject</a> mapping. <em>Read-only.</em><br />
+    Each hardware device has a mapping from its outputs to <code>Controller.Standard</code> items, specified in a JSON file. 
+    For example, <a href="https://github.com/highfidelity/hifi/blob/master/interface/resources/controllers/leapmotion.json">
+    leapmotion.json</a> and 
+    <a href="https://github.com/highfidelity/hifi/blob/master/interface/resources/controllers/vive.json">vive.json</a>.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".actionEvent"><span class="type-signature">(static) </span>actionEvent<span class="signature">(actionID, value)</span><span class="type-signature"> &rarr; {Signal}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Triggered when an action occurs.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>actionID</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The ID of the action, per <a href="Controller.html#.findAction">findAction</a>.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The value associated with the action.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Signal</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Report action events as they occur.</p>
+    
+    <pre class="prettyprint"><code>var actionNamesForID = {};
+var actionNames = Controller.getActionNames();
+for (var i = 0, length = actionNames.length; i &lt; length; i++) {
+    actionNamesForID[Controller.findAction(actionNames[i])] = actionNames[i];
+}
+
+function onActionEvent(action, value) {
+    print("onActionEvent() : " + action + " ( " + actionNamesForID[action] + " ) ; " + value);
+}
+
+Controller.actionEvent.connect(onActionEvent);
+
+Script.scriptEnding.connect(function () {
+    Controller.actionEvent.disconnect(onActionEvent);
+});</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".captureActionEvents"><span class="type-signature">(static) </span>captureActionEvents<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Disable translating and rotating the user's avatar in response to keyboard and controller controls.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Disable avatar translation and rotation for a short period.</p>
+    
+    <pre class="prettyprint"><code>Script.setTimeout(function () {
+    Controller.captureActionEvents();
+}, 5000);
+
+Script.setTimeout(function () {
+    Controller.releaseActionEvents();
+}, 10000);</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".captureEntityClickEvents"><span class="type-signature">(static) </span>captureEntityClickEvents<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Disable <a href="Entities.html#.mousePressOnEntity">Entities.mousePressOnEntity</a> and <a href="Entities.html#.mouseDoublePressOnEntity">Entities.mouseDoublePressOnEntity</a> events on entities.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Disable entity click events for a short period.</p>
+    
+    <pre class="prettyprint"><code>Entities.mousePressOnEntity.connect(function (entityID, event) {
+    print("Clicked on entity: " + entityID);
+});
+
+Script.setTimeout(function () {
+    Controller.captureEntityClickEvents();
+}, 5000);
+
+Script.setTimeout(function () {
+    Controller.releaseEntityClickEvents();
+}, 10000);</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".captureJoystick"><span class="type-signature">(static) </span>captureJoystick<span class="signature">(joystickID)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Disable default Interface actions for a joystick.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>joystickID</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The integer ID of the joystick.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <dt class="important tag-deprecated">Deprecated:</dt><dd><ul class="dummy"><li>This function no longer has any effect.</li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".captureKeyEvents"><span class="type-signature">(static) </span>captureKeyEvents<span class="signature">(event)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Disable default Interface actions for a particular key event.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>event</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#KeyEvent">KeyEvent</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Details of the key event to be captured. The <code>key</code> property must be specified. The 
+    <code>text</code> property is ignored. The other properties default to <code>false</code>.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Disable left and right strafing.</p>
+    
+    <pre class="prettyprint"><code>var STRAFE_LEFT = { "key": 16777234, isShifted: true };
+var STRAFE_RIGHT = { "key": 16777236, isShifted: true };
+
+Controller.captureKeyEvents(STRAFE_LEFT);
+Controller.captureKeyEvents(STRAFE_RIGHT);
+
+Script.scriptEnding.connect(function () {
+    Controller.releaseKeyEvents(STRAFE_LEFT);
+    Controller.releaseKeyEvents(STRAFE_RIGHT);
+});</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".captureMouseEvents"><span class="type-signature">(static) </span>captureMouseEvents<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Disable processing of mouse "move", "press", "double-press", and "release" events into 
+<a href="Controller.html#.Hardware">Controller.Hardware.Keyboard</a> outputs.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Disable Controller.Hardware.Keyboard mouse events for a short period.</p>
+    
+    <pre class="prettyprint"><code>var MAPPING_NAME = "com.highfidelity.controllers.example.newMapping";
+var mapping = Controller.newMapping(MAPPING_NAME);
+mapping.from(Controller.Hardware.Keyboard.MouseX).to(function (x) {
+    print("Mouse x = " + x);
+});
+mapping.from(Controller.Hardware.Keyboard.MouseY).to(function (y) {
+    print("Mouse y = " + y);
+});
+Controller.enableMapping(MAPPING_NAME);
+Script.scriptEnding.connect(function () {
+    Controller.disableMapping(MAPPING_NAME);
+});
+
+Script.setTimeout(function () {
+    Controller.captureMouseEvents();
+}, 5000);
+
+Script.setTimeout(function () {
+    Controller.releaseMouseEvents();
+}, 10000);</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".captureTouchEvents"><span class="type-signature">(static) </span>captureTouchEvents<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Disable processing of touch "begin", "update", and "end" events into 
+<a href="Controller.html#.Hardware">Controller.Hardware.Keyboard</a>, 
+<a href="Controller.html#.Hardware">Controller.Hardware.Touchscreen</a>, and 
+<a href="Controller.html#.Hardware">Controller.Hardware.TouchscreenVirtualPad</a> outputs.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".captureWheelEvents"><span class="type-signature">(static) </span>captureWheelEvents<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Disable processing of mouse wheel rotation events into <a href="Controller.html#.Hardware">Controller.Hardware.Keyboard</a> 
+outputs.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".disableMapping"><span class="type-signature">(static) </span>disableMapping<span class="signature">(mappingName)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Disable a controller mapping. When disabled, the routes in the mapping have no effect.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>mappingName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The name of the mapping.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".enableMapping"><span class="type-signature">(static) </span>enableMapping<span class="signature">(mappingName, enable)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Enable or disable a controller mapping. When enabled, the routes in the mapping have effect.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>mappingName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">The name of the mapping.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>enable</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    true
+                
+                </td>
+            
+
+            <td class="description last">If <code>true</code> then the mapping is enabled, otherwise it is disabled.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".findAction"><span class="type-signature">(static) </span>findAction<span class="signature">(actionName)</span><span class="type-signature"> &rarr; {number}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Find the ID of an action from its name.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>actionName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The name of the action: one of the <a href="Controller.html#.Actions">Controller.Actions</a> property names.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The integer ID of the action if found, otherwise <code>4095</code>. Note that this value is not 
+the same as the value of the relevant <a href="Controller.html#.Actions">Controller.Actions</a> property.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">number</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Get the ID of the "TranslateY" action. Compare with the property value.</p>
+    
+    <pre class="prettyprint"><code>var actionID = Controller.findAction("TranslateY");
+print("Action ID = " + actionID);  // 1
+print("Property value = " + Controller.Actions.TranslateY);  // 537001728 or similar value.</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".findDevice"><span class="type-signature">(static) </span>findDevice<span class="signature">(deviceName)</span><span class="type-signature"> &rarr; {number}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Find the ID of a specific controller from its device name.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>deviceName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The name of the device to find.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The integer ID of the device if available, otherwise <code>65535</code>.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">number</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Get the ID of the Oculus Touch.</p>
+    
+    <pre class="prettyprint"><code>var deviceID = Controller.findDevice("OculusTouch");
+print("Device ID = " + deviceID);</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".getActionNames"><span class="type-signature">(static) </span>getActionNames<span class="signature">()</span><span class="type-signature"> &rarr; {Array.&lt;string>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Get the names of all actions available as properties of <a href="Controller.html#.Actions">Controller.Actions</a>.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    An array of action names.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array.&lt;string></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Get the names of all actions.</p>
+    
+    <pre class="prettyprint"><code>var actionNames = Controller.getActionNames();
+print("Action names: " + JSON.stringify(actionNames));
+// ["TranslateX","TranslateY","TranslateZ","Roll", ...</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".getActions"><span class="type-signature">(static) </span>getActions<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="Controller.html#.Actions">Controller.Actions</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Get the <a href="Controller.html#.Actions">Controller.Actions</a> property tree. Calling this function is the same as using the <a href="Controller.html">Controller</a> 
+property, <code>Controller.Actions</code>.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The <a href="Controller.html#.Actions">Controller.Actions</a> property tree.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Controller.html#.Actions">Controller.Actions</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".getActionValue"><span class="type-signature">(static) </span>getActionValue<span class="signature">(actionID)</span><span class="type-signature"> &rarr; {number}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Get the current value of an action.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>actionID</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The integer ID of the action.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The current value of the action.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">number</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Periodically report the value of the "TranslateX" action.</p>
+    
+    <pre class="prettyprint"><code>var actionID = Controller.findAction("TranslateX");
+
+function reportValue() {
+    print(Controller.getActionValue(actionID));
+}
+reportTimer = Script.setInterval(reportValue, 1000);</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".getAllActions"><span class="type-signature">(static) </span>getAllActions<span class="signature">()</span><span class="type-signature"> &rarr; {Array.&lt;Action>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Get a list of all available actions.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <dt class="important tag-deprecated">Deprecated:</dt><dd><ul class="dummy"><li>This function no longer works.</li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    All available actions.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array.&lt;Action></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".getAvailableInputs"><span class="type-signature">(static) </span>getAvailableInputs<span class="signature">(deviceID)</span><span class="type-signature"> &rarr; {Array.&lt;NamedPair>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Get a list of all available inputs for a hardware device.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>deviceID</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Integer ID of the hardware device.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <dt class="important tag-deprecated">Deprecated:</dt><dd><ul class="dummy"><li>This function no longer works.</li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    All available inputs for the device.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array.&lt;NamedPair></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".getAxisValue"><span class="type-signature">(static) </span>getAxisValue<span class="signature">(source)</span><span class="type-signature"> &rarr; {number}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Get the value of a controller axis output. Note: Also gets the value of a controller button output.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>source</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The <a href="Controller.html#.Standard">Controller.Standard</a> or <a href="Controller.html#.Hardware">Controller.Hardware</a> item.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The current value of the controller item output if <code>source</code> is valid, otherwise 
+    <code>0</code>.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">number</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".getDeviceName"><span class="type-signature">(static) </span>getDeviceName<span class="signature">(deviceID)</span><span class="type-signature"> &rarr; {string}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Find the name of a particular controller from its device ID.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>deviceID</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The integer ID of the device.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The name of the device if found, otherwise <code>"unknown"</code>.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">string</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Get the name of the Oculus Touch controller from its ID.</p>
+    
+    <pre class="prettyprint"><code>var deviceID = Controller.findDevice("OculusTouch");
+print("Device ID = " + deviceID);
+
+var deviceName = Controller.getDeviceName(deviceID);
+print("Device name = " + deviceName);</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".getDeviceNames"><span class="type-signature">(static) </span>getDeviceNames<span class="signature">()</span><span class="type-signature"> &rarr; {Array.&lt;string>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Get the names of all currently available controller devices plus "Actions", "Application", and "Standard".
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    An array of device names.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array.&lt;string></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Get the names of all currently available controller devices.</p>
+    
+    <pre class="prettyprint"><code>var deviceNames = Controller.getDeviceNames();
+print(JSON.stringify(deviceNames));
+// ["Standard","Keyboard","LeapMotion","OculusTouch","Application","Actions"] or similar.</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".getHardware"><span class="type-signature">(static) </span>getHardware<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="Controller.html#.Hardware">Controller.Hardware</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Get the <a href="Controller.html#.Hardware">Controller.Hardware</a> property tree. Calling this function is the same as using the <a href="Controller.html">Controller</a> 
+property, <code>Controller.Hardware</code>.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The <a href="Controller.html#.Hardware">Controller.Hardware</a> property tree.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Controller.html#.Hardware">Controller.Hardware</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".getInputRecorderSaveDirectory"><span class="type-signature">(static) </span>getInputRecorderSaveDirectory<span class="signature">()</span><span class="type-signature"> &rarr; {string}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Get the directory in which input recordings are saved.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The directory in which input recordings are saved.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">string</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".getPoseValue"><span class="type-signature">(static) </span>getPoseValue<span class="signature">(source)</span><span class="type-signature"> &rarr; {<a href="global.html#Pose">Pose</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Get the value of a controller pose output.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>source</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The <a href="Controller.html#.Standard">Controller.Standard</a> or <a href="Controller.html#.Hardware">Controller.Hardware</a> pose output.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The current value of the controller pose output if <code>source</code> is a pose output, otherwise 
+    an invalid pose with <code>Pose.valid == false</code>.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="global.html#Pose">Pose</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".getRecommendedHUDRect"><span class="type-signature">(static) </span>getRecommendedHUDRect<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="global.html#Rect">Rect</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Get the recommended area to position UI on the HUD surface if in HMD mode or Interface's window interior if in desktop 
+mode.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The recommended area in which to position UI.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="global.html#Rect">Rect</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".getStandard"><span class="type-signature">(static) </span>getStandard<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="Controller.html#.Standard">Controller.Standard</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Get the <a href="Controller.html#.Standard">Controller.Standard</a> property tree. Calling this function is the same as using the <a href="Controller.html">Controller</a> 
+property, <code>Controller.Standard</code>.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The <a href="Controller.html#.Standard">Controller.Standard</a> property tree.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Controller.html#.Standard">Controller.Standard</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".getValue"><span class="type-signature">(static) </span>getValue<span class="signature">(source)</span><span class="type-signature"> &rarr; {number}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Get the value of a controller button or axis output. Note: Also gets the value of a controller axis output.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>source</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The <a href="Controller.html#.Standard">Controller.Standard</a> or <a href="Controller.html#.Hardware">Controller.Hardware</a> item.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The current value of the controller item output if <code>source</code> is valid, otherwise 
+    <code>0</code>.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">number</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Report the Standard and Vive right trigger values.</p>
+    
+    <pre class="prettyprint"><code>var triggerValue = Controller.getValue(Controller.Standard.RT);
+print("Trigger value: " + triggerValue);
+
+if (Controller.Hardware.Vive) {
+    triggerValue = Controller.getValue(Controller.Hardware.Vive.RT);
+    print("Vive trigger value: " + triggerValue);
+} else {
+    print("No Vive present");
+}</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".getViewportDimensions"><span class="type-signature">(static) </span>getViewportDimensions<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="global.html#Vec2">Vec2</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Get the dimensions of the Interface window's interior if in desktop mode or the HUD surface if in HMD mode.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The dimensions of the Interface window interior if in desktop mode or HUD surface if in HMD mode.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="global.html#Vec2">Vec2</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".hardwareChanged"><span class="type-signature">(static) </span>hardwareChanged<span class="signature">()</span><span class="type-signature"> &rarr; {Signal}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Triggered when a device is registered or unregistered by a plugin. Not all plugins generate 
+<code>hardwareChanged</code> events: for example connecting or disconnecting a mouse will not generate an event but 
+connecting or disconnecting an Xbox controller will.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Signal</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".inputEvent"><span class="type-signature">(static) </span>inputEvent<span class="signature">(action, value)</span><span class="type-signature"> &rarr; {Signal}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Triggered when there is a new controller input event.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>action</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The input action, per <a href="Controller.html#.Standard">Controller.Standard</a>.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The value associated with the input action.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Signal</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Report input events as they occur.</p>
+    
+    <pre class="prettyprint"><code>var inputNamesForID = {};
+for (var property in Controller.Standard) {
+    inputNamesForID[Controller.Standard[property]] = "Controller.Standard." + property;
+}
+
+function onInputEvent(input, value) {
+    print("onInputEvent() : " + input + " ( " + inputNamesForID[input] + " ) ; " + value);
+}
+
+Controller.inputEvent.connect(onInputEvent);
+
+Script.scriptEnding.connect(function () {
+    Controller.inputEvent.disconnect(onInputEvent);
+});</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".keyPressEvent"><span class="type-signature">(static) </span>keyPressEvent<span class="signature">(event)</span><span class="type-signature"> &rarr; {Signal}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Triggered when a keyboard key is pressed.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>event</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#KeyEvent">KeyEvent</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Details of the key press.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Signal</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Report the KeyEvent details for each key press.</p>
+    
+    <pre class="prettyprint"><code>Controller.keyPressEvent.connect(function (event) {
+    print(JSON.stringify(event));
+});</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".keyReleaseEvent"><span class="type-signature">(static) </span>keyReleaseEvent<span class="signature">(event)</span><span class="type-signature"> &rarr; {Signal}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Triggered when a keyboard key is released from being pressed.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>event</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#KeyEvent">KeyEvent</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Details of the key release.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Signal</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".loadInputRecording"><span class="type-signature">(static) </span>loadInputRecording<span class="signature">(file)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Load an input recording, ready for play back.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>file</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The path to the recording file, prefixed by <code>"file:///"</code>.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".loadMapping"><span class="type-signature">(static) </span>loadMapping<span class="signature">(jsonURL)</span><span class="type-signature"> &rarr; {<a href="MappingObject.html">MappingObject</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Create a new controller mapping from a <a href="Controller.html#.MappingJSON">MappingJSON</a> JSON file at a URL. Use 
+<a href="Controller.html#.enableMapping">enableMapping</a> to enable the mapping for it to take effect.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>jsonURL</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The URL the <a href="Controller.html#.MappingJSON">MappingJSON</a> JSON file.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-todo">To Do:</dt>
+    <dd class="tag-todo">
+        <ul>
+            <li><em>Implement this function. It currently does not load the mapping from the file; it just returns 
+    <code>null</code>.</em></li>
+        </ul>
+    </dd>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    A controller mapping object.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="MappingObject.html">MappingObject</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".mouseDoublePressEvent"><span class="type-signature">(static) </span>mouseDoublePressEvent<span class="signature">(event)</span><span class="type-signature"> &rarr; {Signal}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Triggered when a mouse button is double-pressed.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>event</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#MouseEvent">MouseEvent</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Details of the button double-press.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Signal</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".mouseMoveEvent"><span class="type-signature">(static) </span>mouseMoveEvent<span class="signature">(event)</span><span class="type-signature"> &rarr; {Signal}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Triggered when the mouse moves.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>event</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#MouseEvent">MouseEvent</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Details of the mouse movement.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Signal</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Report the MouseEvent details for each mouse move.</p>
+    
+    <pre class="prettyprint"><code>Controller.mouseMoveEvent.connect(function (event) {
+    print(JSON.stringify(event));
+});</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".mousePressEvent"><span class="type-signature">(static) </span>mousePressEvent<span class="signature">(event)</span><span class="type-signature"> &rarr; {Signal}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Triggered when a mouse button is pressed.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>event</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#MouseEvent">MouseEvent</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Details of the button press.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Signal</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".mouseReleaseEvent"><span class="type-signature">(static) </span>mouseReleaseEvent<span class="signature">(event)</span><span class="type-signature"> &rarr; {Signal}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Triggered when a mouse button is released from being pressed.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>event</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#MouseEvent">MouseEvent</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Details of the button release.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Signal</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".newMapping"><span class="type-signature">(static) </span>newMapping<span class="signature">(mappingName)</span><span class="type-signature"> &rarr; {<a href="MappingObject.html">MappingObject</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Create a new controller mapping. Routes can then be added to the mapping using <a href="MappingObject.html">MappingObject</a> methods and 
+routed to <code>Standard</code> controls, <code>Actions</code>, or script functions using <a href="RouteObject.html">RouteObject</a> 
+methods. The mapping can then be enabled using <a href="Controller.html#.enableMapping">enableMapping</a> for it to take effect.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>mappingName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    Uuid.generate()
+                
+                </td>
+            
+
+            <td class="description last">A unique name for the mapping. If not specified a new UUID generated 
+    by <a href="Uuid.html#.generate">Uuid.generate</a> is used.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    A controller mapping object.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="MappingObject.html">MappingObject</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Create a simple mapping that makes the right trigger move your avatar up.</p>
+    
+    <pre class="prettyprint"><code>var MAPPING_NAME = "com.highfidelity.controllers.example.newMapping";
+var mapping = Controller.newMapping(MAPPING_NAME);
+
+mapping.from(Controller.Standard.RT).to(Controller.Actions.TranslateY);
+Controller.enableMapping(MAPPING_NAME);
+
+Script.scriptEnding.connect(function () {
+    Controller.disableMapping(MAPPING_NAME);
+});</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".parseMapping"><span class="type-signature">(static) </span>parseMapping<span class="signature">(jsonString)</span><span class="type-signature"> &rarr; {<a href="MappingObject.html">MappingObject</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Create a new controller mapping from a <a href="Controller.html#.MappingJSON">MappingJSON</a> string. Use 
+<a href="Controller.html#.enableMapping">enableMapping</a> to enable the mapping for it to take effect.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>jsonString</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">A JSON string of the <a href="Controller.html#.MappingJSON">MappingJSON</a>.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    A controller mapping object.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="MappingObject.html">MappingObject</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Create a simple mapping that makes the right trigger move your avatar up.</p>
+    
+    <pre class="prettyprint"><code>var mappingJSON = {
+    "name": "com.highfidelity.controllers.example.jsonMapping",
+    "channels": [
+        { "from": "Standard.RT", "to": "Actions.TranslateY" }
+    ]
+};
+
+var mapping = Controller.parseMapping(JSON.stringify(mappingJSON));
+mapping.enable();
+
+Script.scriptEnding.connect(function () {
+    mapping.disable();
+});</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".releaseActionEvents"><span class="type-signature">(static) </span>releaseActionEvents<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Enable translating and rotating the user's avatar in response to keyboard and controller controls that were disabled 
+using <a href="Controller.html#.captureActionEvents">captureActionEvents</a>.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".releaseEntityClickEvents"><span class="type-signature">(static) </span>releaseEntityClickEvents<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Re-enable <a href="Entities.html#.mousePressOnEntity">Entities.mousePressOnEntity</a> and <a href="Entities.html#.mouseDoublePressOnEntity">Entities.mouseDoublePressOnEntity</a> events on entities that were 
+disabled using <a href="Controller.html#.captureEntityClickEvents">captureEntityClickEvents</a>.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".releaseJoystick"><span class="type-signature">(static) </span>releaseJoystick<span class="signature">(joystickID)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Re-enable default Interface actions for a joystick that has been disabled using 
+<a href="Controller.html#.captureJoystick">captureJoystick</a>.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>joystickID</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The integer ID of the joystick.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <dt class="important tag-deprecated">Deprecated:</dt><dd><ul class="dummy"><li>This function no longer has any effect.</li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".releaseKeyEvents"><span class="type-signature">(static) </span>releaseKeyEvents<span class="signature">(event)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Re-enable default Interface actions for a particular key event that has been disabled using 
+<a href="Controller.html#.captureKeyEvents">captureKeyEvents</a>.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>event</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#KeyEvent">KeyEvent</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Details of the key event to release from capture. The <code>key</code> property must be 
+    specified. The <code>text</code> property is ignored. The other properties default to <code>false</code>.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".releaseMouseEvents"><span class="type-signature">(static) </span>releaseMouseEvents<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Enable processing of mouse "move", "press", "double-press", and "release" events into 
+<a href="Controller.html#.Hardware-Keyboard">Controller.Hardware.Keyboard</a> outputs that were disabled using 
+<a href="Controller.html#.captureMouseEvents">captureMouseEvents</a>.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".releaseTouchEvents"><span class="type-signature">(static) </span>releaseTouchEvents<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Enable processing of touch "begin", "update", and "end" events into 
+<a href="Controller.html#.Hardware">Controller.Hardware.Keyboard</a>, 
+<a href="Controller.html#.Hardware">Controller.Hardware.Touchscreen</a>, and 
+<a href="Controller.html#.Hardware">Controller.Hardware.TouchscreenVirtualPad</a> outputs that were disabled using 
+<a href="Controller.html#.captureTouchEvents">captureTouchEvents</a>.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".releaseWheelEvents"><span class="type-signature">(static) </span>releaseWheelEvents<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Enable processing of mouse wheel rotation events into <a href="Controller.html#.Hardware">Controller.Hardware.Keyboard</a> 
+outputs that wer disabled using <a href="Controller.html#.captureWheelEvents">captureWheelEvents</a>.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".saveInputRecording"><span class="type-signature">(static) </span>saveInputRecording<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Save the current recording to a file. The current recording may have been recorded by
+<a href="Controller.html#.startInputRecording">startInputRecording</a> and
+<a href="Controller.html#.stopInputRecording">stopInputRecording</a>, or loaded by
+<a href="Controller.html#.loadInputRecording">loadInputRecording</a>. It is saved in the directory returned by 
+<a href="Controller.html#.getInputRecorderSaveDirectory">getInputRecorderSaveDirectory</a>.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".setVPadEnabled"><span class="type-signature">(static) </span>setVPadEnabled<span class="signature">(enable)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Enables or disables the virtual game pad that is displayed on certain devices (e.g., Android).
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>enable</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">If <code>true</code> then the virtual game pad doesn't work, otherwise it does work provided 
+    that it is not hidden by <a href="Controller.html#.setVPadHidden">setVPadHidden</a>.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".setVPadExtraBottomMargin"><span class="type-signature">(static) </span>setVPadExtraBottomMargin<span class="signature">(margin)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Sets the amount of extra margin between the virtual game pad that is displayed on certain devices (e.g., Android) and 
+the bottom of the display.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>margin</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Integer number of pixels in the extra margin.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".setVPadHidden"><span class="type-signature">(static) </span>setVPadHidden<span class="signature">(hidden)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Shows or hides the virtual game pad that is displayed on certain devices (e.g., Android).
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>hidden</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">If <code>true</code> then the virtual game pad is hidden, otherwise it is shown.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".startInputPlayback"><span class="type-signature">(static) </span>startInputPlayback<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Play back the current recording from the beginning. The current recording may have been recorded by 
+<a href="Controller.html#.startInputRecording">startInputRecording</a> and 
+<a href="Controller.html#.stopInputRecording">stopInputRecording</a>, or loaded by 
+<a href="Controller.html#.loadInputRecording">loadInputRecording</a>. Playback repeats in a loop until 
+<a href="Controller.html#.stopInputPlayback">stopInputPlayback</a> is called.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Play back a controller recording.</p>
+    
+    <pre class="prettyprint"><code>var file = Window.browse("Select Recording", Controller.getInputRecorderSaveDirectory());
+if (file !== null) {
+    print("Play recording: " + file);
+    Controller.loadInputRecording("file:///" + file);
+    Controller.startInputPlayback();
+
+    // Stop playback after 20s.
+    Script.setTimeout(function () {
+        print("Stop playing recording");
+        Controller.stopInputPlayback();
+    }, 20000);
+}</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".startInputRecording"><span class="type-signature">(static) </span>startInputRecording<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Start making a recording of currently active controllers.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Make a controller recording.</p>
+    
+    <pre class="prettyprint"><code>// Delay start of recording for 2s.
+Script.setTimeout(function () {
+    print("Start input recording");
+    Controller.startInputRecording();
+}, 2000);
+
+// Make a 10s recording.
+Script.setTimeout(function () {
+    print("Stop input recording");
+    Controller.stopInputRecording();
+    Controller.saveInputRecording();
+    print("Input recording saved in: " + Controller.getInputRecorderSaveDirectory());
+}, 12000);</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".stopInputPlayback"><span class="type-signature">(static) </span>stopInputPlayback<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Stop play back of a recording started by <a href="Controller.html#.startInputPlayback">startInputPlayback</a>.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".stopInputRecording"><span class="type-signature">(static) </span>stopInputRecording<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Stop making a recording started by <a href="Controller.html#.startInputRecording">startInputRecording</a>.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".touchBeginEvent"><span class="type-signature">(static) </span>touchBeginEvent<span class="signature">(event)</span><span class="type-signature"> &rarr; {Signal}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Triggered when a touch event starts in the Interface window on a touch-enabled display or device.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>event</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#TouchEvent">TouchEvent</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Details of the touch begin.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Signal</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Report the TouchEvent details when a touch event starts.</p>
+    
+    <pre class="prettyprint"><code>Controller.touchBeginEvent.connect(function (event) {
+    print(JSON.stringify(event));
+});</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".touchEndEvent"><span class="type-signature">(static) </span>touchEndEvent<span class="signature">(event)</span><span class="type-signature"> &rarr; {Signal}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Triggered when a touch event ends in the Interface window on a touch-enabled display or device.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>event</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#TouchEvent">TouchEvent</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Details of the touch end.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Signal</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".touchUpdateEvent"><span class="type-signature">(static) </span>touchUpdateEvent<span class="signature">(event)</span><span class="type-signature"> &rarr; {Signal}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Triggered when a touch event update occurs in the Interface window on a touch-enabled display or device.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>event</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#TouchEvent">TouchEvent</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Details of the touch update.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Signal</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".triggerHapticPulse"><span class="type-signature">(static) </span>triggerHapticPulse<span class="signature">(strength, duration, hand)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Triggers a haptic pulse on connected and enabled devices that have the capability.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>strength</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">The strength of the haptic pulse, <code>0.0</code> &ndash; <code>1.0</code>.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>duration</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">The duration of the haptic pulse, in milliseconds.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>hand</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Controller.html#.Hand">Controller.Hand</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    2
+                
+                </td>
+            
+
+            <td class="description last">The hand or hands to trigger the haptic pulse on.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Trigger a haptic pulse on the right hand.</p>
+    
+    <pre class="prettyprint"><code>var HAPTIC_STRENGTH = 0.5;
+var HAPTIC_DURATION = 10;
+var RIGHT_HAND = 1;
+Controller.triggerHapticPulse(HAPTIC_STRENGTH, HAPTIC_DURATION, RIGHT_HAND);</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".triggerHapticPulseOnDevice"><span class="type-signature">(static) </span>triggerHapticPulseOnDevice<span class="signature">(deviceID, strength, duration, hand)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Triggers a haptic pulse on a particular device if connected and enabled and it has the capability.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>deviceID</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">The ID of the device to trigger the haptic pulse on.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>strength</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">The strength of the haptic pulse, <code>0.0</code> &ndash; <code>1.0</code>.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>duration</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">The duration of the haptic pulse, in milliseconds.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>hand</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Controller.html#.Hand">Controller.Hand</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    2
+                
+                </td>
+            
+
+            <td class="description last">The hand or hands to trigger the haptic pulse on.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Trigger a haptic pulse on an Oculus Touch controller.</p>
+    
+    <pre class="prettyprint"><code>var HAPTIC_STRENGTH = 0.5;
+var deviceID = Controller.findDevice("OculusTouch");
+var HAPTIC_DURATION = 10;
+var RIGHT_HAND = 1;
+Controller.triggerHapticPulseOnDevice(deviceID, HAPTIC_STRENGTH, HAPTIC_DURATION, RIGHT_HAND);</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".triggerShortHapticPulse"><span class="type-signature">(static) </span>triggerShortHapticPulse<span class="signature">(strength, hand)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Triggers a 250ms haptic pulse on connected and enabled devices that have the capability.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>strength</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">The strength of the haptic pulse, <code>0.0</code> &ndash; <code>1.0</code>.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>hand</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Controller.html#.Hand">Controller.Hand</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    2
+                
+                </td>
+            
+
+            <td class="description last">The hand or hands to trigger the haptic pulse on.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".triggerShortHapticPulseOnDevice"><span class="type-signature">(static) </span>triggerShortHapticPulseOnDevice<span class="signature">(deviceID, strength, hand)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Triggers a 250ms haptic pulse on a particular device if connected and enabled and it has the capability.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>deviceID</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">The ID of the device to trigger the haptic pulse on.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>strength</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">The strength of the haptic pulse, <code>0.0</code> &ndash; <code>1.0</code>.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>hand</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Controller.html#.Hand">Controller.Hand</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    2
+                
+                </td>
+            
+
+            <td class="description last">The hand or hands to trigger the haptic pulse on.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".wheelEvent"><span class="type-signature">(static) </span>wheelEvent<span class="signature">(event)</span><span class="type-signature"> &rarr; {Signal}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Triggered when the mouse wheel is rotated.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>event</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#WheelEvent">WheelEvent</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Details of the wheel movement.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Signal</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Report the WheelEvent details for each wheel rotation.</p>
+    
+    <pre class="prettyprint"><code>Controller.wheelEvent.connect(function (event) {
+    print(JSON.stringify(event));
+});
+     </code></pre>
+
+
+
+        
+    
+
+    
+        <h3 class="subsection-title">Type Definitions</h3>
+
+        
+                
+<h4 class="name" id=".Actions">Actions</h4>
+
+
+
+
+<div class="description">
+    <p>The <code>Controller.Actions</code> object has properties representing predefined actions on the user's avatar and 
+Interface. The property values are integer IDs, uniquely identifying each action. <em>Read-only.</em> These can be used 
+as end points in the routes of a <a href="MappingObject.html">MappingObject</a>. The data routed to each action is either a number or a 
+<a href="global.html#Pose">Pose</a>.</p>
+
+<table>
+  <thead>
+    <tr><th>Property</th><th>Type</th><th>Data</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+    <tr><td colSpan=4><strong>Avatar Movement</strong></td>
+    <tr><td><code>TranslateX</code></td><td>number</td><td>number</td><td>Move the user's avatar in the direction of its 
+      x-axis, if the camera isn't in independent or mirror modes.</td></tr>
+    <tr><td><code>TranslateY</code></td><td>number</td><td>number</td><td>Move the user's avatar in the direction of its 
+      y-axis, if the camera isn't in independent or mirror modes.</td></tr>
+    <tr><td><code>TranslateZ</code></td><td>number</td><td>number</td><td>Move the user's avatar in the direction of its 
+      z-axis, if the camera isn't in independent or mirror modes.</td></tr>
+    <tr><td><code>Pitch</code></td><td>number</td><td>number</td><td>Rotate the user's avatar head and attached camera 
+      about its negative x-axis (i.e., positive values pitch down), if the camera isn't in HMD, independent, or mirror 
+      modes.</td></tr>
+    <tr><td><code>Yaw</code></td><td>number</td><td>number</td><td>Rotate the user's avatar about its y-axis, if the 
+      camera isn't in independent or mirror modes.</td></tr>
+    <tr><td><code>Roll</code></td><td>number</td><td>number</td><td>No action.</td></tr>
+    <tr><td><code>StepTranslateX</code></td><td>number</td><td>number</td><td>No action.</td></tr>
+    <tr><td><code>StepTranslateY</code></td><td>number</td><td>number</td><td>No action.</td></tr>
+    <tr><td><code>StepTranslateZ</code></td><td>number</td><td>number</td><td>No action.</td></tr>
+    <tr><td><code>StepPitch</code></td><td>number</td><td>number</td><td>No action.</td></tr>
+    <tr><td><code>StepYaw</code></td><td>number</td><td>number</td><td>Rotate the user's avatar about its y-axis in a 
+      step increment, if the camera isn't in independent or mirror modes.</td></tr>
+    <tr><td><code>StepRoll</code></td><td>number</td><td>number</td><td>No action.</td></tr>
+
+    <tr><td colSpan=4><strong>Avatar Skeleton</strong></td>
+    <tr><td><code>Hips</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Set the hips pose of the user's avatar.
+      </td></tr>
+    <tr><td><code>Spine2</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Set the spine2 pose of the user's avatar.
+      </td></tr>
+    <tr><td><code>Head</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Set the head pose of the user's avatar.
+      </td></tr>
+    <tr><td><code>LeftArm</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Set the left arm pose of the user's avatar.
+      </td></tr>
+    <tr><td><code>RightArm</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Set the right arm pose of the user's 
+      avatar.</td></tr>
+    <tr><td><code>LeftHand</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Set the left hand pose of the user's
+      avatar.</td></tr>
+    <tr><td><code>LeftHandThumb1</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Set the left thumb 1 finger joint 
+      pose of the user's avatar.</td></tr>
+    <tr><td><code>LeftHandThumb2</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Set the left thumb 2 finger joint 
+      pose of the user's avatar.</td></tr>
+    <tr><td><code>LeftHandThumb3</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Set the left thumb 3 finger joint 
+      pose of the user's avatar.</td></tr>
+    <tr><td><code>LeftHandThumb4</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Set the left thumb 4 finger joint 
+      pose of the user's avatar.</td></tr>
+    <tr><td><code>LeftHandIndex1</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Set the left index 1 finger joint 
+      pose of the user's avatar.</td></tr>
+    <tr><td><code>LeftHandIndex2</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Set the left index 2 finger joint 
+      pose of the user's avatar.</td></tr>
+    <tr><td><code>LeftHandIndex3</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Set the left index 3 finger joint 
+      pose of the user's avatar.</td></tr>
+    <tr><td><code>LeftHandIndex4</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Set the left index 4 finger joint 
+      pose of the user's avatar.</td></tr>
+    <tr><td><code>LeftHandMiddle1</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Set the left middle 1 finger joint 
+      pose of the user's avatar.</td></tr>
+    <tr><td><code>LeftHandMiddle2</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Set the left middle 2 finger joint 
+      pose of the user's avatar.</td></tr>
+    <tr><td><code>LeftHandMiddle3</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Set the left middle 3 finger joint 
+      pose of the user's avatar.</td></tr>
+    <tr><td><code>LeftHandMiddle4</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Set the left middle 4 finger joint 
+      pose of the user's avatar.</td></tr>
+    <tr><td><code>LeftHandRing1</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Set the left ring 1 finger joint pose 
+      of the user's avatar.</td></tr>
+    <tr><td><code>LeftHandRing2</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Set the left ring 2 finger joint pose 
+      of the user's avatar.</td></tr>
+    <tr><td><code>LeftHandRing3</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Set the left ring 3 finger joint pose 
+      of the user's avatar.</td></tr>
+    <tr><td><code>LeftHandRing4</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Set the left ring 4 finger joint pose 
+      of the user's avatar.</td></tr>
+    <tr><td><code>LeftHandPinky1</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Set the left pinky 1 finger joint 
+      pose of the user's avatar.</td></tr>
+    <tr><td><code>LeftHandPinky2</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Set the left pinky 2 finger joint 
+      pose of the user's avatar.</td></tr>
+    <tr><td><code>LeftHandPinky3</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Set the left pinky 3 finger joint 
+      pose of the user's avatar.</td></tr>
+    <tr><td><code>LeftHandPinky4</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Set the left pinky 4 finger joint 
+      pose of the user's avatar.</td></tr>
+    <tr><td><code>RightHand</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Set the right hand of the user's avatar.
+      </td></tr>
+    <tr><td><code>RightHandThumb1</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Set the right thumb 1 finger joint 
+      pose of the user's avatar.</td></tr>
+    <tr><td><code>RightHandThumb2</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Set the right thumb 2 finger joint 
+      pose of the user's avatar.</td></tr>
+    <tr><td><code>RightHandThumb3</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Set the right thumb 3 finger joint 
+      pose of the user's avatar.</td></tr>
+    <tr><td><code>RightHandThumb4</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Set the right thumb 4 finger joint 
+      pose of the user's avatar.</td></tr>
+    <tr><td><code>RightHandIndex1</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Set the right index 1 finger joint 
+      pose of the user's avatar.</td></tr>
+    <tr><td><code>RightHandIndex2</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Set the right index 2 finger joint 
+      pose of the user's avatar.</td></tr>
+    <tr><td><code>RightHandIndex3</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Set the right index 3 finger joint 
+      pose of the user's avatar.</td></tr>
+    <tr><td><code>RightHandIndex4</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Set the right index 4 finger joint 
+      pose of the user's avatar.</td></tr>
+    <tr><td><code>RightHandMiddle1</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Set the right middle 1 finger 
+      joint pose of the user's avatar.</td></tr>
+    <tr><td><code>RightHandMiddle2</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Set the right middle 2 finger 
+      joint pose of the user's avatar.</td></tr>
+    <tr><td><code>RightHandMiddle3</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Set the right middle 3 finger 
+      joint pose of the user's avatar.</td></tr>
+    <tr><td><code>RightHandMiddle4</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Set the right middle 4 finger 
+      joint pose of the user's avatar.</td></tr>
+    <tr><td><code>RightHandRing1</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Set the right ring 1 finger joint 
+      pose of the user's avatar.</td></tr>
+    <tr><td><code>RightHandRing2</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Set the right ring 2 finger joint 
+      pose of the user's avatar.</td></tr>
+    <tr><td><code>RightHandRing3</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Set the right ring 3 finger joint 
+      pose of the user's avatar.</td></tr>
+    <tr><td><code>RightHandRing4</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Set the right ring 4 finger joint 
+      pose of the user's avatar.</td></tr>
+    <tr><td><code>RightHandPinky1</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Set the right pinky 1 finger joint 
+      pose of the user's avatar.</td></tr>
+    <tr><td><code>RightHandPinky2</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Set the right pinky 2 finger joint 
+      pose of the user's avatar.</td></tr>
+    <tr><td><code>RightHandPinky3</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Set the right pinky 3 finger joint 
+      pose of the user's avatar.</td></tr>
+    <tr><td><code>RightHandPinky4</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Set the right pinky 4 finger joint 
+      pose of the user's avatar.</td></tr>
+    <tr><td><code>LeftFoot</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Set the left foot pose of the user's
+      avatar.</td></tr>
+    <tr><td><code>RightFoot</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Set the right foot pose of the user's
+      avatar.</td></tr>
+
+    <tr><td colSpan=4><strong><strong>Application</strong></td>
+    <tr><td><code>BoomIn</code></td><td>number</td><td>number</td><td>Zoom camera in from third person toward first 
+      person view.</td></tr>
+    <tr><td><code>BoomOut</code></td><td>number</td><td>number</td><td>Zoom camera out from first person to third 
+      person view.</td></tr>
+    <tr><td><code>CycleCamera</code></td><td>number</td><td>number</td><td>Cycle the camera view from first person, to 
+      third person, to full screen mirror, then back to first person and repeat.</td></tr>
+    <tr><td><code>ContextMenu</code></td><td>number</td><td>number</td><td>Show / hide the tablet.</td></tr>
+    <tr><td><code>ToggleMute</code></td><td>number</td><td>number</td><td>Toggle the microphone mute.</td></tr>
+    <tr><td><code>ToggleOverlay</code></td><td>number</td><td>number</td><td>Toggle the display of overlays.</td></tr>
+    <tr><td><code>Sprint</code></td><td>number</td><td>number</td><td>Set avatar sprint mode.</td></tr>
+    <tr><td><code>ReticleClick</code></td><td>number</td><td>number</td><td>Set mouse-pressed.</td></tr>
+    <tr><td><code>ReticleX</code></td><td>number</td><td>number</td><td>Move the cursor left/right in the x direction.
+      </td></tr>
+    <tr><td><code>ReticleY</code></td><td>number</td><td>number</td><td>move the cursor up/down in the y direction.
+      </td></tr>
+    <tr><td><code>ReticleLeft</code></td><td>number</td><td>number</td><td>Move the cursor left.</td></tr>
+    <tr><td><code>ReticleRight</code></td><td>number</td><td>number</td><td>Move the cursor right.</td></tr>
+    <tr><td><code>ReticleUp</code></td><td>number</td><td>number</td><td>Move the cursor up.</td></tr>
+    <tr><td><code>ReticleDown</code></td><td>number</td><td>number</td><td>Move the cursor down.</td></tr>
+    <tr><td><code>UiNavLateral</code></td><td>number</td><td>number</td><td>Generate a keyboard left or right arrow key 
+      event.</td></tr>
+    <tr><td><code>UiNavVertical</code></td><td>number</td><td>number</td><td>Generate a keyboard up or down arrow key 
+      event.</td></tr>
+    <tr><td><code>UiNavGroup</code></td><td>number</td><td>number</td><td>Generate a keyboard tab or back-tab key event.
+      </td></tr>
+    <tr><td><code>UiNavSelect</code></td><td>number</td><td>number</td><td>Generate a keyboard Enter key event.
+      </td></tr>
+    <tr><td><code>UiNavBack</code></td><td>number</td><td>number</td><td>Generate a keyboard Esc key event.</td></tr>
+    <tr><td><code>LeftHandClick</code></td><td>number</td><td>number</td><td><strong>Deprecated: </strong> No action.
+      </td></tr>
+    <tr><td><code>RightHandClick</code></td><td>number</td><td>number</td><td><strong>Deprecated:</strong> No action.
+      </td></tr>
+    <tr><td><code>Shift</code></td><td>number</td><td>number</td><td><strong>Deprecated:</strong> No action.</td></tr>
+    <tr><td><code>PrimaryAction</code></td><td>number</td><td>number</td><td><strong>Deprecated:</strong> No action.
+      </td></tr>
+    <tr><td><code>SecondaryAction</code></td><td>number</td><td>number</td><td><strong>Deprecated:</strong> No action.
+      </td></tr>
+
+    <tr><td colSpan=4><strong>Aliases</strong></td>
+    <tr><td><code>Backward</code></td><td>number</td><td>number</td><td>Alias for <code>TranslateZ</code> in the 
+      positive direction.</td></tr>
+    <tr><td><code>Forward</code></td><td>number</td><td>number</td><td>Alias for <code>TranslateZ</code> in the negative 
+      direction.</td></tr>
+    <tr><td><code>StrafeRight</code></td><td>number</td><td>number</td><td>Alias for <code>TranslateX</code> in the
+      positive direction.</td></tr>
+    <tr><td><code>StrafeLeft</code></td><td>number</td><td>number</td><td>Alias for <code>TranslateX</code> in the
+      negative direction.</td></tr>
+    <tr><td><code>Up</code></td><td>number</td><td>number</td><td>Alias for <code>TranslateY</code> in the positive
+      direction.</td></tr>
+    <tr><td><code>Down</code></td><td>number</td><td>number</td><td>Alias for <code>TranslateY</code> in the negative 
+      direction.</td></tr>
+    <tr><td><code>PitchDown</code></td><td>number</td><td>number</td><td>Alias for <code>Pitch</code> in the positive 
+      direction.</td></tr>
+    <tr><td><code>PitchUp</code></td><td>number</td><td>number</td><td>Alias for <code>Pitch</code> in the negative
+      direction.</td></tr>
+    <tr><td><code>YawLeft</code></td><td>number</td><td>number</td><td>Alias for <code>Yaw</code> in the positive
+      direction.</td></tr>
+    <tr><td><code>YawRight</code></td><td>number</td><td>number</td><td>Alias for <code>Yaw</code> in the negative 
+      direction.</td></tr>
+
+    <tr><td colSpan=4><strong>Deprecated Aliases</strong></td>
+    <tr><td><code>LEFT_HAND</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td><strong>Deprecated:</strong> Use 
+      <code>LeftHand</code> instead.</td></tr>
+    <tr><td><code>RIGHT_HAND</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td><strong>Deprecated:</strong> Use 
+      <code>RightHand</code> instead.</td></tr>
+    <tr><td><code>BOOM_IN</code></td><td>number</td><td>number</td><td><strong>Deprecated:</strong> Use 
+      <code>BoomIn</code> instead.</td></tr>
+    <tr><td><code>BOOM_OUT</code></td><td>number</td><td>number</td><td><strong>Deprecated:</strong> Use 
+      <code>BoomOut</code> instead.</td></tr>
+    <tr><td><code>CONTEXT_MENU</code></td><td>number</td><td>number</td><td><strong>Deprecated:</strong> Use 
+      <code>ContextMenu</code> instead.</td></tr>
+    <tr><td><code>TOGGLE_MUTE</code></td><td>number</td><td>number</td><td><strong>Deprecated:</strong> Use 
+      <code>ToggleMute</code> instead.</td></tr>
+    <tr><td><code>SPRINT</code></td><td>number</td><td>number</td><td><strong>Deprecated:</strong> Use 
+      <code>Sprint</code> instead.</td></tr>
+    <tr><td><code>LONGITUDINAL_BACKWARD</code></td><td>number</td><td>number</td><td><strong>Deprecated:</strong> Use 
+      <code>Backward</code> instead.</td></tr>
+    <tr><td><code>LONGITUDINAL_FORWARD</code></td><td>number</td><td>number</td><td><strong>Deprecated:</strong> Use 
+      <code>Forward</code> instead.</td></tr>
+    <tr><td><code>LATERAL_LEFT</code></td><td>number</td><td>number</td><td><strong>Deprecated:</strong> Use 
+      <code>StrafeLeft</code> instead.</td></tr>
+    <tr><td><code>LATERAL_RIGHT</code></td><td>number</td><td>number</td><td><strong>Deprecated:</strong> Use 
+      <code>StrafeRight</code> instead.</td></tr>
+    <tr><td><code>VERTICAL_UP</code></td><td>number</td><td>number</td><td><strong>Deprecated:</strong> Use 
+      <code>Up</code> instead.</td></tr>
+    <tr><td><code>VERTICAL_DOWN</code></td><td>number</td><td>number</td><td><strong>Deprecated:</strong> Use 
+      <code>Down</code> instead.</td></tr>
+    <tr><td><code>PITCH_DOWN</code></td><td>number</td><td>number</td><td><strong>Deprecated:</strong> Use 
+      <code>PitchDown</code> instead.</td></tr>
+    <tr><td><code>PITCH_UP</code></td><td>number</td><td>number</td><td><strong>Deprecated:</strong> Use 
+      <code>PitchUp</code> instead.</td></tr>
+    <tr><td><code>YAW_LEFT</code></td><td>number</td><td>number</td><td><strong>Deprecated:</strong> Use 
+      <code>YawLeft</code> instead.</td></tr>
+    <tr><td><code>YAW_RIGHT</code></td><td>number</td><td>number</td><td><strong>Deprecated:</strong> Use 
+      <code>YawRight</code> instead.</td></tr>
+    <tr><td><code>LEFT_HAND_CLICK</code></td><td>number</td><td>number</td><td><strong>Deprecated:</strong> Use 
+      <code>LeftHandClick</code> instead.</td></tr>
+    <tr><td><code>RIGHT_HAND_CLICK</code></td><td>number</td><td>number</td><td><strong>Deprecated:</strong> Use 
+      <code>RightHandClick</code> instead.</td></tr>
+    <tr><td><code>SHIFT</code></td><td>number</td><td>number</td><td><strong>Deprecated:</strong> Use 
+      <code>Shift</code> instead.</td></tr>
+    <tr><td><code>ACTION1</code></td><td>number</td><td>number</td><td><strong>Deprecated:</strong> Use 
+      <code>PrimaryAction</code> instead.</td></tr>
+    <tr><td><code>ACTION2</code></td><td>number</td><td>number</td><td><strong>Deprecated:</strong> Use 
+      <code>SecondaryAction</code> instead.</td></tr>
+
+    <tr><td colSpan=4><strong>Deprecated Trackers</strong></td>
+    <tr><td><code>TrackedObject00</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td><strong>Deprecated: </strong> No
+      action.</td></tr>
+    <tr><td><code>TrackedObject01</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td><strong>Deprecated: </strong> No
+      action.</td></tr>
+    <tr><td><code>TrackedObject02</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td><strong>Deprecated: </strong> No
+      action.</td></tr>
+    <tr><td><code>TrackedObject03</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td><strong>Deprecated: </strong> No
+      action.</td></tr>
+    <tr><td><code>TrackedObject04</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td><strong>Deprecated: </strong> No
+      action.</td></tr>
+    <tr><td><code>TrackedObject05</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td><strong>Deprecated: </strong> No
+      action.</td></tr>
+    <tr><td><code>TrackedObject06</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td><strong>Deprecated: </strong> No
+      action.</td></tr>
+    <tr><td><code>TrackedObject07</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td><strong>Deprecated: </strong> No
+      action.</td></tr>
+    <tr><td><code>TrackedObject08</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td><strong>Deprecated: </strong> No
+      action.</td></tr>
+    <tr><td><code>TrackedObject09</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td><strong>Deprecated: </strong> No
+      action.</td></tr>
+    <tr><td><code>TrackedObject10</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td><strong>Deprecated: </strong> No
+      action.</td></tr>
+    <tr><td><code>TrackedObject11</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td><strong>Deprecated: </strong> No
+      action.</td></tr>
+    <tr><td><code>TrackedObject12</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td><strong>Deprecated: </strong> No
+      action.</td></tr>
+    <tr><td><code>TrackedObject13</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td><strong>Deprecated: </strong> No
+      action.</td></tr>
+    <tr><td><code>TrackedObject14</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td><strong>Deprecated: </strong> No
+      action.</td></tr>
+    <tr><td><code>TrackedObject15</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td><strong>Deprecated: </strong> No
+      action.</td></tr>
+  </tbody>
+</table>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+            
+                
+<h4 class="name" id=".Hand">Hand</h4>
+
+
+
+
+<div class="description">
+    <p>Some controller actions may be associated with one or both hands:</p>
+<table>
+  <thead>
+    <tr><th>Value</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>0</code></td><td>Left hand.</td></tr>
+    <tr><td><code>1</code></td><td>Right hand.</td></tr>
+    <tr><td><code>2</code></td><td>Both hands.</td></tr>
+  </tbody>
+</table>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">number</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+            
+                
+<h4 class="name" id=".Hardware">Hardware</h4>
+
+
+
+
+<div class="description">
+    <p>The <code>Controller.Hardware</code> object has properties representing standard and hardware-specific controller and 
+computer outputs, plus predefined actions on Interface and the user's avatar. <em>Read-only.</em> The outputs can be mapped 
+to actions or functions in a <a href="RouteObject.html">RouteObject</a> mapping. Additionally, hardware-specific controller outputs can be mapped 
+to standard controller outputs. 
+
+<p>Controllers typically implement a subset of the <a href="Controller.html#.Standard">Controller.Standard</a> controls, plus they may implement some extras. 
+Some common controllers are included in the table. You can see the outputs provided by these and others by 
+viewing their <a href="Controller.html#.MappingJSON">MappingJSON</a> files at 
+<a href="https://github.com/highfidelity/hifi/tree/master/interface/resources/controllers">
+https://github.com/highfidelity/hifi/tree/master/interface/resources/controllers</a>.</p>
+
+<table>
+  <thead>
+    <tr><th>Property</th><th>Type</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>Controller.Hardware.Actions</code></td><td>object</td><td>Synonym for <a href="Controller.html#.Actions">Controller.Actions</a>.</td></tr>
+    <tr><td><code>Controller.Hardware.Application</code></td><td>object</td><td>Interface state outputs. See 
+      <a href="Controller.html#.Hardware-Application">Controller.Hardware-Application</a>.</td></tr>
+    <tr><td><code>Controller.Hardware.Keyboard</code></td><td>object</td><td>Keyboard, mouse, and touch pad outputs. See
+      <a href="Controller.html#.Hardware-Keyboard">Controller.Hardware-Keyboard</a>.</td></tr>
+    <tr><td><code>Controller.Hardware.OculusTouch</code></td><td>object</td><td>Oculus Rift HMD outputs. See
+      <a href="Controller.html#.Hardware-OculusTouch">Controller.Hardware-OculusTouch</a>.</td></tr>
+    <tr><td><code>Controller.Hardware.Vive</code></td><td>object</td><td>Vive HMD outputs. See
+      <a href="Controller.html#.Hardware-Vive">Controller.Hardware-Vive</a>.</td></tr>
+  </tbody>
+</table>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">List all the currently available <code>Controller.Hardware</code> properties.</p>
+    
+    <pre class="prettyprint"><code>function printProperties(string, item) {
+    print(string);
+    for (var key in item) {
+        if (item.hasOwnProperty(key)) {
+            printProperties(string + "." + key, item[key]);
+        }
+    }
+}
+
+printProperties("Controller.Hardware", Controller.Hardware);
+ </code></pre>
+
+
+
+            
+                
+<h4 class="name" id=".Hardware-Application">Hardware-Application</h4>
+
+
+
+
+<div class="description">
+    <p>The <code>Controller.Hardware.Application</code> object has properties representing Interface's state. The property
+values are integer IDs, uniquely identifying each output. <em>Read-only.</em> These can be mapped to actions or functions or
+<code>Controller.Standard</code> items in a <a href="RouteObject.html">RouteObject</a> mapping (e.g., using the <a href="RouteObject.html#when">RouteObject#when</a> method).
+Each data value is either <code>1.0</code> for "true" or <code>0.0</code> for "false".</p>
+<table>
+  <thead>
+    <tr><th>Property</th><th>Type</th><th>Data</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>CameraFirstPerson</code></td><td>number</td><td>number</td><td>The camera is in first-person mode.
+      </td></tr>
+    <tr><td><code>CameraThirdPerson</code></td><td>number</td><td>number</td><td>The camera is in third-person mode.
+      </td></tr>
+    <tr><td><code>CameraFSM</code></td><td>number</td><td>number</td><td>The camera is in full screen mirror mode.</td></tr>
+    <tr><td><code>CameraIndependent</code></td><td>number</td><td>number</td><td>The camera is in independent mode.</td></tr>
+    <tr><td><code>CameraEntity</code></td><td>number</td><td>number</td><td>The camera is in entity mode.</td></tr>
+    <tr><td><code>InHMD</code></td><td>number</td><td>number</td><td>The user is in HMD mode.</td></tr>
+    <tr><td><code>AdvancedMovement</code></td><td>number</td><td>number</td><td>Advanced movement controls are enabled.
+      </td></tr>
+    <tr><td><code>SnapTurn</code></td><td>number</td><td>number</td><td>Snap turn is enabled.</td></tr>
+    <tr><td><code>Grounded</code></td><td>number</td><td>number</td><td>The user's avatar is on the ground.</td></tr>
+    <tr><td><code>NavigationFocused</code></td><td>number</td><td>number</td><td><em>Not used.</em></td></tr>
+  </tbody>
+</table>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+            
+                
+<h4 class="name" id=".Hardware-Keyboard">Hardware-Keyboard</h4>
+
+
+
+
+<div class="description">
+    <p>The <code>Controller.Hardware.Keyboard</code> object has properties representing keyboard, mouse, and display touch 
+events. The property values are integer IDs, uniquely identifying each output. <em>Read-only.</em> These can be mapped to 
+actions or functions or <code>Controller.Standard</code> items in a <a href="RouteObject.html">RouteObject</a> mapping. For presses, each data 
+value is either <code>1.0</code> for "true" or <code>0.0</code> for "false".</p>
+<table>
+  <thead>
+    <tr><th>Property</th><th>Type</th><td>Data</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>0</code> &ndash; <code>9</code></td><td>number</td><td>number</td><td>A "0" &ndash; "1" key on the 
+      keyboard or keypad is pressed.</td></tr>
+    <tr><td><code>A</code> &ndash; <code>Z</code></td><td>number</td><td>number</td><td>A "A" &ndash; "Z" key on the 
+      keyboard is pressed.</td></tr>
+    <tr><td><code>Space</code></td><td>number</td><td>number</td><td>The space bar on the keyboard is pressed.</td></tr>
+    <tr><td><code>Tab</code></td><td>number</td><td>number</td><td>The tab key on the keyboard is pressed.</td></tr>
+    <tr><td><code>Shift</code></td><td>number</td><td>number</td><td>The shift key on the keyboard is pressed.</td></tr>
+    <tr><td><code>Control</code></td><td>number</td><td>number</td><td>The control key on the keyboard is pressed. (The 
+      "Command" key on OSX.)</td></tr>
+    <tr><td><code>Left</code></td><td>number</td><td>number</td><td>The left arrow key on the keyboard or keypad is pressed.
+      </td></tr>
+    <tr><td><code>Right</code></td><td>number</td><td>number</td><td>The right arrow key on the keyboard or keypad is 
+      pressed.</td></tr>
+    <tr><td><code>Up</code></td><td>number</td><td>number</td><td>The up arrow key on the keyboard or keypad is pressed.
+      </td></tr>
+    <tr><td><code>Down</code></td><td>number</td><td>number</td><td>The down arrow key on the keyboard or keypad is pressed.
+      </td></tr>
+    <tr><td><code>PgUp</code></td><td>number</td><td>number</td><td>The page up key on the keyboard or keypad is pressed.
+      </td></tr>
+    <tr><td><code>PgDown</code></td><td>number</td><td>number</td><td>The page down key on the keyboard or keypad is pressed.
+      </td></tr>
+    <tr><td><code>LeftMouseButton</code></td><td>number</td><td>number</td><td>The left mouse button pressed.</td></tr>
+    <tr><td><code>MiddleMouseButton</code></td><td>number</td><td>number</td><td>The middle mouse button pressed.</td></tr>
+    <tr><td><code>RightMouseButton</code></td><td>number</td><td>number</td><td>The right mouse button pressed.</td></tr>
+    <tr><td><code>LeftMouseClicked</code></td><td>number</td><td>number</td><td>The left mouse button clicked.</td></tr>
+    <tr><td><code>MiddleMouseClicked</code></td><td>number</td><td>number</td><td>The middle mouse button clicked.</td></tr>
+    <tr><td><code>RightMouseClicked</code></td><td>number</td><td>number</td><td>The right mouse button clicked.</td></tr>
+    <tr><td><code>MouseMoveRight</code></td><td>number</td><td>number</td><td>The mouse moved right.</td></tr>
+    <tr><td><code>MouseMoveLeft</code></td><td>number</td><td>number</td><td>The mouse moved left.</td></tr>
+    <tr><td><code>MouseMoveUp</code></td><td>number</td><td>number</td><td>The mouse moved up.</td></tr>
+    <tr><td><code>MouseMoveDown</code></td><td>number</td><td>number</td><td>The mouse moved down.</td></tr>
+    <tr><td><code>MouseX</code></td><td>number</td><td>number</td><td>The mouse x-coordinate changed. The data value is its 
+      new x-coordinate value.</td></tr>
+    <tr><td><code>MouseY</code></td><td>number</td><td>number</td><td>The mouse y-coordinate changed. The data value is its 
+      new y-coordinate value.</td></tr>
+    <tr><td><code>MouseWheelRight</code></td><td>number</td><td>number</td><td>The mouse wheel rotated left. The data value 
+      is the number of units rotated (typically <code>1.0</code>).</td></tr>
+    <tr><td><code>MouseWheelLeft</code></td><td>number</td><td>number</td><td>The mouse wheel rotated left. The data value 
+      is the number of units rotated (typically <code>1.0</code>).</td></tr>
+    <tr><td><code>MouseWheelUp</code></td><td>number</td><td>number</td><td>The mouse wheel rotated up. The data value 
+      is the number of units rotated (typically <code>1.0</code>).</td></tr>
+    <tr><td><code>MouseWheelDown</code></td><td>number</td><td>number</td><td>The mouse wheel rotated down. The data value 
+      is the number of units rotated (typically <code>1.0</code>).</td></tr>
+    <tr><td><code>TouchpadRight</code></td><td>number</td><td>number</td><td>The average touch on a touch-enabled device 
+      moved right. The data value is how far the average position of all touch points moved.</td></tr>
+    <tr><td><code>TouchpadLeft</code></td><td>number</td><td>number</td><td>The average touch on a touch-enabled device 
+      moved left. The data value is how far the average position of all touch points moved.</td></tr>
+    <tr><td><code>TouchpadUp</code></td><td>number</td><td>number</td><td>The average touch on a touch-enabled device 
+      moved up. The data value is how far the average position of all touch points moved.</td></tr>
+    <tr><td><code>TouchpadDown</code></td><td>number</td><td>number</td><td>The average touch on a touch-enabled device 
+      moved down. The data value is how far the average position of all touch points moved.</td></tr>
+  </tbody>
+</table>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-todo">To Do:</dt>
+    <dd class="tag-todo">
+        <ul>
+            <li><em>Currently, the mouse wheel in an ordinary mouse generates left/right wheel events instead of up/down.</em></li>
+        </ul>
+    </dd>
+    
+</dl>
+
+
+
+
+
+
+            
+                
+<h4 class="name" id=".Hardware-OculusTouch">Hardware-OculusTouch</h4>
+
+
+
+
+<div class="description">
+    <p>The <code>Controller.Hardware.OculusTouch</code> object has properties representing Oculus Rift. The property values are 
+integer IDs, uniquely identifying each output. <em>Read-only.</em> These can be mapped to actions or functions or 
+<code>Controller.Standard</code> items in a <a href="RouteObject.html">RouteObject</a> mapping.</p>
+<table>
+  <thead>
+    <tr><th>Property</th><th>Type</th><th>Data</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+    <tr><td colspan="4"><strong>Buttons</strong></td></tr>
+    <tr><td><code>A</code></td><td>number</td><td>number</td><td>"A" button pressed.</td></tr>
+    <tr><td><code>B</code></td><td>number</td><td>number</td><td>"B" button pressed.</td></tr>
+    <tr><td><code>X</code></td><td>number</td><td>number</td><td>"X" button pressed.</td></tr>
+    <tr><td><code>Y</code></td><td>number</td><td>number</td><td>"Y" button pressed.</td></tr>
+    <tr><td><code>LeftApplicationMenu</code></td><td>number</td><td>number</td><td>Left application menu button pressed.
+      </td></tr>
+    <tr><td><code>RightApplicationMenu</code></td><td>number</td><td>number</td><td>Right application menu button pressed.
+      </td></tr>
+    <tr><td colspan="4"><strong>Sticks</strong></td></tr>
+    <tr><td><code>LX</code></td><td>number</td><td>number</td><td>Left stick x-axis scale.</td></tr>
+    <tr><td><code>LY</code></td><td>number</td><td>number</td><td>Left stick y-axis scale.</td></tr>
+    <tr><td><code>RX</code></td><td>number</td><td>number</td><td>Right stick x-axis scale.</td></tr>
+    <tr><td><code>RY</code></td><td>number</td><td>number</td><td>Right stick y-axis scale.</td></tr>
+    <tr><td><code>LS</code></td><td>number</td><td>number</td><td>Left stick button pressed.</td></tr>
+    <tr><td><code>RS</code></td><td>number</td><td>number</td><td>Right stick button pressed.</td></tr>
+    <tr><td><code>LSTouch</code></td><td>number</td><td>number</td><td>Left stick is touched.</td></tr>
+    <tr><td><code>RSTouch</code></td><td>number</td><td>number</td><td>Right stick is touched.</td></tr>
+    <tr><td colspan="4"><strong>Triggers</strong></td></tr>
+    <tr><td><code>LT</code></td><td>number</td><td>number</td><td>Left trigger scale.</td></tr>
+    <tr><td><code>RT</code></td><td>number</td><td>number</td><td>Right trigger scale.</td></tr>
+    <tr><td><code>LeftGrip</code></td><td>number</td><td>number</td><td>Left grip scale.</td></tr>
+    <tr><td><code>RightGrip</code></td><td>number</td><td>number</td><td>Right grip scale.</td></tr>
+    <tr><td colspan="4"><strong>Finger Abstractions</strong></td></tr>
+    <tr><td><code>LeftPrimaryThumbTouch</code></td><td>number</td><td>number</td><td>Left thumb touching primary thumb 
+      button.</td></tr>
+    <tr><td><code>LeftSecondaryThumbTouch</code></td><td>number</td><td>number</td><td>Left thumb touching secondary thumb 
+      button.</td></tr>
+    <tr><td><code>LeftThumbUp</code></td><td>number</td><td>number</td><td>Left thumb not touching primary or secondary 
+      thumb buttons.</td></tr>
+    <tr><td><code>RightPrimaryThumbTouch</code></td><td>number</td><td>number</td><td>Right thumb touching primary thumb 
+      button.</td></tr>
+    <tr><td><code>RightSecondaryThumbTouch</code></td><td>number</td><td>number</td><td>Right thumb touching secondary thumb 
+      button.</td></tr>
+    <tr><td><code>RightThumbUp</code></td><td>number</td><td>number</td><td>Right thumb not touching primary or secondary 
+      thumb buttons.</td></tr>
+    <tr><td><code>LeftPrimaryIndexTouch</code></td><td>number</td><td>number</td><td>Left index finger is touching primary 
+      index finger control.</td></tr>
+    <tr><td><code>LeftIndexPoint</code></td><td>number</td><td>number</td><td>Left index finger is pointing, not touching 
+      primary or secondary index finger controls.</td></tr>
+    <tr><td><code>RightPrimaryIndexTouch</code></td><td>number</td><td>number</td><td>Right index finger is touching primary 
+      index finger control.</td></tr>
+    <tr><td><code>RightIndexPoint</code></td><td>number</td><td>number</td><td>Right index finger is pointing, not touching 
+      primary or secondary index finger controls.</td></tr>
+    <tr><td colspan="4"><strong>Avatar Skeleton</strong></td></tr>
+    <tr><td><code>Head</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Head pose.</td></tr>
+    <tr><td><code>LeftHand</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Left hand pose.</td></tr>
+    <tr><td><code>RightHand</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>right hand pose.</td></tr>
+  </tbody>
+</table>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+            
+                
+<h4 class="name" id=".Hardware-Vive">Hardware-Vive</h4>
+
+
+
+
+<div class="description">
+    <p>The <code>Controller.Hardware.Vive</code> object has properties representing Vive. The property values are integer IDs,
+uniquely identifying each output. <em>Read-only.</em> These can be mapped to actions or functions or 
+<code>Controller.Standard</code> items in a <a href="RouteObject.html">RouteObject</a> mapping.</p>
+<table>
+  <thead>
+    <tr><th>Property</th><th>Type</th><th>Data</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+    <tr><td colspan="4"><strong>Touch Pad (Sticks)</strong></td></tr>
+    <tr><td><code>LX</code></td><td>number</td><td>number</td><td>Left touch pad x-axis scale.</td></tr>
+    <tr><td><code>LY</code></td><td>number</td><td>number</td><td>Left touch pad y-axis scale.</td></tr>
+    <tr><td><code>RX</code></td><td>number</td><td>number</td><td>Right stick x-axis scale.</td></tr>
+    <tr><td><code>RY</code></td><td>number</td><td>number</td><td>Right stick y-axis scale.</td></tr>
+    <tr><td><code>LS</code></td><td>number</td><td>number</td><td>Left touch pad pressed.</td></tr>
+    <tr><td><code>LS_CENTER</code></td><td>number</td><td>number</td><td>Left touch pad center pressed.</td></tr>
+    <tr><td><code>LS_X</code></td><td>number</td><td>number</td><td>Left touch pad pressed x-coordinate.</td></tr>
+    <tr><td><code>LS_Y</code></td><td>number</td><td>number</td><td>Left touch pad pressed y-coordinate.</td></tr>
+    <tr><td><code>RS</code></td><td>number</td><td>number</td><td>Right touch pad pressed.</td></tr>
+    <tr><td><code>RS_CENTER</code></td><td>number</td><td>number</td><td>Right touch pad center pressed.</td></tr>
+    <tr><td><code>RS_X</code></td><td>number</td><td>number</td><td>Right touch pad pressed x-coordinate.</td></tr>
+    <tr><td><code>RS_Y</code></td><td>number</td><td>number</td><td>Right touch pad pressed y-coordinate.</td></tr>
+    <tr><td><code>LSTouch</code></td><td>number</td><td>number</td><td>Left touch pad is touched.</td></tr>
+    <tr><td><code>RSTouch</code></td><td>number</td><td>number</td><td>Right touch pad is touched.</td></tr>
+    <tr><td colspan="4"><strong>Triggers</strong></td></tr>
+    <tr><td><code>LT</code></td><td>number</td><td>number</td><td>Left trigger scale.</td></tr>
+    <tr><td><code>RT</code></td><td>number</td><td>number</td><td>Right trigger scale.</td></tr>
+    <tr><td><code>LTClick</code></td><td>number</td><td>number</td><td>Left trigger click.</td></tr>
+    <tr><td><code>RTClick</code></td><td>number</td><td>number</td><td>Right trigger click.</td></tr>
+    <tr><td><code>LeftGrip</code></td><td>number</td><td>number</td><td>Left grip scale.</td></tr>
+    <tr><td><code>RightGrip</code></td><td>number</td><td>number</td><td>Right grip scale.</td></tr>
+    <tr><td colspan="4"><strong>Avatar Skeleton</strong></td></tr>
+    <tr><td><code>Hips</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Hips pose.</td></tr>
+    <tr><td><code>Spine2</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Spine2 pose.</td></tr>
+    <tr><td><code>Head</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Head pose.</td></tr>
+    <tr><td><code>LeftArm</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Left arm pose.</td></tr>
+    <tr><td><code>RightArm</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Right arm pose</td></tr>
+    <tr><td><code>LeftHand</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Left hand pose.</td></tr>
+    <tr><td><code>RightHand</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Right hand pose.</td></tr>
+    <tr><td colspan="4"><strong>Trackers</strong></td></tr>
+    <tr><td><code>TrackedObject00</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Tracker 0 pose.</td></tr>
+    <tr><td><code>TrackedObject01</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Tracker 1 pose.</td></tr>
+    <tr><td><code>TrackedObject02</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Tracker 2 pose.</td></tr>
+    <tr><td><code>TrackedObject03</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Tracker 3 pose.</td></tr>
+    <tr><td><code>TrackedObject04</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Tracker 4 pose.</td></tr>
+    <tr><td><code>TrackedObject05</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Tracker 5 pose.</td></tr>
+    <tr><td><code>TrackedObject06</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Tracker 6 pose.</td></tr>
+    <tr><td><code>TrackedObject07</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Tracker 7 pose.</td></tr>
+    <tr><td><code>TrackedObject08</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Tracker 8 pose.</td></tr>
+    <tr><td><code>TrackedObject09</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Tracker 9 pose.</td></tr>
+    <tr><td><code>TrackedObject10</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Tracker 10 pose.</td></tr>
+    <tr><td><code>TrackedObject11</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Tracker 11 pose.</td></tr>
+    <tr><td><code>TrackedObject12</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Tracker 12 pose.</td></tr>
+    <tr><td><code>TrackedObject13</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Tracker 13 pose.</td></tr>
+    <tr><td><code>TrackedObject14</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Tracker 14 pose.</td></tr>
+    <tr><td><code>TrackedObject15</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Tracker 15 pose.</td></tr>
+  </tbody>
+</table>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+            
+                
+<h4 class="name" id=".MappingJSON">MappingJSON</h4>
+
+
+
+
+<div class="description">
+    A <a href="MappingObject.html">MappingObject</a> can be specified in JSON format. A simple example is provided below. Full examples &mdash; the 
+default mappings provided in Interface &mdash;  can be found at 
+<a href="https://github.com/highfidelity/hifi/tree/master/interface/resources/controllers">
+https://github.com/highfidelity/hifi/tree/master/interface/resources/controllers</a>.
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>name</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The name of the mapping.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>channels</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;<a href="Controller.html#.MappingJSONRoute">Controller.MappingJSONRoute</a>></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">An array of routes.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">A simple mapping JSON that makes the right trigger move your avatar up after a dead zone.</p>
+    
+    <pre class="prettyprint"><code>{
+    "name": "com.highfidelity.controllers.example.jsonMapping",
+    "channels": [
+        { 
+            "from": "Standard.RT", 
+            "filters": { "type": "deadZone", "min": 0.05 },
+            "to": "Actions.TranslateY"
+        }
+    ]
+}</code></pre>
+
+
+
+            
+                
+<h4 class="name" id=".MappingJSONAxis">MappingJSONAxis</h4>
+
+
+
+
+<div class="description">
+    An axis pair in a <a href="Controller.html#.MappingJSONRoute">Controller.MappingJSONRoute</a>.
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>makeAxis</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;Array.&lt;string>></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">A two-member array of single-member arrays of <a href="Controller.html#.Hardware">Controller.Hardware</a> property names. 
+The leading <code>"Controller.Hardware."</code> can be omitted from the property names.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">An axis using the keyboard's left and right keys.</p>
+    
+    <pre class="prettyprint"><code>{ "makeAxis" : [
+        ["Keyboard.Left"],
+        ["Keyboard.Right"]
+    ]
+}</code></pre>
+
+
+
+            
+                
+<h4 class="name" id=".MappingJSONFilter">MappingJSONFilter</h4>
+
+
+
+
+<div class="description">
+    A filter in a <a href="Controller.html#.MappingJSONRoute">Controller.MappingJSONRoute</a>.
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>type</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">The name of the filter, being the name of the one of the <a href="RouteObject.html">RouteObject</a>'s filter methods.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>?</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">If the filter method has a first parameter, the property name is the name of that parameter and the 
+    property value is the value to use.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>?</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">If the filter method has a second parameter, the property name  is the name of that parameter and 
+    the property value is the value to use.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">A hysteresis filter.</p>
+    
+    <pre class="prettyprint"><code>{ 
+    "type": "hysteresis", 
+    "min": 0.85, 
+    "max": 0.9
+}</code></pre>
+
+
+
+            
+                
+<h4 class="name" id=".MappingJSONRoute">MappingJSONRoute</h4>
+
+
+
+
+<div class="description">
+    A route in a <a href="Controller.html#.MappingJSON">Controller.MappingJSON</a>.
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>from</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type"><a href="Controller.html#.MappingJSONAxis">Controller.MappingJSONAxis</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">The name of a <a href="Controller.html#.Hardware">Controller.Hardware</a> property name or an axis 
+    made from them. If a property name, the leading <code>"Controller.Hardware."</code> can be omitted.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>peek</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last">If <codd>true</code> then peeking is enabled per <a href="RouteObject.html#peek">RouteObject#peek</a>.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>debug</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last">If <code>true</code> then debug is enabled per <a href="RouteObject.html#debug">RouteObject#debug</a>.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>when</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type">Array.&lt;string></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    []
+                
+                </td>
+            
+
+            <td class="description last">One or more numeric <a href="Controller.html#.Hardware">Controller.Hardware</a> property names which are evaluated 
+    as booleans and ANDed together. Prepend with a <code>!</code> to use the logical NOT of the property value. The leading 
+    <code>"Controller.Hardware."</code> can be omitted from the property names.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>filters</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Controller.html#.MappingJSONFilter">Controller.MappingJSONFilter</a></span>
+|
+
+<span class="param-type">Array.&lt;<a href="Controller.html#.MappingJSONFilter">Controller.MappingJSONFilter</a>></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    []
+                
+                </td>
+            
+
+            <td class="description last">One or more filters in the route.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>to</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">The name of a <a href="Controller.html#.Actions">Controller.Actions</a> or <a href="Controller.html#.Standard">Controller.Standard</a> property. The leading 
+    <code>"Controller."</code> can be omitted.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+            
+                
+<h4 class="name" id=".Standard">Standard</h4>
+
+
+
+
+<div class="description">
+    <p>The <code>Controller.Standard</code> object has properties representing standard controller outputs. Those for physical 
+controllers are based on the XBox controller, with aliases for PlayStation. The property values are integer IDs, uniquely 
+identifying each output. <em>Read-only.</em> These can be mapped to actions or functions in a <a href="RouteObject.html">RouteObject</a> 
+mapping.</p>
+
+<p>The data value provided by each control is either a number or a <a href="global.html#Pose">Pose</a>. Numbers are typically normalized to
+<code>0.0</code> or <code>1.0</code> for button states, the range <code>0.0 &ndash; 1.0</code> for unidirectional scales,
+and the range <code>-1.0 &ndash; 1.0</code> for bidirectional scales.</p>
+
+<p>Each hardware device has a mapping from its outputs to <code>Controller.Standard</code> items, specified in a JSON file.
+For example, <a href="https://github.com/highfidelity/hifi/blob/master/interface/resources/controllers/leapmotion.json">
+leapmotion.json</a> and
+<a href="https://github.com/highfidelity/hifi/blob/master/interface/resources/controllers/vive.json">vive.json</a>.</p>
+
+<table>
+  <thead>
+      <tr><th>Property</th><th>Type</th><th>Data</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+
+    <tr><td colspan="4"><strong>Buttons</strong></td></tr>
+    <tr><td><code>A</code></td><td>number</td><td>number</td><td>"A" button pressed.</td></tr>
+    <tr><td><code>B</code></td><td>number</td><td>number</td><td>"B" button pressed.</td></tr>
+    <tr><td><code>X</code></td><td>number</td><td>number</td><td>"X" button pressed.</td></tr>
+    <tr><td><code>Y</code></td><td>number</td><td>number</td><td>"Y" button pressed.</td></tr>
+    <tr><td><code>DL</code></td><td>number</td><td>number</td><td>D-pad left pressed.</td></tr>
+    <tr><td><code>DR</code></td><td>number</td><td>number</td><td>D-pad right pressed.</td></tr>
+    <tr><td><code>DU</code></td><td>number</td><td>number</td><td>D-pad up pressed.</td></tr>
+    <tr><td><code>DD</code></td><td>number</td><td>number</td><td>D-pad down pressed.</td></tr>
+    <tr><td><code>Start</code></td><td>number</td><td>number</td><td>"Start" center button pressed.</td></tr>
+    <tr><td><code>Back</code></td><td>number</td><td>number</td><td>"Back" center button pressed.</td></tr>
+    <tr><td><code>LB</code></td><td>number</td><td>number</td><td>Left bumper button pressed.</td></tr>
+    <tr><td><code>RB</code></td><td>number</td><td>number</td><td>Right bumper button pressed.</td></tr>
+
+    <tr><td colspan="4"><strong>Sticks</strong></td></tr>
+    <tr><td><code>LX</code></td><td>number</td><td>number</td><td>Left stick x-axis scale.</td></tr>
+    <tr><td><code>LY</code></td><td>number</td><td>number</td><td>Left stick y-axis scale.</td></tr>
+    <tr><td><code>RX</code></td><td>number</td><td>number</td><td>Right stick x-axis scale.</td></tr>
+    <tr><td><code>RY</code></td><td>number</td><td>number</td><td>Right stick y-axis scale.</td></tr>
+    <tr><td><code>LS</code></td><td>number</td><td>number</td><td>Left stick button pressed.</td></tr>
+    <tr><td><code>RS</code></td><td>number</td><td>number</td><td>Right stick button pressed.</td></tr>
+    <tr><td><code>LSTouch</code></td><td>number</td><td>number</td><td>Left stick is touched.</td></tr>
+    <tr><td><code>RSTouch</code></td><td>number</td><td>number</td><td>Right stick is touched.</td></tr>
+
+    <tr><td colspan="4"><strong>Triggers</strong></td></tr>
+    <tr><td><code>LT</code></td><td>number</td><td>number</td><td>Left trigger scale.</td></tr>
+    <tr><td><code>RT</code></td><td>number</td><td>number</td><td>Right trigger scale.</td></tr>
+    <tr><td><code>LTClick</code></td><td>number</td><td>number</td><td>Left trigger click.</td></tr>
+    <tr><td><code>RTClick</code></td><td>number</td><td>number</td><td>Right trigger click.</td></tr>
+    <tr><td><code>LeftGrip</code></td><td>number</td><td>number</td><td>Left grip scale.</td></tr>
+    <tr><td><code>RightGrip</code></td><td>number</td><td>number</td><td>Right grip scale.</td></tr>
+    <tr><td><code>LeftGripTouch</code></td><td>number</td><td>number</td><td>Left grip is touched.</td></tr>
+    <tr><td><code>RightGripTouch</code></td><td>number</td><td>number</td><td>Right grip is touched.</td></tr>
+
+    <tr><td colspan="4"><strong>Aliases, PlayStation Style Names</strong></td></tr>
+    <tr><td><code>Cross</code></td><td>number</td><td>number</td><td>Alias for <code>A</code>.</td></tr>
+    <tr><td><code>Circle</code></td><td>number</td><td>number</td><td>Alias for <code>B</code>.</td></tr>
+    <tr><td><code>Square</code></td><td>number</td><td>number</td><td>Alias for <code>X</code>.</td></tr>
+    <tr><td><code>Triangle</code></td><td>number</td><td>number</td><td>Alias for <code>Y</code>.</td></tr>
+    <tr><td><code>Left</code></td><td>number</td><td>number</td><td>Alias for <code>DL</code>.</td></tr>
+    <tr><td><code>Right</code></td><td>number</td><td>number</td><td>Alias for <code>DR</code>.</td></tr>
+    <tr><td><code>Up</code></td><td>number</td><td>number</td><td>Alias for <code>DU</code>.</td></tr>
+    <tr><td><code>Down</code></td><td>number</td><td>number</td><td>Alias for <code>DD</code>.</td></tr>
+    <tr><td><code>Select</code></td><td>number</td><td>number</td><td>Alias for <code>Back</code>.</td></tr>
+    <tr><td><code>L1</code></td><td>number</td><td>number</td><td>Alias for <code>LB</code>.</td></tr>
+    <tr><td><code>R1</code></td><td>number</td><td>number</td><td>Alias for <code>RB</code>.</td></tr>
+    <tr><td><code>L3</code></td><td>number</td><td>number</td><td>Alias for <code>LS</code>.</td></tr>
+    <tr><td><code>R3</code></td><td>number</td><td>number</td><td>Alias for <code>RS</code>.</td></tr>
+    <tr><td><code>L2</code></td><td>number</td><td>number</td><td>Alias for <code>LT</code>.</td></tr>
+    <tr><td><code>R2</code></td><td>number</td><td>number</td><td>Alias for <code>RT</code>.</td></tr>
+
+    <tr><td colspan="4"><strong>Finger Abstractions</strong></td></tr>
+    <tr><td><code>LeftPrimaryThumb</code></td><td>number</td><td>number</td><td>Left primary thumb button pressed.</td></tr>
+    <tr><td><code>LeftSecondaryThumb</code></td><td>number</td><td>number</td><td>Left secondary thumb button pressed.
+      </td></tr>
+    <tr><td><code>RightPrimaryThumb</code></td><td>number</td><td>number</td><td>Right primary thumb button pressed.
+      </td></tr>
+    <tr><td><code>RightSecondaryThumb</code></td><td>number</td><td>number</td><td>Right secondary thumb button pressed.
+      </td></tr>
+    <tr><td><code>LeftPrimaryThumbTouch</code></td><td>number</td><td>number</td><td>Left thumb touching primary thumb 
+      button.</td></tr>
+    <tr><td><code>LeftSecondaryThumbTouch</code></td><td>number</td><td>number</td><td>Left thumb touching secondary thumb 
+      button.</td></tr>
+    <tr><td><code>LeftThumbUp</code></td><td>number</td><td>number</td><td>Left thumb not touching primary or secondary 
+      thumb buttons.</td></tr>
+    <tr><td><code>RightPrimaryThumbTouch</code></td><td>number</td><td>number</td><td>Right thumb touching primary thumb 
+      button.</td></tr>
+    <tr><td><code>RightSecondaryThumbTouch</code></td><td>number</td><td>number</td><td>Right thumb touching secondary thumb 
+      button.</td></tr>
+    <tr><td><code>RightThumbUp</code></td><td>number</td><td>number</td><td>Right thumb not touching primary or secondary 
+      thumb buttons.</td></tr>
+    <tr><td><code>LeftPrimaryIndex</code></td><td>number</td><td>number</td><td>Left primary index control pressed. 
+      <strong>To Do:</strong> <em>Implement this for current controllers.</em></td></tr>
+    <tr><td><code>LeftSecondaryIndex</code></td><td>number</td><td>number</td><td>Left secondary index control pressed.
+      </td></tr>
+    <tr><td><code>RightPrimaryIndex</code></td><td>number</td><td>number</td><td>Right primary index control pressed. 
+      <strong>To Do:</strong> <em>Implement this for current controllers.</em></td></tr>
+    <tr><td><code>RightSecondaryIndex</code></td><td>number</td><td>number</td><td>Right secondary index control pressed.
+      </td></tr>
+    <tr><td><code>LeftPrimaryIndexTouch</code></td><td>number</td><td>number</td><td>Left index finger is touching primary 
+      index finger control.</td></tr>
+    <tr><td><code>LeftSecondaryIndexTouch</code></td><td>number</td><td>number</td><td>Left index finger is touching 
+      secondary index finger control.</td></tr>
+    <tr><td><code>LeftIndexPoint</code></td><td>number</td><td>number</td><td>Left index finger is pointing, not touching 
+      primary or secondary index finger controls.</td></tr>
+    <tr><td><code>RightPrimaryIndexTouch</code></td><td>number</td><td>number</td><td>Right index finger is touching primary 
+      index finger control.</td></tr>
+    <tr><td><code>RightSecondaryIndexTouch</code></td><td>number</td><td>number</td><td>Right index finger is touching 
+      secondary index finger control.</td></tr>
+    <tr><td><code>RightIndexPoint</code></td><td>number</td><td>number</td><td>Right index finger is pointing, not touching 
+      primary or secondary index finger controls.</td></tr>
+
+    <tr><td colspan="4"><strong>Avatar Skeleton</strong></td></tr>
+    <tr><td><code>Hips</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Hips pose.</td></tr>
+    <tr><td><code>Spine2</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Spine2 pose.</td></tr>
+    <tr><td><code>Head</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Head pose.</td></tr>
+    <tr><td><code>LeftArm</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Left arm pose.</td></tr>
+    <tr><td><code>RightArm</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Right arm pose</td></tr>
+    <tr><td><code>LeftHand</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Left hand pose.</td></tr>
+    <tr><td><code>LeftHandThumb1</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Left thumb 1 finger joint pose.</td></tr>
+    <tr><td><code>LeftHandThumb2</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Left thumb 2 finger joint pose.</td></tr>
+    <tr><td><code>LeftHandThumb3</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Left thumb 3 finger joint pose.</td></tr>
+    <tr><td><code>LeftHandThumb4</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Left thumb 4 finger joint pose.</td></tr>
+    <tr><td><code>LeftHandIndex1</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Left index 1 finger joint pose.</td></tr>
+    <tr><td><code>LeftHandIndex2</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Left index 2 finger joint pose.</td></tr>
+    <tr><td><code>LeftHandIndex3</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Left index 3 finger joint pose.</td></tr>
+    <tr><td><code>LeftHandIndex4</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Left index 4 finger joint pose.</td></tr>
+    <tr><td><code>LeftHandMiddle1</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Left middle 1 finger joint pose.
+      </td></tr>
+    <tr><td><code>LeftHandMiddle2</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Left middle 2 finger joint pose.
+      </td></tr>
+    <tr><td><code>LeftHandMiddle3</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Left middle 3 finger joint pose.
+      </td></tr>
+    <tr><td><code>LeftHandMiddle4</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Left middle 4 finger joint pose.
+      </td></tr>
+    <tr><td><code>LeftHandRing1</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Left ring 1 finger joint pose.</td></tr>
+    <tr><td><code>LeftHandRing2</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Left ring 2 finger joint pose.</td></tr>
+    <tr><td><code>LeftHandRing3</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Left ring 3 finger joint pose.</td></tr>
+    <tr><td><code>LeftHandRing4</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Left ring 4 finger joint pose.</td></tr>
+    <tr><td><code>LeftHandPinky1</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Left pinky 1 finger joint pose.</td></tr>
+    <tr><td><code>LeftHandPinky2</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Left pinky 2 finger joint pose.</td></tr>
+    <tr><td><code>LeftHandPinky3</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Left pinky 3 finger joint pose.</td></tr>
+    <tr><td><code>LeftHandPinky4</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Left pinky 4 finger joint pose.</td></tr>
+    <tr><td><code>RightHand</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Right hand pose.</td></tr>
+    <tr><td><code>RightHandThumb1</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Right thumb 1 finger joint pose.
+      </td></tr>
+    <tr><td><code>RightHandThumb2</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Right thumb 2 finger joint pose.
+      </td></tr>
+    <tr><td><code>RightHandThumb3</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Right thumb 3 finger joint pose.
+      </td></tr>
+    <tr><td><code>RightHandThumb4</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Right thumb 4 finger joint pose.
+      </td></tr>
+    <tr><td><code>RightHandIndex1</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Right index 1 finger joint pose.
+      </td></tr>
+    <tr><td><code>RightHandIndex2</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Right index 2 finger joint pose.
+      </td></tr>
+    <tr><td><code>RightHandIndex3</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Right index 3 finger joint pose.
+      </td></tr>
+    <tr><td><code>RightHandIndex4</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Right index 4 finger joint pose.
+      </td></tr>
+    <tr><td><code>RightHandMiddle1</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Right middle 1 finger joint pose.
+      </td></tr>
+    <tr><td><code>RightHandMiddle2</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Right middle 2 finger joint pose.
+      </td></tr>
+    <tr><td><code>RightHandMiddle3</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Right middle 3 finger joint pose.
+      </td></tr>
+    <tr><td><code>RightHandMiddle4</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Right middle 4 finger joint pose.
+      </td></tr>
+    <tr><td><code>RightHandRing1</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Right ring 1 finger joint pose.</td></tr>
+    <tr><td><code>RightHandRing2</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Right ring 2 finger joint pose.</td></tr>
+    <tr><td><code>RightHandRing3</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Right ring 3 finger joint pose.</td></tr>
+    <tr><td><code>RightHandRing4</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Right ring 4 finger joint pose.</td></tr>
+    <tr><td><code>RightHandPinky1</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Right pinky 1 finger joint pose.
+      </td></tr>
+    <tr><td><code>RightHandPinky2</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Right pinky 2 finger joint pose.
+      </td></tr>
+    <tr><td><code>RightHandPinky3</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Right pinky 3 finger joint pose.
+      </td></tr>
+    <tr><td><code>RightHandPinky4</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Right pinky 4 finger joint pose.
+      </td></tr>
+    <tr><td><code>LeftFoot</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Left foot pose.</td></tr>
+    <tr><td><code>RightFoot</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Right foot pose.</td></tr>
+
+    <tr><td colspan="4"><strong>Trackers</strong></td></tr>
+    <tr><td><code>TrackedObject00</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Tracker 0 pose.</td></tr>
+    <tr><td><code>TrackedObject01</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Tracker 1 pose.</td></tr>
+    <tr><td><code>TrackedObject02</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Tracker 2 pose.</td></tr>
+    <tr><td><code>TrackedObject03</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Tracker 3 pose.</td></tr>
+    <tr><td><code>TrackedObject04</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Tracker 4 pose.</td></tr>
+    <tr><td><code>TrackedObject05</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Tracker 5 pose.</td></tr>
+    <tr><td><code>TrackedObject06</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Tracker 6 pose.</td></tr>
+    <tr><td><code>TrackedObject07</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Tracker 7 pose.</td></tr>
+    <tr><td><code>TrackedObject08</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Tracker 8 pose.</td></tr>
+    <tr><td><code>TrackedObject09</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Tracker 9 pose.</td></tr>
+    <tr><td><code>TrackedObject10</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Tracker 10 pose.</td></tr>
+    <tr><td><code>TrackedObject11</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Tracker 11 pose.</td></tr>
+    <tr><td><code>TrackedObject12</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Tracker 12 pose.</td></tr>
+    <tr><td><code>TrackedObject13</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Tracker 13 pose.</td></tr>
+    <tr><td><code>TrackedObject14</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Tracker 14 pose.</td></tr>
+    <tr><td><code>TrackedObject15</code></td><td>number</td><td><a href="global.html#Pose">Pose</a></td><td>Tracker 15 pose.</td></tr>
+
+  </tbody>
+</table>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+            
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AnimationObject.html">AnimationObject</a></li><li><a href="AudioEffectOptions.html">AudioEffectOptions</a></li><li><a href="AudioInjector.html">AudioInjector</a></li><li><a href="AudioStats.AudioStreamStats.html">AudioStreamStats</a></li><li><a href="InteractiveWindow.html">InteractiveWindow</a></li><li><a href="MappingObject.html">MappingObject</a></li><li><a href="MeshProxy.html">MeshProxy</a></li><li><a href="OverlayWebWindow.html">OverlayWebWindow</a></li><li><a href="OverlayWindow.html">OverlayWindow</a></li><li><a href="ResourceObject.html">ResourceObject</a></li><li><a href="RouteObject.html">RouteObject</a></li><li><a href="Scene.Stage.html">Stage</a></li><li><a href="ScriptsModel.html">ScriptsModel</a></li><li><a href="ScriptsModelFilter.html">ScriptsModelFilter</a></li><li><a href="SoundObject.html">SoundObject</a></li><li><a href="TabletButtonProxy.html">TabletButtonProxy</a></li><li><a href="TabletProxy.html">TabletProxy</a></li><li><a href="ToolbarButtonProxy.html">ToolbarButtonProxy</a></li><li><a href="ToolbarProxy.html">ToolbarProxy</a></li></ul><h3>Namespaces</h3><ul><li><a href="AccountServices.html">AccountServices</a></li><li><a href="Agent.html">Agent</a></li><li><a href="AnimationCache.html">AnimationCache</a></li><li><a href="Assets.html">Assets</a></li><li><a href="Audio.html">Audio</a></li><li><a href="AudioScope.html">AudioScope</a></li><li><a href="AudioStats.html">AudioStats</a></li><li><a href="Avatar.html">Avatar</a></li><li><a href="AvatarBookmarks.html">AvatarBookmarks</a></li><li><a href="AvatarInputs.html">AvatarInputs</a></li><li><a href="AvatarList.html">AvatarList</a></li><li><a href="AvatarManager.html">AvatarManager</a></li><li><a href="Camera.html">Camera</a></li><li><a href="Clipboard.html">Clipboard</a></li><li><a href="Controller.html">Controller</a></li><li><a href="DebugDraw.html">DebugDraw</a></li><li><a href="Desktop.html">Desktop</a></li><li><a href="Entities.html">Entities</a></li><li><a href="EntityViewer.html">EntityViewer</a></li><li><a href="FaceTracker.html">FaceTracker</a></li><li><a href="File.html">File</a></li><li><a href="GooglePoly.html">GooglePoly</a></li><li><a href="Graphics.html">Graphics</a></li><li><a href="Graphics.RenderFlags.html">RenderFlags</a></li><li><a href="HifiAbout.html">HifiAbout</a></li><li><a href="HMD.html">HMD</a></li><li><a href="LaserPointers.html">LaserPointers</a></li><li><a href="location.html">location</a></li><li><a href="LocationBookmarks.html">LocationBookmarks</a></li><li><a href="LODManager.html">LODManager</a></li><li><a href="Mat4.html">Mat4</a></li><li><a href="Menu.html">Menu</a></li><li><a href="Messages.html">Messages</a></li><li><a href="Midi.html">Midi</a></li><li><a href="ModelCache.html">ModelCache</a></li><li><a href="MyAvatar.html">MyAvatar</a></li><li><a href="OffscreenFlags.html">OffscreenFlags</a></li><li><a href="Overlays.html">Overlays</a></li><li><a href="Paths.html">Paths</a></li><li><a href="Picks.html">Picks</a></li><li><a href="PickType.html">PickType</a></li><li><a href="Pointers.html">Pointers</a></li><li><a href="Quat.html">Quat</a></li><li><a href="RayPick.html">RayPick</a></li><li><a href="Recording.html">Recording</a></li><li><a href="Render.html">Render</a></li><li><a href="Resource.html">Resource</a></li><li><a href="Resources.html">Resources</a></li><li><a href="Reticle.html">Reticle</a></li><li><a href="Scene.html">Scene</a></li><li><a href="Script.html">Script</a></li><li><a href="ScriptDiscoveryService.html">ScriptDiscoveryService</a></li><li><a href="Selection.html">Selection</a></li><li><a href="Settings.html">Settings</a></li><li><a href="Snapshot.html">Snapshot</a></li><li><a href="SoundCache.html">SoundCache</a></li><li><a href="SpeechRecognizer.html">SpeechRecognizer</a></li><li><a href="Stats.html">Stats</a></li><li><a href="Steam.html">Steam</a></li><li><a href="Tablet.html">Tablet</a></li><li><a href="tabletInterface.html">tabletInterface</a></li><li><a href="TextureCache.html">TextureCache</a></li><li><a href="Toolbars.html">Toolbars</a></li><li><a href="Users.html">Users</a></li><li><a href="Uuid.html">Uuid</a></li><li><a href="Vec3.html">Vec3</a></li><li><a href="Wallet.html">Wallet</a></li><li><a href="Window.html">Window</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Aug 22 2018 14:55:19 GMT-0400 (EDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
