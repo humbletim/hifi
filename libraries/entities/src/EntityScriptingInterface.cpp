@@ -13,6 +13,7 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
+#include <glm/gtx/string_cast.hpp>
 
 #include <QFutureWatcher>
 #include <QtConcurrent/QtConcurrentRun>
@@ -41,6 +42,36 @@
 const QString GRABBABLE_USER_DATA = "{\"grabbableKey\":{\"grabbable\":true}}";
 const QString NOT_GRABBABLE_USER_DATA = "{\"grabbableKey\":{\"grabbable\":false}}";
 
+namespace ModelResizeHelper {
+    void applyNaturalDimensions(const QUuid& objectID, const glm::vec3& maxDimensions) {
+        auto entities = DependencyManager::get<EntityScriptingInterface>();
+        auto naturalDimensions = entities->getEntityProperties(objectID, EntityPropertyFlags{ PROP_DIMENSIONS }).getNaturalDimensions();
+        auto clampedDimensions = glm::clamp(naturalDimensions, glm::vec3(ENTITY_ITEM_MIN_DIMENSION), maxDimensions);
+        auto adjustedDimensions = naturalDimensions;
+        if (clampedDimensions != naturalDimensions) {
+            adjustedDimensions = glm::normalize(naturalDimensions) * glm::compMin(clampedDimensions);
+            qDebug() << "autoResizing Entity -- adjusted dimensions" << QVariantMap{
+                { "naturalDimensions", glm::to_string(glm::dvec3(naturalDimensions)).c_str() },
+                { "clampedDimensions", glm::to_string(glm::dvec3(clampedDimensions)).c_str() },
+                { "adjustedDimensions", glm::to_string(glm::dvec3(adjustedDimensions)).c_str() },
+            };
+        }
+        EntityItemProperties properties;
+        properties.setDimensions(adjustedDimensions);
+        properties.setLastEdited(usecTimestampNow());
+        {
+            // log this edge case (which seems to be a race condition in the multi-user / parallel sizing scenario)
+            auto lastEditedBy = entities->getEntityProperties(objectID, EntityPropertyFlags{ PROP_LAST_EDITED_BY }).getLastEditedBy();
+            auto sessionUUID = DependencyManager::get<NodeList>()->getSessionUUID();
+            if (lastEditedBy != sessionUUID) {
+                qDebug() << "WARNING: autosizing a Model not last edited by us... lastEditedBy:" << lastEditedBy << "sessionUUID:" << sessionUUID;
+            }
+        }
+        qDebug() << "autoResizing Entity" << objectID << " .dimensions = " << glm::to_string(glm::dvec3(clampedDimensions)).c_str();
+        entities->editEntity(objectID, properties);
+    }
+}
+
 EntityScriptingInterface::EntityScriptingInterface(bool bidOnSimulationOwnership) :
     _entityTree(nullptr),
     _bidOnSimulationOwnership(bidOnSimulationOwnership)
@@ -60,6 +91,25 @@ EntityScriptingInterface::EntityScriptingInterface(bool bidOnSimulationOwnership
 
     auto& packetReceiver = nodeList->getPacketReceiver();
     packetReceiver.registerListener(PacketType::EntityScriptCallMethod, this, "handleEntityScriptCallMethodPacket");
+
+    connect(this, &EntityScriptingInterface::naturalDimensionsAvailable, [this](QUuid entityID, glm::vec3 naturalDimensions) {
+        if (auto entity = checkForTreeEntityAndTypeMatch(entityID, EntityTypes::Model)) {
+            auto modelEntity = std::dynamic_pointer_cast<ModelEntityItem>(entity);
+            if (!modelEntity->getDimensionsInitialized()) {
+                // TODO: impose Clara-specific size restrictions here
+                // (note: modelURL likely doesn't indicate anymore (given .zip => temp files => ATP upload import process))
+                glm::vec3 maxDimensions = Vectors::MAX;
+                qCDebug(entities) << "EntityScriptingInterface::naturalDimensionsAvailable" << entityID
+                    << "naturalDimensions" << QVariant::fromValue(naturalDimensions)
+                    << "maxDimensions" << QVariant::fromValue(maxDimensions);
+                ModelResizeHelper::applyNaturalDimensions(entityID, maxDimensions);
+            } else {
+                qDebug() << "EntityScriptingInterface::naturalDimensionsAvailable -- dimensions already initialized :(" << entityID;
+            }
+        } else {
+            qDebug() << "EntityScriptingInterface::naturalDimensionsAvailable -- entity no more :(" << entityID;
+        }
+    });
 }
 
 void EntityScriptingInterface::queueEntityMessage(PacketType packetType,
@@ -236,6 +286,17 @@ EntityItemProperties convertPropertiesFromScriptSemantics(const EntityItemProper
     return entitySideProperties;
 }
 
+bool EntityScriptingInterface::waitForNaturalDimensions(QUuid entityID) {
+    auto source = checkForTreeEntityAndTypeMatch(entityID, EntityTypes::Model).get();
+    return QObject::connect(source, &EntityItem::requestRenderUpdate, this, [this, source, entityID] {
+        auto properties = getEntityProperties(entityID, EntityPropertyFlags{ PROP_DIMENSIONS });
+        auto naturalDimensions = properties.getNaturalDimensions();
+        if (naturalDimensions != ENTITY_ITEM_DEFAULT_DIMENSIONS) {
+            QObject::disconnect(source, &EntityItem::requestRenderUpdate, this, 0);
+            emit naturalDimensionsAvailable(entityID, naturalDimensions);
+        }
+    });
+}
 
 QUuid EntityScriptingInterface::addEntity(const EntityItemProperties& properties, bool clientOnly) {
     PROFILE_RANGE(script_entities, __FUNCTION__);
@@ -265,6 +326,7 @@ QUuid EntityScriptingInterface::addEntity(const EntityItemProperties& properties
     // queue the packet
     if (success) {
         queueEntityMessage(PacketType::EntityAdd, id, propertiesWithSimID);
+        waitForNaturalDimensions(id);
         return id;
     } else {
         return QUuid();

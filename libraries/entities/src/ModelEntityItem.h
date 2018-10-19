@@ -22,9 +22,12 @@ class ModelEntityItem : public EntityItem {
 public:
     static EntityItemPointer factory(const EntityItemID& entityID, const EntityItemProperties& properties);
 
-    ModelEntityItem(const EntityItemID& entityItemID);
+    ModelEntityItem(const EntityItemID& entityItemID, bool dimensionsInitialized);
 
     ALLOW_INSTANTIATION // This class can be instantiated
+
+    virtual bool getDimensionsInitialized() const { return _dimensionsInitialized; }
+    virtual void setUnscaledDimensions(const glm::vec3& value) override;
 
     // methods for getting/setting all properties of an entity
     virtual EntityItemProperties getProperties(const EntityPropertyFlags& desiredProperties, bool allowEmptyDesiredProperties) const override;
@@ -167,6 +170,7 @@ protected:
 private:
     uint64_t _lastAnimated{ 0 };
     float _currentFrame{ -1.0f };
+    bool _dimensionsInitialized { true };
 };
 
 #endif // hifi_ModelEntityItem_h

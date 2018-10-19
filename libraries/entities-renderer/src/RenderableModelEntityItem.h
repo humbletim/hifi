@@ -37,7 +37,7 @@ class ModelEntityWrapper : public ModelEntityItem {
     friend class render::entities::ModelEntityRenderer;
 
 protected:
-    ModelEntityWrapper(const EntityItemID& entityItemID) : Parent(entityItemID) {}
+    ModelEntityWrapper(const EntityItemID& entityItemID, bool dimensionsInitialized) : Parent(entityItemID, dimensionsInitialized) {}
     void setModel(const ModelPointer& model);
     ModelPointer getModel() const;
     bool isModelLoaded() const;
@@ -57,8 +57,6 @@ public:
 
     RenderableModelEntityItem(const EntityItemID& entityItemID, bool dimensionsInitialized);
     virtual ~RenderableModelEntityItem();
-
-    virtual void setUnscaledDimensions(const glm::vec3& value) override;
 
     virtual EntityItemProperties getProperties(const EntityPropertyFlags& desiredProperties, bool allowEmptyDesiredProperties) const override;
     void doInitialModelSimulation();
@@ -128,7 +126,6 @@ private:
     QVariantMap _originalTextures;
     bool _jointMapCompleted { false };
     bool _originalTexturesRead { false };
-    bool _dimensionsInitialized { true };
     bool _needsJointSimulation { false };
     bool _needsAnimationReset { false };
 };

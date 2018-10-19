@@ -2257,11 +2257,6 @@ Application::Application(int& argc, char** argv, QElapsedTimer& startupTimer, bo
         });
     }
 
-    // Monitor model assets (e.g., from Clara.io) added to the world that may need resizing.
-    static const int ADD_ASSET_TO_WORLD_TIMER_INTERVAL_MS = 1000;
-    _addAssetToWorldResizeTimer.setInterval(ADD_ASSET_TO_WORLD_TIMER_INTERVAL_MS); // 1s, Qt::CoarseTimer acceptable
-    connect(&_addAssetToWorldResizeTimer, &QTimer::timeout, this, &Application::addAssetToWorldCheckModelSize);
-
     // Auto-update and close adding asset to world info message box.
     static const int ADD_ASSET_TO_WORLD_INFO_TIMEOUT_MS = 5000;
     _addAssetToWorldInfoTimer.setInterval(ADD_ASSET_TO_WORLD_INFO_TIMEOUT_MS); // 5s, Qt::CoarseTimer acceptable
@@ -7390,107 +7385,30 @@ void Application::addAssetToWorldAddEntity(QString filePath, QString mapping) {
         properties.setShapeType(SHAPE_TYPE_SIMPLE_COMPOUND);
     }
     properties.setCollisionless(true);  // Temporarily set so that doesn't collide with avatar.
-    properties.setVisible(false);  // Temporarily set so that don't see at large unresized dimensions.
     bool grabbable = (Menu::getInstance()->isOptionChecked(MenuOption::CreateEntitiesGrabbable));
     properties.setUserData(grabbable ? GRABBABLE_USER_DATA : NOT_GRABBABLE_USER_DATA);
     glm::vec3 positionOffset = getMyAvatar()->getWorldOrientation() * (getMyAvatar()->getSensorToWorldScale() * glm::vec3(0.0f, 0.0f, -2.0f));
     properties.setPosition(getMyAvatar()->getWorldPosition() + positionOffset);
     properties.setRotation(getMyAvatar()->getWorldOrientation());
     properties.setGravity(glm::vec3(0.0f, 0.0f, 0.0f));
-    auto entityID = DependencyManager::get<EntityScriptingInterface>()->addEntity(properties);
 
-    // Note: Model dimensions are not available here; model is scaled per FBX mesh in RenderableModelEntityItem::update() later
-    // on. But FBX dimensions may be in cm, so we monitor for the dimension change and rescale again if warranted.
+    // Note: Model dimensions are not available here -- EntityScriptingInterface::addModelEntity attends to autoresizing later.
+    auto entityID = DependencyManager::get<EntityScriptingInterface>()->addModelEntity(
+        properties.getName(), properties.getModelURL(), properties.getTextures(),
+        properties.getShapeType() == SHAPE_TYPE_BOX ? "box" : "simple-compound",
+        properties.getDynamic(), properties.getCollisionless(), grabbable,
+        properties.getPosition(), properties.getGravity()
+    );
 
     if (entityID == QUuid()) {
         QString errorInfo = "Could not add model " + mapping + " to world.";
         qWarning(interfaceapp) << "Could not add model to world: " + errorInfo;
         addAssetToWorldError(filenameFromPath(filePath), errorInfo);
     } else {
-        // Monitor when asset is rendered in world so that can resize if necessary.
-        _addAssetToWorldResizeList.insert(entityID, 0);  // List value is count of checks performed.
-        if (!_addAssetToWorldResizeTimer.isActive()) {
-            _addAssetToWorldResizeTimer.start();
-        }
-
         // Close progress message box.
         addAssetToWorldInfoDone(filenameFromPath(filePath));
     }
 }
-
-void Application::addAssetToWorldCheckModelSize() {
-    if (_addAssetToWorldResizeList.size() == 0) {
-        return;
-    }
-
-    auto item = _addAssetToWorldResizeList.begin();
-    while (item != _addAssetToWorldResizeList.end()) {
-        auto entityID = item.key();
-
-        EntityPropertyFlags propertyFlags;
-        propertyFlags += PROP_NAME;
-        propertyFlags += PROP_DIMENSIONS;
-        auto entityScriptingInterface = DependencyManager::get<EntityScriptingInterface>();
-        auto properties = entityScriptingInterface->getEntityProperties(entityID, propertyFlags);
-        auto name = properties.getName();
-        auto dimensions = properties.getDimensions();
-
-        bool doResize = false;
-
-        const glm::vec3 DEFAULT_DIMENSIONS = glm::vec3(0.1f, 0.1f, 0.1f);
-        if (dimensions != DEFAULT_DIMENSIONS) {
-
-            // Scale model so that its maximum is exactly specific size.
-            const float MAXIMUM_DIMENSION = getMyAvatar()->getSensorToWorldScale();
-            auto previousDimensions = dimensions;
-            auto scale = std::min(MAXIMUM_DIMENSION / dimensions.x, std::min(MAXIMUM_DIMENSION / dimensions.y,
-                MAXIMUM_DIMENSION / dimensions.z));
-            dimensions *= scale;
-            qInfo(interfaceapp) << "Model" << name << "auto-resized from" << previousDimensions << " to " << dimensions;
-            doResize = true;
-
-            item = _addAssetToWorldResizeList.erase(item);  // Finished with this entity; advance to next.
-        } else {
-            // Increment count of checks done.
-            _addAssetToWorldResizeList[entityID]++;
-
-            const int CHECK_MODEL_SIZE_MAX_CHECKS = 300;
-            if (_addAssetToWorldResizeList[entityID] > CHECK_MODEL_SIZE_MAX_CHECKS) {
-                // Have done enough checks; model was either the default size or something's gone wrong.
-
-                // Rescale all dimensions.
-                const glm::vec3 UNIT_DIMENSIONS = glm::vec3(1.0f, 1.0f, 1.0f);
-                dimensions = UNIT_DIMENSIONS;
-                qInfo(interfaceapp) << "Model" << name << "auto-resize timed out; resized to " << dimensions;
-                doResize = true;
-
-                item = _addAssetToWorldResizeList.erase(item);  // Finished with this entity; advance to next.
-            } else {
-                // No action on this entity; advance to next.
-                ++item;
-            }
-        }
-
-        if (doResize) {
-            EntityItemProperties properties;
-            properties.setDimensions(dimensions);
-            properties.setVisible(true);
-            if (!name.toLower().endsWith(PNG_EXTENSION) && !name.toLower().endsWith(JPG_EXTENSION)) {
-                properties.setCollisionless(false);
-            }
-            bool grabbable = (Menu::getInstance()->isOptionChecked(MenuOption::CreateEntitiesGrabbable));
-            properties.setUserData(grabbable ? GRABBABLE_USER_DATA : NOT_GRABBABLE_USER_DATA);
-            properties.setLastEdited(usecTimestampNow());
-            entityScriptingInterface->editEntity(entityID, properties);
-        }
-    }
-
-    // Stop timer if nothing in list to check.
-    if (_addAssetToWorldResizeList.size() == 0) {
-        _addAssetToWorldResizeTimer.stop();
-    }
-}
-
 
 void Application::addAssetToWorldInfo(QString modelName, QString infoText) {
     // Displays the most recent info message, subject to being overridden by error messages.

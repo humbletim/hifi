@@ -67,21 +67,10 @@ EntityItemPointer RenderableModelEntityItem::factory(const EntityItemID& entityI
 }
 
 RenderableModelEntityItem::RenderableModelEntityItem(const EntityItemID& entityItemID, bool dimensionsInitialized) :
-    ModelEntityWrapper(entityItemID),
-    _dimensionsInitialized(dimensionsInitialized) {
-    
-    
+    ModelEntityWrapper(entityItemID, dimensionsInitialized) {
 }
 
 RenderableModelEntityItem::~RenderableModelEntityItem() { }
-
-void RenderableModelEntityItem::setUnscaledDimensions(const glm::vec3& value) {
-    glm::vec3 newDimensions = glm::max(value, glm::vec3(0.0f)); // can never have negative dimensions
-    if (getUnscaledDimensions() != newDimensions) {
-        _dimensionsInitialized = true;
-        ModelEntityItem::setUnscaledDimensions(value);
-    }
-}
 
 QVariantMap parseTexturesToMap(QString textures, const QVariantMap& defaultTextures) {
     // If textures are unset, revert to original textures
@@ -153,7 +142,7 @@ bool RenderableModelEntityItem::needsUpdateModelBounds() const {
         return false;
     }
 
-    if (!_dimensionsInitialized || !model->isActive()) {
+    if (!getDimensionsInitialized() || !model->isActive()) {
         return false;
     }
 
@@ -194,7 +183,7 @@ bool RenderableModelEntityItem::needsUpdateModelBounds() const {
 void RenderableModelEntityItem::updateModelBounds() {
     DETAILED_PROFILE_RANGE(simulation_physics, "updateModelBounds");
 
-    if (!_dimensionsInitialized || !hasModel()) {
+    if (!getDimensionsInitialized() || !hasModel()) {
         return;
     }
 
@@ -1291,7 +1280,7 @@ bool ModelEntityRenderer::needsRenderUpdateFromTypedEntity(const TypedEntityPoin
     });
 
     if (model && model->isLoaded()) {
-        if (!entity->_dimensionsInitialized || entity->_needsInitialSimulation || !entity->_originalTexturesRead) {
+        if (!entity->getDimensionsInitialized() || entity->_needsInitialSimulation || !entity->_originalTexturesRead) {
             return true;
        } 
 
@@ -1400,20 +1389,6 @@ void ModelEntityRenderer::doRenderUpdateSynchronousTyped(const ScenePointer& sce
             _prevModelLoaded = true;
         });
     }
-
-    // Check for initializing the model
-    // FIXME: There are several places below here where we are modifying the entity, which we should not be doing from the renderable
-    if (!entity->_dimensionsInitialized) {
-        EntityItemProperties properties;
-        properties.setLastEdited(usecTimestampNow()); // we must set the edit time since we're editing it
-        auto extents = model->getMeshExtents();
-        properties.setDimensions(extents.maximum - extents.minimum);
-        qCDebug(entitiesrenderer) << "Autoresizing"
-            << (!entity->getName().isEmpty() ? entity->getName() : entity->getModelURL())
-            << "from mesh extents";
-
-        QMetaObject::invokeMethod(DependencyManager::get<EntityScriptingInterface>().data(), "editEntity",
-            Qt::QueuedConnection, Q_ARG(QUuid, entity->getEntityItemID()), Q_ARG(EntityItemProperties, properties));
     }
 
     if (!entity->_originalTexturesRead) {

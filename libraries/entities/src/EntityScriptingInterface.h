@@ -1903,6 +1903,14 @@ signals:
      */
     void webEventReceived(const EntityItemID& entityItemID, const QVariant& message);
 
+    /**jsdoc
+     * Triggered when the naturalDimensions for a Model entity become available.
+     * @param {Uuid} entityID - The ID of the entity that event was received from.
+     * @param {Vec3} naturalDimensions - The model's naturalDimensions.
+     * @returns {Signal}
+     */
+    void naturalDimensionsAvailable(QUuid entityID, glm::vec3 naturalDimensions);
+
 protected:
     void withEntitiesScriptEngine(std::function<void(QSharedPointer<EntitiesScriptEngineProvider>)> function) {
         std::lock_guard<std::recursive_mutex> lock(_entitiesScriptEngineLock);
@@ -1917,6 +1925,7 @@ private:
     bool polyVoxWorker(QUuid entityID, std::function<bool(PolyVoxEntityItem&)> actor);
     bool setPoints(QUuid entityID, std::function<bool(LineEntityItem&)> actor);
     void queueEntityMessage(PacketType packetType, EntityItemID entityID, const EntityItemProperties& properties);
+    bool waitForNaturalDimensions(QUuid entityID);
     bool addLocalEntityCopy(EntityItemProperties& propertiesWithSimID, EntityItemID& id, bool isClone = false);
 
     EntityItemPointer checkForTreeEntityAndTypeMatch(const QUuid& entityID,

@@ -55,7 +55,7 @@ EntityItemProperties::EntityItemProperties(EntityPropertyFlags desiredProperties
     _localRenderAlphaChanged(false),
 
     _defaultSettings(true),
-    _naturalDimensions(1.0f, 1.0f, 1.0f),
+    _naturalDimensions(ENTITY_ITEM_DEFAULT_DIMENSIONS),
     _naturalPosition(0.0f, 0.0f, 0.0f),
     _desiredProperties(desiredProperties)
 {

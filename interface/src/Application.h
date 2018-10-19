@@ -483,8 +483,6 @@ private slots:
     void setDisplayPlugin(DisplayPluginPointer newPlugin);
     void domainConnectionRefused(const QString& reasonMessage, int reason, const QString& extraInfo);
 
-    void addAssetToWorldCheckModelSize();
-
     void onAssetToWorldMessageBoxClosed();
     void addAssetToWorldInfoTimeout();
     void addAssetToWorldErrorTimeout();
@@ -740,9 +738,6 @@ private:
     QString _returnFromFullScreenMirrorTo;
 
     ConnectionMonitor _connectionMonitor;
-
-    QTimer _addAssetToWorldResizeTimer;
-    QHash<QUuid, int> _addAssetToWorldResizeList;
 
     void addAssetToWorldInfo(QString modelName, QString infoText);
     void addAssetToWorldInfoClear(QString modelName);

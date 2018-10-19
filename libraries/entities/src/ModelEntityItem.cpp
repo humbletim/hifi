@@ -28,12 +28,13 @@ const QString ModelEntityItem::DEFAULT_MODEL_URL = QString("");
 const QString ModelEntityItem::DEFAULT_COMPOUND_SHAPE_URL = QString("");
 
 EntityItemPointer ModelEntityItem::factory(const EntityItemID& entityID, const EntityItemProperties& properties) {
-    EntityItemPointer entity(new ModelEntityItem(entityID), [](EntityItem* ptr) { ptr->deleteLater(); });
+    EntityItemPointer entity(new ModelEntityItem(entityID, properties.getDimensionsInitialized()), [](EntityItem* ptr) { ptr->deleteLater(); });
     entity->setProperties(properties);
     return entity;
 }
 
-ModelEntityItem::ModelEntityItem(const EntityItemID& entityItemID) : EntityItem(entityItemID)
+ModelEntityItem::ModelEntityItem(const EntityItemID& entityItemID, bool dimensionsInitialized)
+    : EntityItem(entityItemID), _dimensionsInitialized(dimensionsInitialized)
 {
     _lastAnimated = usecTimestampNow();
     // set the last animated when interface (re)starts
@@ -69,6 +70,14 @@ EntityItemProperties ModelEntityItem::getProperties(const EntityPropertyFlags& d
         _animationProperties.getProperties(properties);
     });
     return properties;
+}
+
+void ModelEntityItem::setUnscaledDimensions(const glm::vec3& value) {
+    glm::vec3 newDimensions = glm::max(value, glm::vec3(0.0f)); // can never have negative dimensions
+    if (getUnscaledDimensions() != newDimensions) {
+        _dimensionsInitialized = true;
+        EntityItem::setUnscaledDimensions(value);
+    }
 }
 
 bool ModelEntityItem::setProperties(const EntityItemProperties& properties) {
