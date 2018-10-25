@@ -1356,7 +1356,7 @@ void ModelEntityRenderer::doRenderUpdateSynchronousTyped(const ScenePointer& sce
         connect(model.get(), &Model::requestRenderUpdate, this, &ModelEntityRenderer::requestRenderUpdate);
         connect(model.get(), &Model::setURLFinished, this, [&](bool didVisualGeometryRequestSucceed) {
             setKey(didVisualGeometryRequestSucceed);
-            emit requestRenderUpdate();
+            emit entity->requestRenderUpdate(); // note: per EntityRenderer ctor this also triggers ModelEntityRenderer::requestRenderUpdate
             if(didVisualGeometryRequestSucceed) {
                 emit DependencyManager::get<scriptable::ModelProviderFactory>()->
                     modelAddedToScene(entity->getEntityItemID(), NestableType::Entity, _model);

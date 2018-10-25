@@ -84,6 +84,7 @@ class MainWindow;
 class AssetUpload;
 class CompositorHelper;
 class AudioInjector;
+class AppAssetImporter;
 
 namespace controller {
     class StateController;
@@ -358,18 +359,6 @@ public slots:
 
     void showDialog(const QUrl& widgetUrl, const QUrl& tabletUrl, const QString& name) const;
 
-    // FIXME: Move addAssetToWorld* methods to own class?
-    void addAssetToWorldFromURL(QString url);
-    void addAssetToWorldFromURLRequestFinished();
-    void addAssetToWorld(QString filePath, QString zipFile, bool isZip = false, bool isBlocks = false);
-    void addAssetToWorldUnzipFailure(QString filePath);
-    void addAssetToWorldWithNewMapping(QString filePath, QString mapping, int copy, bool isZip = false, bool isBlocks = false);
-    void addAssetToWorldUpload(QString filePath, QString mapping, bool isZip = false, bool isBlocks = false);
-    void addAssetToWorldSetMapping(QString filePath, QString mapping, QString hash, bool isZip = false, bool isBlocks = false);
-    void addAssetToWorldAddEntity(QString filePath, QString mapping);
-
-    void handleUnzip(QString sourceFile, QStringList destinationFile, bool autoAdd, bool isZip, bool isBlocks);
-
     FileScriptingInterface* getFileDownloadInterface() { return _fileDownload; }
 
     void handleLocalServerConnection() const;
@@ -422,8 +411,6 @@ public slots:
 
     OverlayID getKeyboardFocusOverlay();
     void setKeyboardFocusOverlay(const OverlayID& overlayID);
-
-    void addAssetToWorldMessageClose();
 
     void loadLODToolsDialog();
     void loadEntityStatisticsDialog();
@@ -482,10 +469,6 @@ private slots:
     void updateDisplayMode();
     void setDisplayPlugin(DisplayPluginPointer newPlugin);
     void domainConnectionRefused(const QString& reasonMessage, int reason, const QString& extraInfo);
-
-    void onAssetToWorldMessageBoxClosed();
-    void addAssetToWorldInfoTimeout();
-    void addAssetToWorldErrorTimeout();
 
     void handleSandboxStatus(QNetworkReply* reply);
     void switchDisplayMode();
@@ -739,18 +722,8 @@ private:
 
     ConnectionMonitor _connectionMonitor;
 
-    void addAssetToWorldInfo(QString modelName, QString infoText);
-    void addAssetToWorldInfoClear(QString modelName);
-    void addAssetToWorldInfoDone(QString modelName);
-    void addAssetToWorldError(QString modelName, QString errorText);
-
-    QQuickItem* _addAssetToWorldMessageBox{ nullptr };
-    QStringList _addAssetToWorldInfoKeys;  // Model name
-    QStringList _addAssetToWorldInfoMessages;  // Info message
-    QTimer _addAssetToWorldInfoTimer;
-    QTimer _addAssetToWorldErrorTimer;
-
     FileScriptingInterface* _fileDownload;
+    QPointer<AppAssetImporter> _assetImporter;
     AudioInjectorPointer _snapshotSoundInjector;
     SharedSoundPointer _snapshotSound;
     SharedSoundPointer _sampleSound;
