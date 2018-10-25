@@ -13,6 +13,7 @@
 #include <AssetUpload.h>
 #include <OffscreenUi.h>
 #include <QtWidgets/QMessageBox>
+#include <QTemporaryDir>
 #include "AvatarHashMap.h"
 
 namespace { QLoggingCategory asset_import{ "hifi.interface.import" }; }
@@ -275,15 +276,6 @@ void AppAssetImporter::addAssetToWorldAddEntity(QString filePath, QString mappin
         properties.getDynamic(), properties.getCollisionless(), grabbable,
         properties.getPosition(), properties.getGravity()
     );
-
-    if (auto entityTreeRenderer = DependencyManager::get<EntityTreeRenderer>()) {
-        if (auto entityTree = entityTreeRenderer->getTree()) {
-            entityTree->withReadLock([&] {
-                EntityItemPointer entity = entityTree->findEntityByEntityItemID(entityID);
-                qDebug() << "addAssetToWorldAddEntity...entity pointer" << entity;
-                });
-        }
-    }
 
     if (entityID == QUuid()) {
         QString errorInfo = "Could not add model " + mapping + " to world.";

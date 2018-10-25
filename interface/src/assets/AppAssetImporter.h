@@ -14,17 +14,6 @@
 
 #include "Application.h"
 
-#if 0
-struct AssetImportContext {
-public:
-    QString origin;
-    QString url;
-    bool isZip;
-    bool isBlocks;
-    QString zipFile;
-};
-#endif
-
 class AppAssetImporter : public QObject {
     Q_OBJECT
 public:
