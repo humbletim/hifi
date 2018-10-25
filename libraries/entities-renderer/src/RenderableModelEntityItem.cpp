@@ -350,7 +350,7 @@ bool RenderableModelEntityItem::isReadyToComputeShape() const {
             return false;
         }
 
-        if (model->getURL().isEmpty() || !_dimensionsInitialized) {
+        if (model->getURL().isEmpty() || !getDimensionsInitialized()) {
             // we need a render geometry with a scale to proceed, so give up.
             return false;
         }
@@ -1388,7 +1388,6 @@ void ModelEntityRenderer::doRenderUpdateSynchronousTyped(const ScenePointer& sce
         withWriteLock([&] {
             _prevModelLoaded = true;
         });
-    }
     }
 
     if (!entity->_originalTexturesRead) {
